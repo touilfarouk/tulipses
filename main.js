@@ -72,4 +72,19 @@ app.use(Quasar, {
   }
 })
 
+// Hide loading screen and show app
 app.mount('#q-app')
+
+// Remove loading screen after app mounts
+setTimeout(() => {
+  const loading = document.getElementById('loading')
+  const qApp = document.getElementById('q-app')
+
+  if (loading) {
+    loading.style.display = 'none'
+  }
+
+  if (qApp) {
+    qApp.style.display = 'block'
+  }
+}, 100)

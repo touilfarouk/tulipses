@@ -205,7 +205,7 @@ const MainLayout = {
     const previousRoute = Vue.ref('')
 
     // Watch route changes to determine transition
-    Vue.watch(() => router.currentRoute, (to, from) => {
+    Vue.watch(() => router.currentRoute.value, (to, from) => {
       console.log('Route changed from', from?.path, 'to', to?.path)
       if (from && to) {
         // Determine transition based on route hierarchy
