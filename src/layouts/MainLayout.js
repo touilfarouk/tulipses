@@ -137,10 +137,10 @@ const MainLayout = {
       </q-page-container>
 
       <!-- Global Footer -->
-      <q-footer class="bg-white text-dark">
+      <q-footer :class="$q.dark.isActive ? 'bg-dark text-white' : 'bg-white text-dark'">
         <div class="q-py-sm q-px-md">
           <div class="row items-center justify-between">
-            <div class="text-grey-7 text-caption">Balance:</div>
+            <div :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-7'" class="text-caption">Balance:</div>
             <div class="text-h6" :class="getAmountColorClass(balance)">
               {{ currencify(balance) }}
             </div>
