@@ -26,6 +26,19 @@
     <link href="css/shadows.css" rel="stylesheet">
     <!-- Mobile Swipe CSS -->
     <link href="css/mobile-swipe.css" rel="stylesheet">
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#00695c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Moneyballs">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <link
+      href="https://cdn.jsdelivr.net/npm/@quasar/quasar-ui-qcalendar/dist/QCalendarMonth.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
   </head>
   <body>
     <div id="q-app"></div>
@@ -46,6 +59,15 @@
     <script src="https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/lang/en-US.umd.prod.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/lang/ar.umd.prod.js"></script>
 
+    <!-- qcalendar.netlify.app/ -->
+    <script src="https://cdn.jsdelivr.net/npm/@quasar/quasar-ui-qcalendar/dist/QCalendarMonth.umd.min.js"></script>
+
+    <!-- If you need Timestamp functions: -->
+    <script src="https://cdn.jsdelivr.net/npm/@quasar/quasar-ui-qcalendar/dist/Timestamp.umd.min.js"></script>
+
+    <!-- Workbox CDN for PWA -->
+    <script src="https://cdn.jsdelivr.net/npm/workbox-sw@7.0.0/build/workbox-sw.js"></script>
+
     <!-- Store Script -->
     <script src="js/store.js"></script>
 
@@ -57,4 +79,58 @@
     <!-- Application Script -->
     <script type="module" src="main.js"></script>
   </body>
+
+  <!-- Service Worker Registration -->
+  <script>
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('SW registered: ', registration);
+
+            // Check for updates
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  // New version available, show update notification
+                  if (confirm('New version available! Reload to update?')) {
+                    window.location.reload();
+                  }
+                }
+              });
+            });
+          })
+          .catch(registrationError => {
+            console.log('SW registration failed: ', registrationError);
+          });
+      });
+    }
+
+    // PWA Install Prompt
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+
+      // Show install button or banner
+      console.log('Install prompt ready');
+    });
+
+    // Handle install button click
+    function installApp() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the install prompt');
+          } else {
+            console.log('User dismissed the install prompt');
+          }
+          deferredPrompt = null;
+        });
+      }
+    }
+  </script>
 </html>
