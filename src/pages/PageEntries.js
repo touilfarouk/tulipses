@@ -13,8 +13,8 @@ const PageEntries = {
                   <q-slide-item
                     v-for="entry in entries"
                     :key="entry.id"
-                    @left="({ reset }) => { onSwipeLeft(entry, reset) }"
-                    @right="({ reset }) => { onSwipeRight(entry, reset) }"
+                    @left="({ reset }) => { onSwipeRight(entry, reset) }"
+                    @right="({ reset }) => { onSwipeLeft(entry, reset) }"
                     left-color="positive"
                     right-color="negative"
                     :touchable="true"
@@ -49,20 +49,20 @@ const PageEntries = {
                     </q-item>
                     <template v-slot:left>
                       <div class="row items-center no-wrap">
-                        <q-icon name="check" class="q-mr-sm" size="24px" />
+                        <q-icon name="delete" class="q-mr-sm" size="24px" />
                         <div class="text-center">
-                          <div class="text-weight-medium">Mark Paid</div>
-                          <div class="text-caption">Swipe right</div>
+                          <div class="text-weight-medium">Delete</div>
+                          <div class="text-caption">Swipe left</div>
                         </div>
                       </div>
                     </template>
                     <template v-slot:right>
                       <div class="row items-center no-wrap">
                         <div class="text-center">
-                          <div class="text-weight-medium">Delete</div>
-                          <div class="text-caption">Swipe left</div>
+                          <div class="text-weight-medium">Mark Paid</div>
+                          <div class="text-caption">Swipe right</div>
                         </div>
-                        <q-icon name="delete" class="q-ml-sm" size="24px" />
+                        <q-icon name="check" class="q-ml-sm" size="24px" />
                       </div>
                     </template>
                   </q-slide-item>
