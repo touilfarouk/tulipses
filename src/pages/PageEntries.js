@@ -6,7 +6,7 @@ const PageEntries = {
         <!-- Mobile-friendly card layout with slide actions -->
         <div class="row q-col-gutter-md">
           <div class="col-12">
-            <q-card flat bordered class="shadow-2">
+            <q-card flat bordered class="shadow-4">
               <q-card-section>
                 <div class="text-h6 q-mb-md">Entries</div>
                 <q-list separator>
@@ -75,7 +75,7 @@ const PageEntries = {
 
       <!-- Mobile-friendly fixed footer -->
       <q-footer class="bg-white text-dark" elevated>
-        <q-card flat square>
+        <q-card flat square class="shadow-4">
           <q-card-section class="q-pa-md">
             <div class="row items-center q-mb-md">
               <div class="col">

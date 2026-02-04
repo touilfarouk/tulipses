@@ -9,7 +9,7 @@ const PageSettings = {
         <div class="row q-col-gutter-md q-mb-md">
           <!-- Appearance Card -->
           <div class="col-12 col-md-3">
-            <q-card flat bordered class="full-height">
+            <q-card flat bordered class="full-height shadow-4">
               <q-card-section>
                 <div class="text-h6">Appearance</div>
               </q-card-section>
@@ -41,7 +41,7 @@ const PageSettings = {
 
           <!-- Currency Card -->
           <div class="col-12 col-md-3">
-            <q-card flat bordered class="full-height">
+            <q-card flat bordered class="full-height shadow-4">
               <q-card-section>
                 <div class="text-h6">Currency</div>
               </q-card-section>
@@ -61,7 +61,7 @@ const PageSettings = {
 
           <!-- Data Management Card -->
           <div class="col-12 col-md-3">
-            <q-card flat bordered class="full-height">
+            <q-card flat bordered class="full-height shadow-4">
               <q-card-section>
                 <div class="text-h6">Data Management</div>
               </q-card-section>
@@ -79,7 +79,7 @@ const PageSettings = {
 
           <!-- About Card -->
           <div class="col-12 col-md-3">
-            <q-card flat bordered class="full-height">
+            <q-card flat bordered class="full-height shadow-4">
               <q-card-section>
                 <div class="text-h6">About</div>
               </q-card-section>
