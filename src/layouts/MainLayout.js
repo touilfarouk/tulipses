@@ -129,16 +129,29 @@ const MainLayout = {
       <q-page-container>
         <transition
           name="slide-left"
-          mode="out-in"
           appear
+          mode="out-in"
         >
           <router-view />
         </transition>
       </q-page-container>
+
+      <!-- Global Footer -->
+      <q-footer class="bg-white text-dark">
+        <div class="q-py-sm q-px-md">
+          <div class="row items-center justify-between">
+            <div class="text-grey-7 text-caption">Balance:</div>
+            <div class="text-h6" :class="getAmountColorClass(balance)">
+              {{ currencify(balance) }}
+            </div>
+          </div>
+        </div>
+      </q-footer>
     </q-layout>
   `,
   setup() {
     const store = useEntriesStore()
+    const router = VueRouter.useRouter()
 
     // Initialize UI state from store
     store.initializeUIState()
@@ -187,6 +200,25 @@ const MainLayout = {
       }).format(amount)
     }
 
+    // Transition management
+    const transitionName = Vue.ref('fade')
+    const previousRoute = Vue.ref('')
+
+    // Watch route changes to determine transition
+    Vue.watch(() => router.currentRoute, (to, from) => {
+      console.log('Route changed from', from?.path, 'to', to?.path)
+      if (from && to) {
+        // Determine transition based on route hierarchy
+        if (to.path === '/' && from.path !== '/') {
+          transitionName.value = 'slide-right' // Going to home
+        } else if (from.path === '/' && to.path !== '/') {
+          transitionName.value = 'slide-left' // Going from home
+        } else {
+          transitionName.value = 'fade' // Default fade
+        }
+      }
+    }, { immediate: true })
+
     const getAmountColorClass = (amount) => {
       if (amount > 0) return 'text-positive'
       if (amount < 0) return 'text-negative'
@@ -214,6 +246,8 @@ const MainLayout = {
       currencify,
       getAmountColorClass,
       localDrawerOpen,
+      transitionName,
+      previousRoute,
       // UI state from store - using computed properties for better reactivity
       drawerState: Vue.computed(() => localDrawerOpen.value ? 'open' : 'closed'),
       activeMenuItem: Vue.computed(() => store.uiState.activeMenuItem),
