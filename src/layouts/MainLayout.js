@@ -13,7 +13,7 @@ const MainLayout = {
       }
     </style>
     <q-layout view="hHh lpR lFf">
-      <q-header class="bg-primary text-white shadow-4">
+      <q-header class="bg-primary text-white shadow-2">
         <q-toolbar>
           <q-btn
             flat

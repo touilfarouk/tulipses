@@ -5,45 +5,49 @@
   -webkit-user-select: none !important;
   -moz-user-select: none !important;
   -ms-user-select: none !important;
+  position: relative !important;
+  z-index: 1 !important;
 }
 
 .q-slide-item .q-item {
   touch-action: pan-y !important;
   pointer-events: auto !important;
+  position: relative !important;
 }
 
 /* Ensure touch events work on mobile */
 @media (max-width: 768px) {
   .q-slide-item {
-    min-height: 60px !important;
+    min-height: 64px !important;
     touch-action: pan-y !important;
+    overflow: hidden !important;
   }
-  
+
   .q-slide-item .q-item {
-    min-height: 60px !important;
+    min-height: 64px !important;
     padding: 16px !important;
     touch-action: pan-y !important;
+    position: relative !important;
   }
-  
+
   .q-slide-item .q-item-section {
-    min-height: 40px !important;
+    min-height: 32px !important;
+  }
+
+  /* Larger touch areas */
+  .q-slide-item .q-item-section side {
+    min-width: 100px !important;
   }
 }
 
-/* Prevent conflicts with shadows */
+/* Prevent conflicts with shadows and other elements */
 .q-slide-item * {
   box-shadow: none !important;
 }
 
-/* Better touch targets */
-.q-slide-item .q-item-section side {
-  min-width: 80px !important;
-}
-
-/* Ensure proper z-index for swipe */
-.q-slide-item {
-  position: relative !important;
-  z-index: 1 !important;
+.q-slide-item .q-item:before,
+.q-slide-item .q-item:after {
+  display: none !important;
 }
 
 /* Fix for iOS Safari */
@@ -51,5 +55,33 @@
   .q-slide-item {
     -webkit-transform: translateZ(0) !important;
     transform: translateZ(0) !important;
+    -webkit-backface-visibility: hidden !important;
+    backface-visibility: hidden !important;
   }
+}
+
+/* Fix for Android */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  .q-slide-item {
+    -webkit-tap-highlight-color: transparent !important;
+  }
+}
+
+/* Ensure proper swipe area */
+.q-slide-item .q-slide-item__content {
+  touch-action: pan-y !important;
+}
+
+/* Remove any conflicting transitions */
+.q-slide-item .q-item {
+  transition: none !important;
+}
+
+/* Better visual feedback */
+.q-slide-item__left,
+.q-slide-item__right {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 120px !important;
 }

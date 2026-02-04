@@ -6,7 +6,7 @@ const PageEntries = {
         <!-- Mobile-friendly card layout with slide actions -->
         <div class="row q-col-gutter-md">
           <div class="col-12">
-            <q-card flat bordered class="shadow-4">
+            <q-card flat bordered class="shadow-2">
               <q-card-section>
                 <div class="text-h6 q-mb-md">Entries</div>
                 <q-list separator>
@@ -15,11 +15,11 @@ const PageEntries = {
                     :key="entry.id"
                     @left="({ reset }) => { onSwipeLeft(entry, reset) }"
                     @right="({ reset }) => { onSwipeRight(entry, reset) }"
-                    left-color="positive"
-                    right-color="negative"
+                    left-color="negative"
+                    right-color="positive"
                     :touchable="true"
                     :mouseable="true"
-                    :threshold="0.3"
+                    :threshold="0.2"
                     :immediate-check="false"
                   >
                     <q-item
@@ -62,7 +62,7 @@ const PageEntries = {
                     <template v-slot:right>
                       <div class="row items-center no-wrap">
                         <div class="text-center">
-                          <div class="text-weight-medium">Paid</div>
+                          <div class="text-weight-medium">Mark Paid</div>
                           <div class="text-caption">Swipe right</div>
                         </div>
                         <q-icon name="check" class="q-ml-sm" size="24px" />
@@ -74,50 +74,61 @@ const PageEntries = {
             </q-card>
           </div>
         </div>
+
+        <!-- Form Container -->
+        <div class="row q-col-gutter-md q-mt-md">
+          <div class="col-12">
+            <q-card flat bordered class="shadow-2">
+              <q-card-section>
+                <div class="text-h6 q-mb-md">Add New Entry</div>
+                <div class="row q-col-gutter-sm">
+                  <div class="col-12 col-sm-5">
+                    <q-input
+                      v-model="newEntry.name"
+                      placeholder="Entry name"
+                      bg-color="grey-2"
+                      outlined
+                      dense
+                    />
+                  </div>
+                  <div class="col-12 col-sm-4">
+                    <q-input
+                      v-model="newEntry.amount"
+                      input-class="text-right"
+                      placeholder="Amount"
+                      bg-color="grey-2"
+                      type="number"
+                      step="0.01"
+                      outlined
+                      dense
+                    />
+                  </div>
+                  <div class="col-12 col-sm-3">
+                    <q-btn
+                      color="primary"
+                      icon="add"
+                      label="Add"
+                      class="full-width"
+                      @click="addEntry"
+                    />
+                  </div>
+                </div>
+              </q-card-section>
+            </q-card>
+          </div>
+        </div>
       </div>
 
-      <!-- Mobile-friendly fixed footer -->
+      <!-- Simple Footer -->
       <q-footer class="bg-white text-dark" elevated>
-        <q-card flat square class="shadow-4">
+        <q-card flat square class="shadow-2">
           <q-card-section class="q-pa-md">
-            <div class="row items-center q-mb-md">
+            <div class="row items-center">
               <div class="col">
                 <div class="text-grey-7">Balance:</div>
                 <div class="text-h6" :class="getAmountColorClass(balance)">
                   {{ currencify(balance) }}
                 </div>
-              </div>
-            </div>
-            <div class="row q-col-gutter-sm">
-              <div class="col-12 col-sm-5">
-                <q-input
-                  v-model="newEntry.name"
-                  placeholder="Entry name"
-                  bg-color="grey-2"
-                  outlined
-                  dense
-                />
-              </div>
-              <div class="col-12 col-sm-4">
-                <q-input
-                  v-model="newEntry.amount"
-                  input-class="text-right"
-                  placeholder="Amount"
-                  bg-color="grey-2"
-                  type="number"
-                  step="0.01"
-                  outlined
-                  dense
-                />
-              </div>
-              <div class="col-12 col-sm-3">
-                <q-btn
-                  color="primary"
-                  icon="add"
-                  label="Add"
-                  class="full-width"
-                  @click="addEntry"
-                />
               </div>
             </div>
           </q-card-section>
