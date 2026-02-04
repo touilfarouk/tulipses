@@ -5,76 +5,92 @@ const PageSettings = {
       <div class="q-pa-md">
         <h4>Settings</h4>
 
-        <q-card class="q-mb-md" flat bordered>
-          <q-card-section>
-            <div class="text-h6">Appearance</div>
-          </q-card-section>
+        <!-- Settings Cards in Row -->
+        <div class="row q-col-gutter-md q-mb-md">
+          <!-- Appearance Card -->
+          <div class="col-12 col-md-3">
+            <q-card flat bordered class="full-height">
+              <q-card-section>
+                <div class="text-h6">Appearance</div>
+              </q-card-section>
 
-          <q-card-section>
-            <q-toggle
-              v-model="darkMode"
-              label="Dark Mode"
-              color="primary"
-              @update:model-value="toggleDarkMode"
-            />
+              <q-card-section>
+                <q-toggle
+                  v-model="darkMode"
+                  label="Dark Mode"
+                  color="primary"
+                  @update:model-value="toggleDarkMode"
+                />
 
-            <div class="q-mt-md">
-              <q-btn-toggle
-                v-model="themeColor"
-                toggle-color="primary"
-                :options="[
-                  { label: 'Teal', value: 'teal' },
-                  { label: 'Blue', value: 'blue' },
-                  { label: 'Purple', value: 'purple' },
-                  { label: 'Red', value: 'red' }
-                ]"
-                @update:model-value="changeThemeColor"
-              />
-            </div>
-          </q-card-section>
-        </q-card>
+                <div class="q-mt-md">
+                  <q-btn-toggle
+                    v-model="themeColor"
+                    toggle-color="primary"
+                    :options="[
+                      { label: 'Teal', value: 'teal' },
+                      { label: 'Blue', value: 'blue' },
+                      { label: 'Purple', value: 'purple' },
+                      { label: 'Red', value: 'red' }
+                    ]"
+                    @update:model-value="changeThemeColor"
+                  />
+                </div>
+              </q-card-section>
+            </q-card>
+          </div>
 
-        <q-card class="q-mb-md" flat bordered>
-          <q-card-section>
-            <div class="text-h6">Currency</div>
-          </q-card-section>
+          <!-- Currency Card -->
+          <div class="col-12 col-md-3">
+            <q-card flat bordered class="full-height">
+              <q-card-section>
+                <div class="text-h6">Currency</div>
+              </q-card-section>
 
-          <q-card-section>
-            <q-select
-              v-model="currency"
-              :options="currencyOptions"
-              label="Currency"
-              emit-value
-              map-options
-              @update:model-value="changeCurrency"
-            />
-          </q-card-section>
-        </q-card>
+              <q-card-section>
+                <q-select
+                  v-model="currency"
+                  :options="currencyOptions"
+                  label="Currency"
+                  emit-value
+                  map-options
+                  @update:model-value="changeCurrency"
+                />
+              </q-card-section>
+            </q-card>
+          </div>
 
-        <q-card class="q-mb-md" flat bordered>
-          <q-card-section>
-            <div class="text-h6">Data Management</div>
-          </q-card-section>
+          <!-- Data Management Card -->
+          <div class="col-12 col-md-3">
+            <q-card flat bordered class="full-height">
+              <q-card-section>
+                <div class="text-h6">Data Management</div>
+              </q-card-section>
 
-          <q-card-section>
-            <q-btn
-              color="negative"
-              label="Clear All Data"
-              @click="confirmClearData"
-            />
-          </q-card-section>
-        </q-card>
+              <q-card-section>
+                <q-btn
+                  color="negative"
+                  label="Clear All Data"
+                  @click="confirmClearData"
+                  class="full-width"
+                />
+              </q-card-section>
+            </q-card>
+          </div>
 
-        <q-card class="q-mb-md" flat bordered>
-          <q-card-section>
-            <div class="text-h6">About</div>
-          </q-card-section>
+          <!-- About Card -->
+          <div class="col-12 col-md-3">
+            <q-card flat bordered class="full-height">
+              <q-card-section>
+                <div class="text-h6">About</div>
+              </q-card-section>
 
-          <q-card-section>
-            <p>Moneyballs v1.0.0</p>
-            <p>A simple money tracking application</p>
-          </q-card-section>
-        </q-card>
+              <q-card-section>
+                <p class="q-mb-sm">Moneyballs v1.0.0</p>
+                <p class="q-mb-none">A simple money tracking application</p>
+              </q-card-section>
+            </q-card>
+          </div>
+        </div>
 
         <div class="q-mt-md">
           <q-btn flat color="primary" @click="$router.push('/')">Back to Home</q-btn>
