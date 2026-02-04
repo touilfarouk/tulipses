@@ -205,13 +205,13 @@ const MainLayout = {
     const previousRoute = Vue.ref('')
 
     // Watch route changes to determine transition
-    Vue.watch(() => router.currentRoute.value, (to, from) => {
-      console.log('Route changed from', from?.path, 'to', to?.path)
-      if (from && to) {
+    Vue.watch(() => router.currentRoute.value?.path, (newPath, oldPath) => {
+      console.log('Route changed from', oldPath, 'to', newPath)
+      if (oldPath && newPath) {
         // Determine transition based on route hierarchy
-        if (to.path === '/' && from.path !== '/') {
+        if (newPath === '/' && oldPath !== '/') {
           transitionName.value = 'slide-right' // Going to home
-        } else if (from.path === '/' && to.path !== '/') {
+        } else if (oldPath === '/' && newPath !== '/') {
           transitionName.value = 'slide-left' // Going from home
         } else {
           transitionName.value = 'fade' // Default fade

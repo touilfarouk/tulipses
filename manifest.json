@@ -2,12 +2,12 @@
   "name": "Moneyballs - Money Tracker",
   "short_name": "Moneyballs",
   "description": "A simple money tracking application",
-  "start_url": "/",
+  "start_url": "/vite/",
   "display": "standalone",
   "background_color": "#00695c",
   "theme_color": "#00695c",
   "orientation": "portrait",
-  "scope": "/",
+  "scope": "/vite/",
   "icons": [
     {
       "src": "icons/icon-72x72.png",
@@ -65,19 +65,5 @@
   ],
   "lang": "en-US",
   "dir": "ltr",
-  "prefer_related_applications": false,
-  "screenshots": [
-    {
-      "src": "screenshots/desktop.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide"
-    },
-    {
-      "src": "screenshots/mobile.png",
-      "sizes": "375x667",
-      "type": "image/png",
-      "form_factor": "narrow"
-    }
-  ]
+  "prefer_related_applications": false
 }
