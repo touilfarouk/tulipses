@@ -13,18 +13,21 @@ const PageEntries = {
                   <q-slide-item
                     v-for="entry in entries"
                     :key="entry.id"
-                    @left="({ reset }) => { onSwipeRight(entry, reset) }"
-                    @right="({ reset }) => { onSwipeLeft(entry, reset) }"
+                    @left="({ reset }) => { onSwipeLeft(entry, reset) }"
+                    @right="({ reset }) => { onSwipeRight(entry, reset) }"
                     left-color="positive"
                     right-color="negative"
                     :touchable="true"
                     :mouseable="true"
+                    :threshold="0.3"
+                    :immediate-check="false"
                   >
                     <q-item
                       clickable
                       @click="showEntryActions(entry)"
                       :class="{ 'bg-green-1': entry.paid }"
                       class="q-py-md"
+                      style="touch-action: pan-y;"
                     >
                       <q-item-section>
                         <q-item-label class="text-weight-bold" :class="getAmountColorClass(entry.amount)">
@@ -49,9 +52,9 @@ const PageEntries = {
                     </q-item>
                     <template v-slot:left>
                       <div class="row items-center no-wrap">
-
+                        <q-icon name="delete" class="q-mr-sm" size="24px" />
                         <div class="text-center">
-                          <div class="text-weight-medium">Paid</div>
+                          <div class="text-weight-medium">Delete</div>
                           <div class="text-caption">Swipe left</div>
                         </div>
                       </div>
@@ -59,7 +62,7 @@ const PageEntries = {
                     <template v-slot:right>
                       <div class="row items-center no-wrap">
                         <div class="text-center">
-                          <div class="text-weight-medium">Delete</div>
+                          <div class="text-weight-medium">Paid</div>
                           <div class="text-caption">Swipe right</div>
                         </div>
                         <q-icon name="check" class="q-ml-sm" size="24px" />

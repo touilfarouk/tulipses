@@ -1,0 +1,55 @@
+/* Mobile Swipe Fixes */
+.q-slide-item {
+  touch-action: pan-y !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+}
+
+.q-slide-item .q-item {
+  touch-action: pan-y !important;
+  pointer-events: auto !important;
+}
+
+/* Ensure touch events work on mobile */
+@media (max-width: 768px) {
+  .q-slide-item {
+    min-height: 60px !important;
+    touch-action: pan-y !important;
+  }
+  
+  .q-slide-item .q-item {
+    min-height: 60px !important;
+    padding: 16px !important;
+    touch-action: pan-y !important;
+  }
+  
+  .q-slide-item .q-item-section {
+    min-height: 40px !important;
+  }
+}
+
+/* Prevent conflicts with shadows */
+.q-slide-item * {
+  box-shadow: none !important;
+}
+
+/* Better touch targets */
+.q-slide-item .q-item-section side {
+  min-width: 80px !important;
+}
+
+/* Ensure proper z-index for swipe */
+.q-slide-item {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* Fix for iOS Safari */
+@supports (-webkit-touch-callout: none) {
+  .q-slide-item {
+    -webkit-transform: translateZ(0) !important;
+    transform: translateZ(0) !important;
+  }
+}
