@@ -49,9 +49,9 @@ const PageEntries = {
                     </q-item>
                     <template v-slot:left>
                       <div class="row items-center no-wrap">
-                        <q-icon name="delete" class="q-mr-sm" size="24px" />
+
                         <div class="text-center">
-                          <div class="text-weight-medium">Delete</div>
+                          <div class="text-weight-medium">Paid</div>
                           <div class="text-caption">Swipe left</div>
                         </div>
                       </div>
@@ -59,7 +59,7 @@ const PageEntries = {
                     <template v-slot:right>
                       <div class="row items-center no-wrap">
                         <div class="text-center">
-                          <div class="text-weight-medium">Mark Paid</div>
+                          <div class="text-weight-medium">Delete</div>
                           <div class="text-caption">Swipe right</div>
                         </div>
                         <q-icon name="check" class="q-ml-sm" size="24px" />
