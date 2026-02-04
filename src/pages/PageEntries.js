@@ -119,20 +119,16 @@ const PageEntries = {
         </div>
       </div>
 
-      <!-- Simple Footer -->
+      <!-- Compact Footer -->
       <q-footer class="bg-white text-dark" elevated>
-        <q-card flat square class="shadow-2">
-          <q-card-section class="q-pa-md">
-            <div class="row items-center">
-              <div class="col">
-                <div class="text-grey-7">Balance:</div>
-                <div class="text-h6" :class="getAmountColorClass(balance)">
-                  {{ currencify(balance) }}
-                </div>
-              </div>
+        <div class="q-py-sm q-px-md">
+          <div class="row items-center justify-between">
+            <div class="text-grey-7 text-caption">Balance:</div>
+            <div class="text-h6" :class="getAmountColorClass(balance)">
+              {{ currencify(balance) }}
             </div>
-          </q-card-section>
-        </q-card>
+          </div>
+        </div>
       </q-footer>
 
       <!-- Action Dialog -->
