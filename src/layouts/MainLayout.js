@@ -205,8 +205,10 @@ const MainLayout = {
     const previousRoute = Vue.ref('')
 
     // Watch route changes to determine transition
+    const currentPath = Vue.ref(router.currentRoute.value?.path || '/')
+
     Vue.watch(() => router.currentRoute.value?.path, (newPath, oldPath) => {
-      console.log('Route changed from', oldPath, 'to', newPath)
+      console.log('Route changed from', oldPath || currentPath.value, 'to', newPath)
       if (oldPath && newPath) {
         // Determine transition based on route hierarchy
         if (newPath === '/' && oldPath !== '/') {
@@ -217,6 +219,7 @@ const MainLayout = {
           transitionName.value = 'fade' // Default fade
         }
       }
+      currentPath.value = newPath
     }, { immediate: true })
 
     const getAmountColorClass = (amount) => {
