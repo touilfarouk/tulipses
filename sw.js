@@ -22,8 +22,6 @@ const cacheList = [
   '/vite/icons/icon-72x72.png',
   '/vite/icons/icon-96x96.png',
   '/vite/icons/icon-128x128.png',
-  '/vite/icons/icon-144x144.png',
-  '/vite/icons/icon-152x152.png',
   '/vite/icons/icon-192x192.png',
   '/vite/icons/icon-384x384.png',
   '/vite/icons/icon-512x512.png',
