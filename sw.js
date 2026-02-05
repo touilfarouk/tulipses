@@ -169,8 +169,8 @@ self.addEventListener("fetch", event => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Ignore non-http requests
-  if (!request.url.startsWith("http")) return;
+  // Ignore non-http requests and chrome-extension requests
+  if (!request.url.startsWith("http") || request.url.startsWith("chrome-extension://")) return;
 
   console.log("SW: Fetching:", request.url);
 
