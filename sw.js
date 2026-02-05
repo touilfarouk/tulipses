@@ -5,16 +5,16 @@ const DYNAMIC_CACHE = `moneyballs-dynamic-v${VERSION}`;
 
 // Only REAL files here
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
+  '/vite/',
+  '/vite/index.html',
+  '/vite/manifest.json',
 
   // Icons
-  '/icons/favicon-16x16.png',
-  '/icons/favicon-32x32.png',
-  '/icons/favicon.ico',
-  '/icons/android-chrome-192x192.png',
-  '/icons/android-chrome-512x512.png',
+  '/vite/icons/favicon-16x16.png',
+  '/vite/icons/favicon-32x32.png',
+  '/vite/icons/favicon.ico',
+  '/vite/icons/android-chrome-192x192.png',
+  '/vite/icons/android-chrome-512x512.png',
 
   // CDN
   'https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/quasar.prod.css',
@@ -76,7 +76,7 @@ self.addEventListener("fetch", event => {
         .catch(() => {
           // SPA fallback
           if (event.request.mode === "navigate") {
-            return caches.match("/index.html");
+            return caches.match("/vite/index.html");
           }
 
           return new Response("Offline", { status: 503 });
