@@ -14,7 +14,7 @@ const APP = {
   registerSW: () => {
     if ('serviceWorker' in navigator) {
       console.log('APP: Registering service worker');
-      navigator.serviceWorker.register('/sw.js', { scope: '/vite/' }).then(function (registration) {
+      navigator.serviceWorker.register('/sw.js').then(function (registration) {
         console.log('APP: Service Worker registered successfully:', registration.scope);
         APP.sw = registration.active;
 

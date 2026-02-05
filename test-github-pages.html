@@ -20,7 +20,7 @@
 </head>
 <body>
     <h1>🚀 GitHub Pages PWA Test - Moneyballs</h1>
-    
+
     <div class="github-info">
         <h2>📁 GitHub Pages Configuration</h2>
         <p><strong>Base URL:</strong> <code>https://touilfarouk.github.io/vite/</code></p>
@@ -66,12 +66,12 @@
 
     <script>
         let registration = null;
-        
+
         // Override console.log to show in our logs div
         const originalLog = console.log;
         const originalError = console.error;
         const originalWarn = console.warn;
-        
+
         function addLog(message, type = 'info') {
             const logs = document.getElementById('logs');
             const timestamp = new Date().toLocaleTimeString();
@@ -108,18 +108,18 @@
 
         async function registerSW() {
             try {
-                addLog('Attempting to register service worker with GitHub Pages scope...');
-                registration = await navigator.serviceWorker.register('/sw.js', { scope: '/vite/' });
+                addLog('Attempting to register service worker...');
+                registration = await navigator.serviceWorker.register('/sw.js');
                 updateStatus('sw-status', '✅ Service Worker registered successfully!', 'success');
                 addLog('Service Worker registered: ' + registration.scope);
-                
+
                 // Wait for service worker to be ready
                 await navigator.serviceWorker.ready;
                 addLog('Service Worker is ready and active');
-                
+
                 // Check cache after registration
                 setTimeout(testCache, 1000);
-                
+
             } catch (error) {
                 updateStatus('sw-status', '❌ Service Worker registration failed: ' + error.message, 'error');
                 addLog('Service Worker registration failed: ' + error.message, 'error');
@@ -167,23 +167,23 @@
             try {
                 const cacheNames = await caches.keys();
                 addLog('Found cache names: ' + cacheNames.join(', '));
-                
+
                 let totalCached = 0;
                 for (const cacheName of cacheNames) {
                     const cache = await caches.open(cacheName);
                     const keys = await cache.keys();
                     totalCached += keys.length;
                     addLog(`Cache "${cacheName}" contains ${keys.length} items`);
-                    
+
                     // Show first few items
                     keys.slice(0, 5).forEach(key => addLog(`  - ${key.url}`));
                     if (keys.length > 5) {
                         addLog(`  ... and ${keys.length - 5} more items`);
                     }
                 }
-                
+
                 updateStatus('cache-status', `💾 Found ${totalCached} cached items across ${cacheNames.length} caches`, 'success');
-                
+
             } catch (error) {
                 updateStatus('cache-status', '❌ Cache test failed: ' + error.message, 'error');
                 addLog('Cache test failed: ' + error.message, 'error');
@@ -192,14 +192,14 @@
 
         async function testSpecificFiles() {
             const keyFiles = [
-                '/vite/index.html',
-                '/vite/main.js',
-                '/vite/js/app.js',
-                '/vite/manifest.json'
+                '/index.html',
+                '/main.js',
+                '/js/app.js',
+                '/manifest.json'
             ];
-            
+
             addLog('Testing key files in cache...');
-            
+
             for (const file of keyFiles) {
                 try {
                     const response = await caches.match(file);
@@ -237,7 +237,7 @@
                 updateStatus('pwa-status', '⚠️ Install prompt not supported in this browser', 'warning');
                 addLog('Install prompt not supported - try Chrome/Edge');
             }
-            
+
             // Check if running as PWA
             if (navigator.standalone) {
                 updateStatus('pwa-status', '📱 Running as installed PWA (iOS)', 'success');
@@ -278,7 +278,7 @@
             addLog('GitHub Pages PWA Test page loaded');
             addLog('Base URL: https://touilfarouk.github.io/vite/');
             updateConnectionStatus();
-            
+
             // Check if service worker is already registered
             navigator.serviceWorker.getRegistrations().then(registrations => {
                 if (registrations.length > 0) {
