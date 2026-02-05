@@ -38,7 +38,18 @@ self.addEventListener("install", event => {
     caches.open(STATIC_CACHE)
       .then(cache => {
         console.log("SW: Caching", STATIC_ASSETS.length, "static assets");
-        return cache.addAll(STATIC_ASSETS);
+
+        // Add files one by one to handle failures gracefully
+        return Promise.allSettled(
+          STATIC_ASSETS.map(url =>
+            cache.add(url).then(() => {
+              console.log("SW: Cached:", url);
+            }).catch(err => {
+              console.warn("SW: Failed to cache:", url, err.message);
+              return null;
+            })
+          )
+        );
       })
       .then(() => {
         console.log("SW: Static assets cached successfully");
@@ -46,15 +57,8 @@ self.addEventListener("install", event => {
       })
       .catch(err => {
         console.error("SW: Cache installation failed:", err);
-        // Try individual caching as fallback
-        return Promise.allSettled(
-          STATIC_ASSETS.map(url =>
-            cache.add(url).catch(err => {
-              console.warn("SW: Failed to cache:", url, err);
-              return null;
-            })
-          )
-        );
+        // Continue with partial success
+        return self.skipWaiting();
       })
   );
 });
