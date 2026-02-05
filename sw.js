@@ -9,11 +9,9 @@ const STATIC_ASSETS = [
   '/vite/index.html',
   '/vite/manifest.json',
 
-  // Icons
+  // Icons that actually exist
   '/vite/icons/favicon-16x16.png',
   '/vite/icons/favicon-32x32.png',
-  '/vite/icons/favicon-48x48.png',
-  '/vite/icons/favicon.ico',
   '/vite/icons/android-chrome-192x192.png',
   '/vite/icons/android-chrome-512x512.png',
 
