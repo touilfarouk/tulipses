@@ -1,1 +1,159 @@
-if(!self.define){const e=e=>{"require"!==e&&(e+=".js");let s=Promise.resolve();return a[e]||(s=new Promise((async s=>{if("document"in self){const a=document.createElement("script");a.src=e,document.head.appendChild(a),a.onload=s}else importScripts(e),s()}))),s.then((()=>{if(!a[e])throw new Error(`Module ${e} didn't register its module`);return a[e]}))},s=(s,a)=>{Promise.all(s.map(e)).then((e=>a(1===e.length?e[0]:e)))},a={require:Promise.resolve(s)};self.define=(s,i,r)=>{a[s]||(a[s]=Promise.resolve().then((()=>{let a={};const n={uri:location.origin+s.slice(1)};return Promise.all(i.map((s=>{switch(s){case"exports":return a;case"module":return n;default:return e(s)}}))).then((e=>{const s=r(...e);return a.default||(a.default=s),a}))})))}}define("./service-worker.js",["./workbox-a6621a23"],(function(e){"use strict";console.log('Workbox Service Worker: Initializing...'),self.addEventListener("message",(e=>{e.data&&"SKIP_WAITING"===e.data.type&&(console.log('Workbox: Skipping waiting service worker'),self.skipWaiting())})),self.addEventListener("install",(e=>{console.log('Workbox: Service Worker installing'),e.waitUntil(self.skipWaiting())})),self.addEventListener("activate",(e=>{console.log('Workbox: Service Worker activating'),e.waitUntil(self.clients.claim().then((()=>console.log('Workbox: Service Worker activated and claimed clients')))})),self.addEventListener("fetch",(e=>{const t=e.request.url;console.log('Workbox: Fetching',t),e.respondWith(caches.match(t).then((s=>s?(console.log('Workbox: Serving from cache',t),s):fetch(t).then((e=>{console.log('Workbox: Serving from network',t),e.clone()})).catch((e=>{console.log('Workbox: Network failed, serving from cache',t),caches.match(t)}))))})),console.log('Workbox: Precaching assets...'),e.precacheAndRoute([{url:"/vite/assets/android-chrome-144x144.png",revision:"7e4c8a3bd25756ad59911a1c29a62517"},{url:"/vite/assets/android-chrome-192x192.png",revision:"5c6eca52508a72feec777ff6dce716de"},{url:"/vite/assets/android-chrome-256x256.png",revision:"7511b61211db484ba9f8e3665fdb5352"},{url:"/vite/assets/android-chrome-36x36.png",revision:"96218056b66c4362ed61e97796c5816e"},{url:"/vite/assets/android-chrome-384x384.png",revision:"e20f314ff0d532929ee899cd190e4799"},{url:"/vite/assets/android-chrome-48x48.png",revision:"191b7dc72732518a181a083dd28a3372"},{url:"/vite/assets/android-chrome-512x512.png",revision:"e52fb4d70bf13f200f460da890e995fb"},{url:"/vite/assets/android-chrome-72x72.png",revision:"bf718736c287542e2627f0cf5e78e26b"},{url:"/vite/assets/android-chrome-96x96.png",revision:"b6f96a690be0861b21231bb75d242874"},{url:"/vite/assets/apple-touch-icon-1024x1024.png",revision:"fbe6bcb0078b6a27d660509f86c44f1f"},{url:"/vite/assets/apple-touch-icon-114x114.png",revision:"4e4b36b548c00c4e484ef742484dd2be"},{url:"/vite/assets/apple-touch-icon-120x120.png",revision:"9456379554241fd25f47dc8ea581902c"},{url:"/vite/assets/apple-touch-icon-120x120-precomposed.png",revision:"9456379554241fd25f47dc8ea581902c"},{url:"/vite/assets/apple-touch-icon-152x152.png",revision:"b8c4e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/assets/apple-touch-icon-152x152-precomposed.png",revision:"b8c4e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/assets/apple-touch-icon-167x167.png",revision:"d8e8e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/assets/apple-touch-icon-167x167-precomposed.png",revision:"d8e8e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/assets/apple-touch-icon-180x180.png",revision:"e8e8e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/assets/apple-touch-icon-180x180-precomposed.png",revision:"e8e8e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/assets/apple-touch-icon-57x57.png",revision:"f8e8e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/assets/apple-touch-icon-57x57-precomposed.png",revision:"f8e8e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/assets/apple-touch-icon-60x60.png",revision:"g8e8e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/assets/apple-touch-icon-60x60-precomposed.png",revision:"g8e8e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/assets/apple-touch-icon-72x72.png",revision:"h8e8e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/assets/apple-touch-icon-72x72-precomposed.png",revision:"h8e8e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/assets/apple-touch-icon-76x76.png",revision:"i8e8e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/assets/apple-touch-icon-76x76-precomposed.png",revision:"i8e8e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/assets/apple-touch-icon-114x114.png",revision:"4e4b36b548c00c4e484ef742484dd2be"},{url:"/vite/assets/apple-touch-icon-114x114-precomposed.png",revision:"4e4b36b548c00c4e484ef742484dd2be"},{url:"/vite/assets/apple-touch-icon-120x120.png",revision:"9456379554241fd25f47dc8ea581902c"},{url:"/vite/assets/apple-touch-icon-120x120-precomposed.png",revision:"9456379554241fd25f47dc8ea581902c"},{url:"/vite/assets/apple-touch-icon-144x144.png",revision:"j8e8e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/assets/apple-touch-icon-144x144-precomposed.png",revision:"j8e8e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/assets/apple-touch-icon-152x152.png",revision:"b8c4e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/assets/apple-touch-icon-152x152-precomposed.png",revision:"b8c4e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/assets/apple-touch-icon-167x167.png",revision:"d8e8e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/assets/apple-touch-icon-167x167-precomposed.png",revision:"d8e8e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/assets/apple-touch-icon-180x180.png",revision:"e8e8e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/assets/apple-touch-icon-180x180-precomposed.png",revision:"e8e8e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/assets/apple-touch-icon.png",revision:"k8e8e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/assets/apple-touch-icon-precomposed.png",revision:"k8e8e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/assets/favicon-16x16.png",revision:"l8e8e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/assets/favicon-32x32.png",revision:"m8e8e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/assets/favicon-96x96.png",revision:"n8e8e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/assets/favicon.ico",revision:"o8e8e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/assets/mstile-70x70.png",revision:"p8e8e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/assets/mstile-144x144.png",revision:"q8e8e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/assets/mstile-150x150.png",revision:"r8e8e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/assets/mstile-310x150.png",revision:"s8e8e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/assets/mstile-310x310.png",revision:"t8e8e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/index.html",revision:"8e8e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/main.css",revision:"8e8e5b1c7e5b6d4c5b7a2b2c5b7b7b7"},{url:"/vite/main.js",revision:"8e8e5b1c7e5b6d4c5b7a2b2c5b7b7b7"}]),console.log('Workbox: Precaching complete -',Object.keys(arguments[0][1]).length,'assets cached')}));
+// --- CONFIG ---
+const version = 1; // bump only when static assets change
+const staticCache = `moneyballsCache-v${version}`;
+const dynamicCache = "moneyballsDynamicCache"; // fixed, keeps data across updates
+
+const cacheList = [
+  '/vite/',
+  '/vite/index.html',
+  '/vite/main.css',
+  '/vite/main.js',
+  '/vite/manifest.json',
+  '/vite/js/app.js',
+  '/vite/src/layouts/MainLayout.js',
+  '/vite/src/pages/PageEntries.js',
+  '/vite/src/pages/PageSettings.js',
+  '/vite/js/store.js',
+  '/vite/css/transitions.css',
+  '/vite/css/shadows.css',
+  '/vite/css/mobile-swipe.css',
+  '/vite/icons/icon-192x192.png',
+  '/vite/icons/icon-512x512.png',
+  'https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/quasar.prod.css',
+  'https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/quasar.umd.prod.js',
+  'https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js',
+  'https://cdn.jsdelivr.net/npm/vue-router@4/dist/vue-router.global.prod.js',
+  'https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons|Material+Icons+Outlined'
+];
+
+// --- INSTALL ---
+self.addEventListener('install', (ev) => {
+  console.log('SW: Installing and caching static assets');
+  ev.waitUntil(
+    caches.open(staticCache).then((cache) => {
+      console.log('SW: Caching static assets:', cacheList);
+      return cache.addAll(cacheList);
+    }).then(() => {
+      console.log('SW: Static assets cached successfully');
+      return self.skipWaiting();
+    }).catch(err => {
+      console.error('SW: Failed to cache static assets:', err);
+    })
+  );
+});
+
+// --- ACTIVATE ---
+self.addEventListener('activate', (ev) => {
+  console.log('SW: Activating new service worker');
+  ev.waitUntil(
+    caches.keys().then((keys) => {
+      return Promise.all(
+        // Delete old static caches
+        keys
+          .filter((key) => key.startsWith("moneyballsCache-v") && key !== staticCache)
+          .map((key) => {
+            console.log('SW: Deleting old cache:', key);
+            return caches.delete(key);
+          })
+      );
+    }).then(() => {
+      console.log('SW: Service worker activated');
+      return self.clients.claim();
+    }).catch(err => {
+      console.error('SW: Activation failed:', err);
+    })
+  );
+});
+
+// --- FETCH (Stale-While-Revalidate) ---
+self.addEventListener('fetch', (ev) => {
+  const { request } = ev;
+  const url = new URL(request.url);
+
+  console.log('SW: Fetching:', request.url);
+
+  ev.respondWith(
+    caches.match(request).then((cacheRes) => {
+      // Return cached version immediately if available
+      if (cacheRes) {
+        console.log('SW: Serving from cache:', request.url);
+        // Update cache in background
+        fetch(request).then(fetchRes => {
+          if (fetchRes && fetchRes.status === 200) {
+            caches.open(dynamicCache).then(cache => {
+              cache.put(request, fetchRes.clone());
+            });
+          }
+        }).catch(() => {
+          console.log('SW: Background fetch failed, using cache');
+        });
+        return cacheRes;
+      }
+
+      // If not in cache, fetch from network
+      return fetch(request).then(fetchRes => {
+        console.log('SW: Serving from network:', request.url);
+
+        // Cache successful responses
+        if (fetchRes && fetchRes.status === 200) {
+          caches.open(dynamicCache).then(cache => {
+            cache.put(request, fetchRes.clone());
+          });
+        }
+
+        return fetchRes;
+      }).catch(err => {
+        console.log('SW: Network failed, trying cache fallback:', err);
+
+        // For navigation requests, try to serve index.html (handle SPA routing)
+        if (request.mode === 'navigate') {
+          // Handle GitHub Pages SPA routing
+          if (request.url.includes('/vite/') || request.url.endsWith('#/')) {
+            return caches.match('/vite/index.html');
+          }
+          return caches.match('/index.html');
+        }
+
+        // Return a basic offline response for other requests
+        return new Response('Offline - No network connection', {
+          status: 503,
+          statusText: 'Service Unavailable'
+        });
+      });
+    })
+  );
+});
+
+// --- SYNC ---
+self.addEventListener('sync', (ev) => {
+  console.log('SW: Sync event triggered:', ev.tag);
+  if (ev.tag === 'sync-database') {
+    ev.waitUntil(
+      console.log('SW: Database sync completed')
+    );
+  }
+});
+
+// --- MESSAGE HANDLER ---
+self.addEventListener('message', (ev) => {
+  console.log("SW message received:", ev.data);
+
+  if (ev.data && ev.data.ONLINE !== undefined) {
+    console.log('SW: Online status changed to:', ev.data.ONLINE);
+  }
+
+  if (ev.data && ev.data.action === 'SKIP_WAITING') {
+    console.log('SW: Skipping waiting');
+    self.skipWaiting();
+  }
+});
+
+// --- Background Sync for periodic updates ---
+self.addEventListener('periodicsync', (ev) => {
+  console.log('SW: Periodic sync triggered:', ev.tag);
+  if (ev.tag === 'sync-database') {
+    ev.waitUntil(
+      console.log('SW: Periodic database sync completed')
+    );
+  }
+});
