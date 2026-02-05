@@ -11,45 +11,48 @@ const APP = {
     setTimeout(APP.checkNavCount, 10000); //10 seconds after loading check for install
     APP.changeDisplay(); //change display to say online or offline
   },
-  registerSW: () => {
-    if ('serviceWorker' in navigator) {
-      console.log('APP: Registering service worker');
-      navigator.serviceWorker.register('/sw.js', { scope: '/vite/' }).then(function (registration) {
-        console.log('APP: Service Worker registered successfully:', registration.scope);
-        APP.sw = registration.active;
+registerSW: () => {
+  if (!('serviceWorker' in navigator)) {
+    console.warn('APP: Service Worker not supported');
+    return;
+  }
 
-        // Check for periodic sync support
-        if ('periodicSync' in registration) {
-          console.log('APP: Periodic sync supported');
-          registration.periodicSync.register('sync-database', {
-            minInterval: 24 * 60 * 60 * 1000 // 24 hours
-          }).then(() => {
-            console.log('APP: Periodic sync registered');
-          }).catch(err => {
-            console.log('APP: Periodic sync registration failed:', err);
-          });
-        } else if ('sync' in registration) {
-          console.log('APP: Background sync supported');
-          registration.sync.register('sync-database').then(() => {
-            console.log('APP: Background sync registered');
-          }).catch(err => {
-            console.log('APP: Background sync registration failed:', err);
-          });
-        } else {
-          console.log('APP: No sync support detected');
-        }
-      }).catch(function (err) {
-        console.warn('APP: Service Worker registration failed:', err);
-      });
+  console.log('APP: Registering service worker');
 
-      navigator.serviceWorker.ready.then((registration) => {
-        console.log('APP: Service Worker is ready');
-        APP.sw = registration.active;
-      });
-    } else {
-      console.warn('APP: Service Worker not supported');
-    }
-  },
+  navigator.serviceWorker.register('/sw.js')
+    .then(registration => {
+      console.log('APP: Service Worker registered:', registration.scope);
+      APP.sw = registration.active;
+
+      // PERIODIC SYNC
+      if ('periodicSync' in registration && registration.periodicSync) {
+        registration.periodicSync.register('sync-database', {
+          minInterval: 24 * 60 * 60 * 1000
+        }).then(() => {
+          console.log('APP: Periodic sync registered');
+        }).catch(err => {
+          console.log('APP: Periodic sync failed:', err);
+        });
+
+      } else if ('sync' in registration) {
+
+        registration.sync.register('sync-database')
+          .then(() => console.log('APP: Background sync registered'))
+          .catch(err => console.log('APP: Background sync failed:', err));
+
+      } else {
+        console.log('APP: No sync support');
+      }
+    })
+    .catch(err => {
+      console.warn('APP: SW registration failed:', err);
+    });
+
+  navigator.serviceWorker.ready.then(reg => {
+    console.log('APP: Service Worker ready');
+    APP.sw = reg.active;
+  });
+},
   addListeners: () => {
     // Check if running as standalone PWA
     if (navigator.standalone) {

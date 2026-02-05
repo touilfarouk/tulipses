@@ -1,175 +1,86 @@
-// --- CONFIG ---
-const version = 1; // bump only when static assets change
-const staticCache = `moneyballsCache-v${version}`;
-const dynamicCache = "moneyballsDynamicCache"; // fixed, keeps data across updates
+// ================= CONFIG =================
+const VERSION = 2;
+const STATIC_CACHE = `moneyballs-static-v${VERSION}`;
+const DYNAMIC_CACHE = `moneyballs-dynamic-v${VERSION}`;
 
-const cacheList = [
-  '/vite/',
-  '/vite/index.html',
-  '/vite/main.js',
-  '/vite/manifest.json',
-  '/vite/js/app.js',
-  '/vite/js/store.js',
-  '/vite/css/transitions.css',
-  '/vite/css/shadows.css',
-  '/vite/css/mobile-swipe.css',
-  '/vite/icons/favicon-16x16.png',
-  '/vite/icons/favicon-32x32.png',
-  '/vite/icons/favicon-48x48.png',
-  '/vite/icons/favicon.ico',
-  '/vite/icons/android-chrome-36x36.png',
-  '/vite/icons/android-chrome-48x48.png',
-  '/vite/icons/android-chrome-72x72.png',
-  '/vite/icons/android-chrome-96x96.png',
-  '/vite/icons/android-chrome-144x144.png',
-  '/vite/icons/android-chrome-192x192.png',
-  '/vite/icons/android-chrome-256x256.png',
-  '/vite/icons/android-chrome-384x384.png',
-  '/vite/icons/android-chrome-512x512.png',
+// Only REAL files here
+const STATIC_ASSETS = [
+  '/',
+  '/index.html',
+  '/manifest.json',
+
+  // Icons
+  '/icons/favicon-16x16.png',
+  '/icons/favicon-32x32.png',
+  '/icons/favicon.ico',
+  '/icons/android-chrome-192x192.png',
+  '/icons/android-chrome-512x512.png',
+
+  // CDN
   'https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/quasar.prod.css',
   'https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/quasar.umd.prod.js',
   'https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js',
   'https://cdn.jsdelivr.net/npm/vue-router@4/dist/vue-router.global.prod.js',
-  'https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons|Material+Icons+Outlined'
+  'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons'
 ];
 
-// --- INSTALL ---
-self.addEventListener('install', (ev) => {
-  console.log('SW: Installing and caching static assets');
-  console.log('SW: Caching static assets:', cacheList);
+// ================= INSTALL =================
+self.addEventListener("install", event => {
+  console.log("SW installing...");
 
-  ev.waitUntil(
-    caches.open(staticCache).then(cache => {
-      // Add files one by one to handle failures gracefully
-      return Promise.allSettled(
-        cacheList.map(url =>
-          cache.add(url).catch(err => {
-            console.warn('SW: Failed to cache:', url, err);
-            return null;
-          })
-        )
-      );
-    }).then(() => {
-      console.log('SW: Static assets cached successfully');
-      self.skipWaiting();
-    }).catch(err => {
-      console.error('SW: Cache installation failed:', err);
-    })
+  event.waitUntil(
+    caches.open(STATIC_CACHE)
+      .then(cache => cache.addAll(STATIC_ASSETS))
+      .then(() => self.skipWaiting())
   );
 });
 
-// --- ACTIVATE ---
-self.addEventListener('activate', (ev) => {
-  console.log('SW: Activating new service worker');
-  ev.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        // Delete old static caches
+// ================= ACTIVATE =================
+self.addEventListener("activate", event => {
+  console.log("SW activating...");
+
+  event.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(
         keys
-          .filter((key) => key.startsWith("moneyballsCache-v") && key !== staticCache)
-          .map((key) => {
-            console.log('SW: Deleting old cache:', key);
-            return caches.delete(key);
-          })
-      );
-    }).then(() => {
-      console.log('SW: Service worker activated');
-      return self.clients.claim();
-    }).catch(err => {
-      console.error('SW: Activation failed:', err);
-    })
+          .filter(k => k !== STATIC_CACHE && k !== DYNAMIC_CACHE)
+          .map(k => caches.delete(k))
+      )
+    ).then(() => self.clients.claim())
   );
 });
 
-// --- FETCH (Stale-While-Revalidate) ---
-self.addEventListener('fetch', (ev) => {
-  const { request } = ev;
-  const url = new URL(request.url);
+// ================= FETCH =================
+self.addEventListener("fetch", event => {
 
-  console.log('SW: Fetching:', request.url);
+  // Ignore chrome-extension requests
+  if (!event.request.url.startsWith("http")) return;
 
-  ev.respondWith(
-    caches.match(request).then((cacheRes) => {
-      // Return cached version immediately if available
-      if (cacheRes) {
-        console.log('SW: Serving from cache:', request.url);
-        // Update cache in background
-        fetch(request).then(fetchRes => {
-          if (fetchRes && fetchRes.status === 200) {
-            caches.open(dynamicCache).then(cache => {
-              cache.put(request, fetchRes.clone());
+  event.respondWith(
+    caches.match(event.request).then(cacheRes => {
+
+      if (cacheRes) return cacheRes;
+
+      return fetch(event.request)
+        .then(networkRes => {
+
+          if (networkRes.status === 200) {
+            return caches.open(DYNAMIC_CACHE).then(cache => {
+              cache.put(event.request, networkRes.clone());
+              return networkRes;
             });
           }
-        }).catch(() => {
-          console.log('SW: Background fetch failed, using cache');
-        });
-        return cacheRes;
-      }
 
-      // If not in cache, fetch from network
-      return fetch(request).then(fetchRes => {
-        console.log('SW: Serving from network:', request.url);
-
-        // Cache successful responses
-        if (fetchRes && fetchRes.status === 200) {
-          caches.open(dynamicCache).then(cache => {
-            cache.put(request, fetchRes.clone());
-          });
-        }
-
-        return fetchRes;
-      }).catch(err => {
-        console.log('SW: Network failed, trying cache fallback:', err);
-
-        // For navigation requests, try to serve index.html (handle SPA routing)
-        if (request.mode === 'navigate') {
-          // Handle GitHub Pages SPA routing with /vite/ prefix
-          if (request.url.includes('/vite/')) {
-            return caches.match('/vite/index.html');
+          return networkRes;
+        })
+        .catch(() => {
+          // SPA fallback
+          if (event.request.mode === "navigate") {
+            return caches.match("/index.html");
           }
-          return caches.match('/index.html');
-        }
 
-        // Return a basic offline response for other requests
-        return new Response('Offline - No network connection', {
-          status: 503,
-          statusText: 'Service Unavailable'
+          return new Response("Offline", { status: 503 });
         });
-      });
     })
   );
-});
-
-// --- SYNC ---
-self.addEventListener('sync', (ev) => {
-  console.log('SW: Sync event triggered:', ev.tag);
-  if (ev.tag === 'sync-database') {
-    ev.waitUntil(
-      console.log('SW: Database sync completed')
-    );
-  }
-});
-
-// --- MESSAGE HANDLER ---
-self.addEventListener('message', (ev) => {
-  console.log("SW message received:", ev.data);
-
-  if (ev.data && ev.data.ONLINE !== undefined) {
-    console.log('SW: Online status changed to:', ev.data.ONLINE);
-  }
-
-  if (ev.data && ev.data.action === 'SKIP_WAITING') {
-    console.log('SW: Skipping waiting');
-    self.skipWaiting();
-  }
-});
-
-// --- Background Sync for periodic updates ---
-self.addEventListener('periodicsync', (ev) => {
-  console.log('SW: Periodic sync triggered:', ev.tag);
-  if (ev.tag === 'sync-database') {
-    ev.waitUntil(
-      console.log('SW: Periodic database sync completed')
-    );
-  }
 });
