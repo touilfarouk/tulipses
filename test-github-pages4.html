@@ -108,8 +108,8 @@
 
         async function registerSW() {
             try {
-                addLog('Attempting to register service worker...');
-                registration = await navigator.serviceWorker.register('/sw.js');
+                addLog('Attempting to register service worker with /vite/ scope...');
+                registration = await navigator.serviceWorker.register('/sw.js', { scope: '/vite/' });
                 updateStatus('sw-status', '✅ Service Worker registered successfully!', 'success');
                 addLog('Service Worker registered: ' + registration.scope);
 
@@ -195,7 +195,11 @@
                 '/vite/index.html',
                 '/vite/main.js',
                 '/vite/js/app.js',
-                '/vite/manifest.json'
+                '/vite/manifest.json',
+                '/vite/icons/icon-16x16.png',
+                '/vite/icons/icon-32x32.png',
+                '/vite/icons/icon-96x96.png',
+                '/vite/icons/icon-128x128.png'
             ];
 
             addLog('Testing key files in cache...');
