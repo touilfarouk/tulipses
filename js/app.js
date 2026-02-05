@@ -1,60 +1,64 @@
+// ================= PWA APP =================
 const APP = {
   sw: null,
-  deferredPrompt: null, //used for installing later
+  deferredPrompt: null,
   isOnline: 'onLine' in navigator && navigator.onLine,
   isStandalone: false,
   navCount: 0,
+
+  // ================= INIT =================
   init: () => {
-    console.log('APP: Initializing PWA features');
+    console.log('APP: Initializing PWA features v3');
     APP.registerSW();
     APP.addListeners();
-    setTimeout(APP.checkNavCount, 10000); //10 seconds after loading check for install
-    APP.changeDisplay(); //change display to say online or offline
+    setTimeout(APP.checkNavCount, 10000);
+    APP.changeDisplay();
   },
-registerSW: () => {
-  if (!('serviceWorker' in navigator)) {
-    console.warn('APP: Service Worker not supported');
-    return;
-  }
 
-  console.log('APP: Registering service worker');
+  // ================= SERVICE WORKER =================
+  registerSW: () => {
+    if (!('serviceWorker' in navigator)) {
+      console.warn('APP: Service Worker not supported');
+      return;
+    }
 
-  navigator.serviceWorker.register('/sw.js')
-    .then(registration => {
-      console.log('APP: Service Worker registered:', registration.scope);
-      APP.sw = registration.active;
+    console.log('APP: Registering service worker');
 
-      // PERIODIC SYNC
-      if ('periodicSync' in registration && registration.periodicSync) {
-        registration.periodicSync.register('sync-database', {
-          minInterval: 24 * 60 * 60 * 1000
-        }).then(() => {
-          console.log('APP: Periodic sync registered');
-        }).catch(err => {
-          console.log('APP: Periodic sync failed:', err);
-        });
+    navigator.serviceWorker.register('/sw.js')
+      .then(registration => {
+        console.log('APP: Service Worker registered:', registration.scope);
+        APP.sw = registration.active;
 
-      } else if ('sync' in registration) {
+        // Periodic Sync
+        if ('periodicSync' in registration && registration.periodicSync) {
+          registration.periodicSync.register('periodic-sync', {
+            minInterval: 24 * 60 * 60 * 1000
+          }).then(() => {
+            console.log('APP: Periodic sync registered');
+          }).catch(err => {
+            console.log('APP: Periodic sync failed:', err);
+          });
+        } else if ('sync' in registration) {
+          registration.sync.register('background-sync')
+            .then(() => console.log('APP: Background sync registered'))
+            .catch(err => console.log('APP: Background sync failed:', err));
+        } else {
+          console.log('APP: No sync support');
+        }
+      })
+      .catch(err => {
+        console.warn('APP: SW registration failed:', err);
+      });
 
-        registration.sync.register('sync-database')
-          .then(() => console.log('APP: Background sync registered'))
-          .catch(err => console.log('APP: Background sync failed:', err));
-
-      } else {
-        console.log('APP: No sync support');
-      }
-    })
-    .catch(err => {
-      console.warn('APP: SW registration failed:', err);
+    navigator.serviceWorker.ready.then(reg => {
+      console.log('APP: Service Worker ready');
+      APP.sw = reg.active;
     });
+  },
 
-  navigator.serviceWorker.ready.then(reg => {
-    console.log('APP: Service Worker ready');
-    APP.sw = reg.active;
-  });
-},
+  // ================= EVENT LISTENERS =================
   addListeners: () => {
-    // Check if running as standalone PWA
+    // Check PWA launch mode
     if (navigator.standalone) {
       console.log('APP: Launched: Installed (iOS)');
       APP.isStandalone = true;
@@ -66,6 +70,7 @@ registerSW: () => {
       APP.isStandalone = false;
     }
 
+    // Network status listeners
     window.addEventListener('pageshow', APP.updateNavCount);
     window.addEventListener('online', APP.changeStatus);
     window.addEventListener('offline', APP.changeStatus);
@@ -78,17 +83,22 @@ registerSW: () => {
       console.log('APP: Install prompt deferred');
     });
   },
+
+  // ================= STATUS HANDLERS =================
   changeStatus: (ev) => {
     APP.isOnline = ev.type === 'online';
     console.log('APP: Connection status changed to:', APP.isOnline ? 'online' : 'offline');
 
-    // Notify service worker of status change
     if (navigator.serviceWorker.controller) {
-      navigator.serviceWorker.controller.postMessage({ ONLINE: APP.isOnline });
+      navigator.serviceWorker.controller.postMessage({
+        type: 'STATUS_CHANGE',
+        online: APP.isOnline
+      });
     }
 
     APP.changeDisplay();
   },
+
   changeDisplay: () => {
     const onlineElement = document.querySelector('.isonline');
 
@@ -106,16 +116,16 @@ registerSW: () => {
       console.log('APP: Display - Offline mode');
     }
   },
+
+  // ================= MESSAGE HANDLERS =================
   gotMessage: (ev) => {
     console.log('APP: Message from Service Worker:', ev.data);
 
-    // Handle different message types
-    if (ev.data.action === 'DB_IMPORTED') {
-      console.log('APP: Database imported successfully');
-    } else if (ev.data.action === 'DB_RESET_AND_IMPORTED') {
-      console.log('APP: Database reset and imported successfully');
+    if (ev.data.type === 'CACHE_UPDATED') {
+      console.log('APP: Cache updated by service worker');
     }
   },
+
   sendMessage: (msg) => {
     if (navigator.serviceWorker.controller) {
       navigator.serviceWorker.controller.postMessage(msg);
@@ -124,6 +134,8 @@ registerSW: () => {
       console.log('APP: No active Service Worker to send message to');
     }
   },
+
+  // ================= NAVIGATION =================
   updateNavCount: (ev) => {
     if (!APP.isStandalone) {
       APP.navCount = 0;
@@ -137,6 +149,7 @@ registerSW: () => {
       console.log('APP: Navigation count updated:', APP.navCount);
     }
   },
+
   checkNavCount: () => {
     let storage = sessionStorage.getItem('moneyballsNavCount');
     if (storage) {
@@ -144,17 +157,16 @@ registerSW: () => {
       if (APP.navCount > 2) {
         console.log('APP: Showing install prompt (user visited ' + APP.navCount + ' times)');
 
-        // Show install prompt on next user interaction
         document.body.addEventListener('click', () => {
           if (APP.deferredPrompt) {
             APP.deferredPrompt.prompt();
             APP.deferredPrompt.userChoice.then((choiceResult) => {
               if (choiceResult.outcome === 'accepted') {
-                console.log('APP: User accepted the install prompt');
+                console.log('APP: User accepted install prompt');
                 APP.deferredPrompt = null;
                 sessionStorage.clear();
               } else {
-                console.log('APP: User dismissed the install prompt');
+                console.log('APP: User dismissed install prompt');
               }
             });
           } else {
@@ -164,16 +176,17 @@ registerSW: () => {
       }
     }
   },
-  // Method to manually trigger install prompt
+
+  // ================= INSTALL PROMPT =================
   showInstallPrompt: () => {
     if (APP.deferredPrompt) {
       APP.deferredPrompt.prompt();
       APP.deferredPrompt.userChoice.then((choiceResult) => {
         if (choiceResult.outcome === 'accepted') {
-          console.log('APP: User accepted the install prompt');
+          console.log('APP: User accepted install prompt');
           APP.deferredPrompt = null;
         } else {
-          console.log('APP: User dismissed the install prompt');
+          console.log('APP: User dismissed install prompt');
         }
       });
     } else {
@@ -182,7 +195,7 @@ registerSW: () => {
   }
 };
 
-// Initialize when DOM is ready
+// ================= INITIALIZATION =================
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', APP.init);
 } else {

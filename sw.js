@@ -1,13 +1,19 @@
 // ================= CONFIG =================
-const VERSION = 2;
+const VERSION = 3;
 const STATIC_CACHE = `moneyballs-static-v${VERSION}`;
 const DYNAMIC_CACHE = `moneyballs-dynamic-v${VERSION}`;
 
-// Only REAL files here
+// Only REAL files here with /vite/ prefix for GitHub Pages
 const STATIC_ASSETS = [
   '/vite/',
   '/vite/index.html',
   '/vite/manifest.json',
+  '/vite/main.js',
+  '/vite/js/app.js',
+  '/vite/js/store.js',
+  '/vite/css/transitions.css',
+  '/vite/css/shadows.css',
+  '/vite/css/mobile-swipe.css',
 
   // Icons
   '/vite/icons/favicon-16x16.png',
@@ -26,61 +32,176 @@ const STATIC_ASSETS = [
 
 // ================= INSTALL =================
 self.addEventListener("install", event => {
-  console.log("SW installing...");
+  console.log("SW installing v" + VERSION);
 
   event.waitUntil(
     caches.open(STATIC_CACHE)
-      .then(cache => cache.addAll(STATIC_ASSETS))
-      .then(() => self.skipWaiting())
+      .then(cache => {
+        console.log("SW: Caching", STATIC_ASSETS.length, "static assets");
+        return cache.addAll(STATIC_ASSETS);
+      })
+      .then(() => {
+        console.log("SW: Static assets cached successfully");
+        return self.skipWaiting();
+      })
+      .catch(err => {
+        console.error("SW: Cache installation failed:", err);
+        // Try individual caching as fallback
+        return Promise.allSettled(
+          STATIC_ASSETS.map(url =>
+            cache.add(url).catch(err => {
+              console.warn("SW: Failed to cache:", url, err);
+              return null;
+            })
+          )
+        );
+      })
   );
 });
 
 // ================= ACTIVATE =================
 self.addEventListener("activate", event => {
-  console.log("SW activating...");
+  console.log("SW activating v" + VERSION);
 
   event.waitUntil(
     caches.keys().then(keys =>
       Promise.all(
         keys
           .filter(k => k !== STATIC_CACHE && k !== DYNAMIC_CACHE)
-          .map(k => caches.delete(k))
+          .map(k => {
+            console.log("SW: Deleting old cache:", k);
+            return caches.delete(k);
+          })
       )
-    ).then(() => self.clients.claim())
+    ).then(() => {
+      console.log("SW: Activation complete");
+      return self.clients.claim();
+    })
   );
 });
 
-// ================= FETCH =================
+// ================= FETCH STRATEGIES =================
+
+// Cache First Strategy for static assets
+const cacheFirst = (request) => {
+  return caches.match(request).then(cacheRes => {
+    if (cacheRes) {
+      console.log("SW: Cache First - Serving from cache:", request.url);
+      return cacheRes;
+    }
+
+    return fetch(request).then(networkRes => {
+      if (networkRes && networkRes.status === 200) {
+        console.log("SW: Cache First - Caching new resource:", request.url);
+        const responseClone = networkRes.clone();
+        caches.open(DYNAMIC_CACHE).then(cache => cache.put(request, responseClone));
+      }
+      return networkRes;
+    });
+  });
+};
+
+// Network First Strategy for API calls
+const networkFirst = (request) => {
+  return fetch(request).then(networkRes => {
+    if (networkRes && networkRes.status === 200) {
+      console.log("SW: Network First - Caching API response:", request.url);
+      const responseClone = networkRes.clone();
+      caches.open(DYNAMIC_CACHE).then(cache => cache.put(request, responseClone));
+    }
+    return networkRes;
+  }).catch(() => {
+    console.log("SW: Network First - Fallback to cache:", request.url);
+    return caches.match(request);
+  });
+};
+
+// Stale While Revalidate Strategy
+const staleWhileRevalidate = (request) => {
+  return caches.match(request).then(cacheRes => {
+    const fetchPromise = fetch(request).then(networkRes => {
+      if (networkRes && networkRes.status === 200) {
+        console.log("SW: SWR - Updating cache:", request.url);
+        const responseClone = networkRes.clone();
+        caches.open(DYNAMIC_CACHE).then(cache => cache.put(request, responseClone));
+      }
+      return networkRes;
+    });
+
+    if (cacheRes) {
+      console.log("SW: SWR - Serving stale cache:", request.url);
+      return cacheRes;
+    }
+
+    return fetchPromise;
+  });
+};
+
+// ================= FETCH ROUTER =================
 self.addEventListener("fetch", event => {
+  const { request } = event;
+  const url = new URL(request.url);
 
-  // Ignore chrome-extension requests
-  if (!event.request.url.startsWith("http")) return;
+  // Ignore non-http requests
+  if (!request.url.startsWith("http")) return;
 
+  console.log("SW: Fetching:", request.url);
+
+  // Route requests to appropriate strategy
   event.respondWith(
-    caches.match(event.request).then(cacheRes => {
+    // Static assets - Cache First
+    (url.pathname.includes('/css/') ||
+     url.pathname.includes('/js/') ||
+     url.pathname.includes('/icons/') ||
+     request.destination === 'script' ||
+     request.destination === 'style' ||
+     request.destination === 'image') ?
+      cacheFirst(request) :
 
-      if (cacheRes) return cacheRes;
+    // Navigation requests - Network First with SPA fallback
+    request.mode === 'navigate' ?
+      networkFirst(request).catch(() => {
+        console.log("SW: Navigation fallback to index.html");
+        return caches.match('/vite/index.html');
+      }) :
 
-      return fetch(event.request)
-        .then(networkRes => {
-
-          if (networkRes.status === 200) {
-            return caches.open(DYNAMIC_CACHE).then(cache => {
-              cache.put(event.request, networkRes.clone());
-              return networkRes;
-            });
-          }
-
-          return networkRes;
-        })
-        .catch(() => {
-          // SPA fallback
-          if (event.request.mode === "navigate") {
-            return caches.match("/vite/index.html");
-          }
-
-          return new Response("Offline", { status: 503 });
-        });
-    })
+    // Everything else - Stale While Revalidate
+    staleWhileRevalidate(request)
   );
+});
+
+// ================= MESSAGE HANDLER =================
+self.addEventListener("message", event => {
+  console.log("SW: Message received:", event.data);
+
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    console.log("SW: Skipping waiting");
+    self.skipWaiting();
+  }
+
+  if (event.data && event.data.type === "CACHE_VERSION") {
+    event.ports[0].postMessage({ version: VERSION });
+  }
+});
+
+// ================= SYNC =================
+self.addEventListener("sync", event => {
+  console.log("SW: Sync event:", event.tag);
+
+  if (event.tag === "background-sync") {
+    event.waitUntil(
+      console.log("SW: Background sync completed")
+    );
+  }
+});
+
+// ================= PERIODIC SYNC =================
+self.addEventListener("periodicsync", event => {
+  console.log("SW: Periodic sync:", event.tag);
+
+  if (event.tag === "periodic-sync") {
+    event.waitUntil(
+      console.log("SW: Periodic sync completed")
+    );
+  }
 });
