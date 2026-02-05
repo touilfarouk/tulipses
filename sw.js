@@ -9,6 +9,20 @@ const STATIC_ASSETS = [
   '/vite/index.html',
   '/vite/manifest.json',
 
+  // JavaScript files
+  '/vite/main.js',
+  '/vite/js/app.js',
+  '/vite/js/store.js',
+  '/vite/src/pages/PageEntries.js',
+  '/vite/src/pages/PageSettings.js',
+  '/vite/src/use/useAmountColorClass.js',
+  '/vite/src/use/useCurrencify.js',
+
+  // CSS files
+  '/vite/css/mobile-swipe.css',
+  '/vite/css/shadows.css',
+  '/vite/css/transitions.css',
+
   // Icons that actually exist
   '/vite/icons/favicon-16x16.png',
   '/vite/icons/favicon-32x32.png',
@@ -25,37 +39,45 @@ const STATIC_ASSETS = [
 
 
   // ================= INSTALL =================
-  self.addEventListener("install", event => {
-    console.log("SW installing v" + VERSION);
+self.addEventListener("install", event => {
+  console.log("SW installing v" + VERSION);
 
-    event.waitUntil(
-      caches.open(STATIC_CACHE)
-        .then(cache => {
-          console.log("SW: Caching", STATIC_ASSETS.length, "static assets");
+  event.waitUntil(
+    caches.open(STATIC_CACHE)
+      .then(cache => {
+        console.log("SW: Caching", STATIC_ASSETS.length, "static assets");
 
-          // Add files one by one to handle failures gracefully
-          return Promise.allSettled(
-            STATIC_ASSETS.map(url =>
-              cache.add(url).then(() => {
+        // Cache each file individually with better error handling
+        const cachePromises = STATIC_ASSETS.map(url => {
+          return fetch(url)
+            .then(response => {
+              if (response.ok) {
                 console.log("SW: Cached:", url);
-              }).catch(err => {
-                console.warn("SW: Failed to cache:", url, err.message);
-                return null;
-              })
-            )
-          );
-        })
-        .then(() => {
-          console.log("SW: Static assets cached successfully");
-          return self.skipWaiting();
-        })
-        .catch(err => {
-          console.error("SW: Cache installation failed:", err);
-          // Continue with partial success
-          return self.skipWaiting();
-        })
-    );
-  });
+                return cache.put(url, response);
+              } else {
+                console.warn("SW: Failed to fetch:", url, response.status);
+                return Promise.resolve();
+              }
+            })
+            .catch(err => {
+              console.warn("SW: Failed to cache:", url, err.message);
+              return Promise.resolve();
+            });
+        });
+
+        return Promise.all(cachePromises);
+      })
+      .then(() => {
+        console.log("SW: Static assets cached successfully");
+        return self.skipWaiting();
+      })
+      .catch(err => {
+        console.error("SW: Cache installation failed:", err);
+        // Continue with partial success
+        return self.skipWaiting();
+      })
+  );
+});
 
   // ================= ACTIVATE =================
   self.addEventListener("activate", event => {
@@ -81,23 +103,29 @@ const STATIC_ASSETS = [
   // ================= FETCH STRATEGIES =================
 
   // Cache First Strategy for static assets
-  const cacheFirst = (request) => {
-    return caches.match(request).then(cacheRes => {
-      if (cacheRes) {
-        console.log("SW: Cache First - Serving from cache:", request.url);
-        return cacheRes;
-      }
+const cacheFirst = (request) => {
+  return caches.match(request).then(cacheRes => {
+    if (cacheRes) {
+      console.log("SW: Cache First - Serving from cache:", request.url);
+      return cacheRes;
+    }
 
-      return fetch(request).then(networkRes => {
-        if (networkRes && networkRes.status === 200) {
-          console.log("SW: Cache First - Caching new resource:", request.url);
-          const responseClone = networkRes.clone();
-          caches.open(DYNAMIC_CACHE).then(cache => cache.put(request, responseClone));
-        }
-        return networkRes;
+    return fetch(request).then(networkRes => {
+      if (networkRes && networkRes.status === 200) {
+        console.log("SW: Cache First - Caching new resource:", request.url);
+        const responseClone = networkRes.clone();
+        caches.open(DYNAMIC_CACHE).then(cache => cache.put(request, responseClone));
+      }
+      return networkRes;
+    }).catch(err => {
+      console.warn("SW: Cache First - Network failed:", request.url, err.message);
+      return new Response('Offline: Resource not available', {
+        status: 503,
+        statusText: 'Service Unavailable'
       });
     });
-  };
+  });
+};
 
   // Network First Strategy for API calls
   const networkFirst = (request) => {
