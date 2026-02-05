@@ -6,13 +6,9 @@ const dynamicCache = "moneyballsDynamicCache"; // fixed, keeps data across updat
 const cacheList = [
   '/vite/',
   '/vite/index.html',
-  '/vite/main.css',
   '/vite/main.js',
   '/vite/manifest.json',
   '/vite/js/app.js',
-  '/vite/src/layouts/MainLayout.js',
-  '/vite/src/pages/PageEntries.js',
-  '/vite/src/pages/PageSettings.js',
   '/vite/js/store.js',
   '/vite/css/transitions.css',
   '/vite/css/shadows.css',
