@@ -4,21 +4,21 @@ const staticCache = `moneyballsCache-v${version}`;
 const dynamicCache = "moneyballsDynamicCache"; // fixed, keeps data across updates
 
 const cacheList = [
-  '/',
-  '/index.html',
-  '/main.css',
-  '/main.js',
-  '/manifest.json',
-  '/js/app.js',
-  '/src/layouts/MainLayout.js',
-  '/src/pages/PageEntries.js',
-  '/src/pages/PageSettings.js',
-  '/js/store.js',
-  '/css/transitions.css',
-  '/css/shadows.css',
-  '/css/mobile-swipe.css',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png',
+  '/vite/',
+  '/vite/index.html',
+  '/vite/main.css',
+  '/vite/main.js',
+  '/vite/manifest.json',
+  '/vite/js/app.js',
+  '/vite/src/layouts/MainLayout.js',
+  '/vite/src/pages/PageEntries.js',
+  '/vite/src/pages/PageSettings.js',
+  '/vite/js/store.js',
+  '/vite/css/transitions.css',
+  '/vite/css/shadows.css',
+  '/vite/css/mobile-swipe.css',
+  '/vite/icons/icon-192x192.png',
+  '/vite/icons/icon-512x512.png',
   'https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/quasar.prod.css',
   'https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/quasar.umd.prod.js',
   'https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js',
@@ -107,7 +107,10 @@ self.addEventListener('fetch', (ev) => {
 
         // For navigation requests, try to serve index.html (handle SPA routing)
         if (request.mode === 'navigate') {
-          // Handle GitHub Pages SPA routing
+          // Handle GitHub Pages SPA routing with /vite/ prefix
+          if (request.url.includes('/vite/')) {
+            return caches.match('/vite/index.html');
+          }
           return caches.match('/index.html');
         }
 
