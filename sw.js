@@ -2,34 +2,24 @@
 const VERSION = 4;
 const STATIC_CACHE = `moneyballs-static-v${VERSION}`;
 const DYNAMIC_CACHE = `moneyballs-dynamic-v${VERSION}`;
-
-// Only REAL files here - adjust paths based on deployment
-const STATIC_ASSETS = [
+const files = [
   '/',
   '/index.html',
   '/manifest.json',
-
-  // JavaScript files
   '/main.js',
-  '/js/app.js',
-  '/js/store.js',
+  '/app.js',
+  '/store.js',
   '/src/pages/PageEntries.js',
   '/src/pages/PageSettings.js',
   '/src/use/useAmountColorClass.js',
   '/src/use/useCurrencify.js',
-
-  // CSS files
   '/css/mobile-swipe.css',
   '/css/shadows.css',
   '/css/transitions.css',
-
-  // Icons that actually exist
   '/icons/favicon-16x16.png',
   '/icons/favicon-32x32.png',
   '/icons/android-chrome-192x192.png',
   '/icons/android-chrome-512x512.png',
-
-  // CDN
   'https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/quasar.prod.css',
   'https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/quasar.umd.prod.js',
   'https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js',
