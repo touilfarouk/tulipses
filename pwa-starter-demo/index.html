@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>PWA Starter Demo</title>
+    <meta name=viewport content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="theme-color" content="#000000">
+    <meta name=description content="Demo of Progressive Web Application with features like splash screen, offline support, service workers etc.">
+    <meta name="keywords" content="PWA, Progressive Web Apps, Service Worker, Offline Support, Push Notifications, Gaurav Behere, PWA Starter, Background Sync, Lighthouse">
+    <meta name="author" content="Gaurav Behere">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PWA Starter Demo">
+    <meta name="application-name" content="PWA Starter Demo">
+    <link rel="icon" type="image/png" href="./images/icon_32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="./images/icon_16.png" sizes="16x16">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="stylesheet" href="./css/styles.css" />
+    <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-messaging.js"></script>
+    <meta name="google-site-verification" content="epQonJNeUcw3dFBM3DJfzKaR0_XKSzu9u0dAF1Qi6vE" />
+    <script>
+      /* Initialize Firebase with your app settings
+      *  these settings can be found in firebase developer console  
+      */
+      var config = {
+        apiKey: "<Your API KEY>",
+        authDomain: "<FIREBASE PROJECT NAME>.firebaseapp.com",
+        databaseURL: "https://<FIREBASE PROJECT NAME>.firebaseio.com",
+        projectId: "<FIREBASE PROJECT NAME>",
+        storageBucket: "topics/push_notifications",
+        messagingSenderId: "<YOUR SENDER ID>"
+      };
+      firebase.initializeApp(config);
+    </script>
+
+</head>
+
+<body>
+    <header>
+        <span class="logo" onclick="window.location='https://gauravbehere.github.io/pwa-starter-demo/'"></span>
+        PWA Starter Demo
+    </header>
+    <div id="contentDiv">
+        <div class="feature">
+            <div class="featureIcon">
+                    <i class="fas fa-bell bell"></i>
+            </div>
+            <div class="featureContent">
+                <div>
+                        Push Notifications
+                </div>
+                <article>
+                    Engage users with push notifications using Firebase API. It makes use of HTML5 Notification.<br>
+                    <a href="https://firebase.google.com/docs/cloud-messaging/" target="_blank">Read More</a>
+                </article>
+            </div>    
+        </div>
+        <div class="feature">
+            <div class="featureIcon">
+                    <i class="fas fa-sync sync"></i>
+            </div>
+            <div class="featureContent">
+                <div>
+                        Background Sync
+                </div>
+                <article>
+                        Background sync is a new web API that lets you defer actions until the user has stable connectivity.<br>
+                    <a href="https://developers.google.com/web/updates/2015/12/background-sync" target="_blank">Read More</a><br><br>
+                    Go Offline & hit this button <button onclick="registerSync()">Trigger Offline Action</button>
+                </article>
+            </div>    
+        </div>
+        <div class="feature">            
+            <div class="featureIcon">
+                    <i class="fas fa-bolt bolt"></i>
+            </div>
+            <div class="featureContent">
+                <div>
+                        Lightening Speed
+                </div>
+                <article>
+                        With caching strategies in place & faster load, PWA repsponds faster in slow networks.<br>
+                    <a href="https://developers.google.com/web/fundamentals/performance/why-performance-matters/" target="_blank">Read More</a>
+                </article>
+            </div>   
+        </div>
+        <div class="feature">           
+            <div class="featureIcon">
+                    <i class="fas fa-cog"></i>
+            </div>
+            <div class="featureContent">
+                <div>
+                        Service Worker
+                </div>
+                <article>
+                        Runs separately from the main browser thread, intercepting network requests, caching or retrieving resources from the cache, and delivering push messages.<br>
+                    <a href="https://developers.google.com/web/ilt/pwa/introduction-to-service-worker" target="_blank">Read More</a>
+                </article>
+            </div>   
+        </div>
+        <div class="feature">            
+            <div class="featureIcon">
+                    <i class="fas fa-wifi wifi"></i>
+            </div>
+            <div class="featureContent">
+                <div>
+                        Respond To Network Changes
+                </div>
+                <article>
+                        Engage user even when there is no network.<br>
+                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/NavigatorOnLine/Online_and_offline_events" target="_blank">Read More</a>
+                </article>
+            </div>   
+        </div>
+        <div class="feature">            
+            <div class="featureIcon">
+                    <i class="fab fa-github-square"></i>
+            </div>
+            <div class="featureContent">
+                <div>
+                        Source Code
+                </div>
+                <article>
+                        Source code & readme can be found here.<br>
+                    <a href="https://github.com/gauravbehere/pwa-starter-demo" target="_blank">PWA Starter Demo</a>
+                </article>
+            </div>   
+        </div>
+    </div>
+    <footer>
+        &copy; MIT Licence &nbsp;
+        <a href="http://gauravbehere.in" target="_blank">Gaurav Behere</a>
+    </footer>
+
+    <script src="./js/notify.js"></script>
+    <script src="./js/networkChange.js"></script>
+    <script defer src="./js/push.js"></script>
+    <script src="./js/sync.js"></script>
+    <script defer src="./js/app.js"></script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-3574737-3"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-3574737-3');
+    </script>
+
+</body>
+
+</html>

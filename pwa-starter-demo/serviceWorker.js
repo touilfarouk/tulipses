@@ -1,36 +1,27 @@
-// ================= CONFIG =================
-var cacheName = 'moneyballs-cache-v1';
+var cacheName = 'cache-v3';
 
 /* 
 * Files to be served from cache
 */
 var files = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/main.js',
-  '/app.js',
-  '/store.js',
-  '/src/pages/PageEntries.js',
-  '/src/pages/PageSettings.js',
-  '/src/use/useAmountColorClass.js',
-  '/src/use/useCurrencify.js',
-  '/css/mobile-swipe.css',
-  '/css/shadows.css',
-  '/css/transitions.css',
-  '/icons/favicon-16x16.png',
-  '/icons/favicon-32x32.png',
-  '/icons/android-chrome-192x192.png',
-  '/icons/android-chrome-512x512.png',
-  'https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/quasar.prod.css',
-  'https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/quasar.umd.prod.js',
-  'https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js',
-  'https://cdn.jsdelivr.net/npm/vue-router@4/dist/vue-router.global.prod.js',
-  'https://cdn.jsdelivr.net/npm/axios@1.6.2/dist/axios.min.js',
-  'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons'
+    './',
+    './index.html',
+    './css/styles.css',
+    '/js/notify.js',
+    '/js/app.js',
+    '/js/sync.js',
+    '/js/push.js',
+    '/js/networkChange.js',
+    './manifest.json',
+    './images/icon_16.png',
+    './images/icon_32.png',
+    './images/icon_192.png',
+    './images/icon_256.png',
+    './images/icon_512.png',
+    "https://use.fontawesome.com/releases/v5.2.0/css/all.css"
 ];
 
-// ================= INSTALL =================
+
 self.addEventListener('install', (event) => {
     console.info('Installing Service Worker');
     event.waitUntil(
@@ -38,7 +29,7 @@ self.addEventListener('install', (event) => {
             .then((cache) => {
                 return cache.addAll(files)
                     .then(() => {
-                        console.info('Successfully Cached');
+                        console.info('Sucessfully Cached');
                         return self.skipWaiting();
                     })
                     .catch((error) => {
@@ -48,7 +39,6 @@ self.addEventListener('install', (event) => {
     );
 });
 
-// ================= ACTIVATE =================
 self.addEventListener('activate', (event) => {
     console.info('Activating service worker');
     event.waitUntil(
@@ -66,7 +56,6 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// ================= FETCH =================
 self.addEventListener('fetch', (event) => {
     console.info('Event: Fetch');
     var request = event.request;
@@ -92,13 +81,12 @@ self.addEventListener('fetch', (event) => {
     );
 });
 
-// ================= PUSH =================
 self.addEventListener('push', (event) => {
     console.info('Event: Push', event);
     event.waitUntil(self.registration.showNotification("test notification", {body: event.body}));
 });
 
-// ================= SYNC =================
+
 self.addEventListener('sync', function(event) {
     console.info('Event: Sync', event);
     /**
@@ -106,3 +94,6 @@ self.addEventListener('sync', function(event) {
      */
     self.registration.showNotification("Syncing Now");
   });
+
+
+  
