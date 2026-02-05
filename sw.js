@@ -3,31 +3,31 @@ const VERSION = 3;
 const STATIC_CACHE = `moneyballs-static-v${VERSION}`;
 const DYNAMIC_CACHE = `moneyballs-dynamic-v${VERSION}`;
 
-// Only REAL files here with /vite/ prefix for GitHub Pages
+// Only REAL files here - adjust paths based on deployment
 const STATIC_ASSETS = [
-  '/vite/',
-  '/vite/index.html',
-  '/vite/manifest.json',
+  '/',
+  '/index.html',
+  '/manifest.json',
 
   // JavaScript files
-  '/vite/main.js',
-  '/vite/js/app.js',
-  '/vite/js/store.js',
-  '/vite/src/pages/PageEntries.js',
-  '/vite/src/pages/PageSettings.js',
-  '/vite/src/use/useAmountColorClass.js',
-  '/vite/src/use/useCurrencify.js',
+  '/main.js',
+  '/js/app.js',
+  '/js/store.js',
+  '/src/pages/PageEntries.js',
+  '/src/pages/PageSettings.js',
+  '/src/use/useAmountColorClass.js',
+  '/src/use/useCurrencify.js',
 
   // CSS files
-  '/vite/css/mobile-swipe.css',
-  '/vite/css/shadows.css',
-  '/vite/css/transitions.css',
+  '/css/mobile-swipe.css',
+  '/css/shadows.css',
+  '/css/transitions.css',
 
   // Icons that actually exist
-  '/vite/icons/favicon-16x16.png',
-  '/vite/icons/favicon-32x32.png',
-  '/vite/icons/android-chrome-192x192.png',
-  '/vite/icons/android-chrome-512x512.png',
+  '/icons/favicon-16x16.png',
+  '/icons/favicon-32x32.png',
+  '/icons/android-chrome-192x192.png',
+  '/icons/android-chrome-512x512.png',
 
   // CDN
   'https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/quasar.prod.css',
@@ -189,7 +189,7 @@ self.addEventListener("fetch", event => {
     request.mode === 'navigate' ?
       networkFirst(request).catch(() => {
         console.log("SW: Navigation fallback to index.html");
-        return caches.match('/vite/index.html');
+        return caches.match('/index.html');
       }) :
 
     // Everything else - Stale While Revalidate
