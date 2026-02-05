@@ -34,6 +34,7 @@ const STATIC_ASSETS = [
   'https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/quasar.umd.prod.js',
   'https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js',
   'https://cdn.jsdelivr.net/npm/vue-router@4/dist/vue-router.global.prod.js',
+  'https://cdn.jsdelivr.net/npm/axios@1.6.2/dist/axios.min.js',
   'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons'
 ];
 

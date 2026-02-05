@@ -99,6 +99,55 @@
     <!-- Quasar Framework -->
     <script src="https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/quasar.umd.prod.js"></script>
 
+    <!-- Axios for HTTP requests -->
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.2/dist/axios.min.js"></script>
+
+    <!-- Axios Interceptors for logging -->
+    <script>
+      // Request interceptor - log outgoing requests
+      axios.interceptors.request.use(
+        function(config) {
+          console.log('🚀 Axios Request:', {
+            method: config.method?.toUpperCase(),
+            url: config.url,
+            data: config.data,
+            headers: config.headers
+          });
+          return config;
+        },
+        function(error) {
+          console.error('❌ Axios Request Error:', error);
+          return Promise.reject(error);
+        }
+      );
+
+      // Response interceptor - log responses
+      axios.interceptors.response.use(
+        function(response) {
+          console.log('✅ Axios Response:', {
+            status: response.status,
+            statusText: response.statusText,
+            url: response.config.url,
+            data: response.data,
+            headers: response.headers
+          });
+          return response;
+        },
+        function(error) {
+          console.error('❌ Axios Response Error:', {
+            status: error.response?.status,
+            statusText: error.response?.statusText,
+            url: error.config?.url,
+            message: error.message,
+            data: error.response?.data
+          });
+          return Promise.reject(error);
+        }
+      );
+
+      console.log('🔧 Axios logging enabled - all requests/responses will be logged');
+    </script>
+
     <!-- Quasar French Language Pack -->
     <script src="https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/lang/fr.umd.prod.js"></script>
 
