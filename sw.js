@@ -36,15 +36,24 @@ const cacheList = [
 // --- INSTALL ---
 self.addEventListener('install', (ev) => {
   console.log('SW: Installing and caching static assets');
+  console.log('SW: Caching static assets:', cacheList);
+
   ev.waitUntil(
-    caches.open(staticCache).then((cache) => {
-      console.log('SW: Caching static assets:', cacheList);
-      return cache.addAll(cacheList);
+    caches.open(staticCache).then(cache => {
+      // Add files one by one to handle failures gracefully
+      return Promise.allSettled(
+        cacheList.map(url =>
+          cache.add(url).catch(err => {
+            console.warn('SW: Failed to cache:', url, err);
+            return null;
+          })
+        )
+      );
     }).then(() => {
       console.log('SW: Static assets cached successfully');
-      return self.skipWaiting();
+      self.skipWaiting();
     }).catch(err => {
-      console.error('SW: Failed to cache static assets:', err);
+      console.error('SW: Cache installation failed:', err);
     })
   );
 });
