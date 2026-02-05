@@ -1,7 +1,7 @@
 .DS_Store
 .thumbs.db
 node_modules
-
+/workbox
 # Quasar core related directories
 .quasar
 /dist
