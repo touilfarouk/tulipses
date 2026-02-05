@@ -1,5 +1,5 @@
   // ================= CONFIG =================
-const VERSION = 3;
+const VERSION = 4;
 const STATIC_CACHE = `moneyballs-static-v${VERSION}`;
 const DYNAMIC_CACHE = `moneyballs-dynamic-v${VERSION}`;
 
@@ -52,11 +52,11 @@ self.addEventListener("install", event => {
         const cachePromises = STATIC_ASSETS.map(url => {
           return fetch(url)
             .then(response => {
-              if (response.ok) {
+              if (response && response.ok) {
                 console.log("SW: Cached:", url);
                 return cache.put(url, response);
               } else {
-                console.warn("SW: Failed to fetch:", url, response.status);
+                console.warn("SW: Failed to fetch:", url, response ? response.status : 'No response');
                 return Promise.resolve();
               }
             })
@@ -66,7 +66,7 @@ self.addEventListener("install", event => {
             });
         });
 
-        return Promise.all(cachePromises);
+        return Promise.allSettled(cachePromises);
       })
       .then(() => {
         console.log("SW: Static assets cached successfully");
