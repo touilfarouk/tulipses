@@ -182,16 +182,33 @@ const APP = {
   // ================= INSTALL PROMPT =================
   showInstallPrompt: () => {
     if (APP.deferredPrompt) {
+      // Show the install prompt
       APP.deferredPrompt.prompt();
+      
+      // Wait for the user to respond to the prompt
       APP.deferredPrompt.userChoice.then((choiceResult) => {
         if (choiceResult.outcome === 'accepted') {
-          console.log('APP: User accepted install prompt');
-          APP.deferredPrompt = null;
+          console.log('User accepted the install prompt');
+          // Optionally, track the installation
+          if (window.gtag) {
+            window.gtag('event', 'install', {
+              'event_category': 'engagement',
+              'event_label': 'install_prompt_accepted'
+            });
+          }
         } else {
-          console.log('APP: User dismissed install prompt');
+          console.log('User dismissed the install prompt');
+        }
+        
+        // Clear the saved prompt since it can't be used again
+        APP.deferredPrompt = null;
+        
+        // Hide the install button
+        const installButton = document.getElementById('install-button');
+        if (installButton) {
+          installButton.style.display = 'none';
         }
       });
-    } else {
       console.log('APP: Install prompt not available');
     }
   }

@@ -7,9 +7,28 @@ const DYNAMIC_CACHE = `${CACHE_PREFIX}-dynamic-${VERSION}`;
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
+  
+  // Core JavaScript files
   '/js/app.js',
+  '/js/store.js',
   '/main.js',
   '/manifest.json',
+  
+  // Layouts
+  '/src/layouts/MainLayout.js',
+  
+  // Pages
+  '/src/pages/PageEntries.js',
+  '/src/pages/PageSettings.js',
+  '/src/pages/utils.js',
+  
+  // Router
+  '/src/router/index.js',
+  '/src/router/routes.js',
+  
+  // Hooks
+  '/src/use/useAmountColorClass.js',
+  '/src/use/useCurrencify.js',
   
   // Icons and assets
   '/icons/favicon-128x128.png',
