@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Existing head content remains the same until the scripts -->
-    
-    <!-- Move scripts to the end of body -->
-    <script>
-        // Add error handling for scripts
-        window.onerror = function(message, source, lineno, colno, error) {
-            console.error("Error:", message, "at", source, "line", lineno);
-            return true; // Prevent default error handling
-        };
-    </script>
+    <title>Moneyballs - Money Tracker</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A simple money tracking application">
+    <meta name="theme-color" content="#00695c">
+    <link rel="icon" href="/vite/icons/favicon.ico">
+    <link rel="manifest" href="/vite/manifest.json">
+    <base href="/vite/">
+    <link href="/vite/css/quasar.prod.css" rel="stylesheet">
+    <link href="/vite/css/fonts.css" rel="stylesheet">
 </head>
 <body>
     <div id="q-app">
@@ -18,7 +18,8 @@
             <div class="q-loading-spinner"></div>
         </div>
     </div>
-<!-- Load Vue first -->
+
+    <!-- Load Vue and dependencies -->
     <script src="/vite/js/vue.global.prod.js"></script>
     <script src="/vite/js/vue-router.global.prod.js"></script>
     <script src="/vite/js/quasar.umd.prod.js"></script>
@@ -39,86 +40,130 @@
     <script src="/vite/src/pages/PageEntries.js"></script>
     <script src="/vite/src/pages/PageSettings.js"></script>
     
-    <!-- Initialize Quasar and main app -->
-   <!-- ... existing head content ... -->
+    <!-- Initialize the app -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Use the global Vue object
-            const { createApp, nextTick } = Vue;
+    (function() {
+        // Debug: Check if required globals are available
+        function checkDependencies() {
+            const required = {
+                'Vue': !!window.Vue,
+                'VueRouter': !!window.VueRouter,
+                'Quasar': !!window.Quasar,
+                'MainLayout': !!window.MainLayout,
+                'PageEntries': !!window.PageEntries,
+                'PageSettings': !!window.PageSettings
+            };
             
-            // Create app instance
-            const app = createApp({
-                template: '<router-view></router-view>'
-            });
-            
-            // Configure Quasar
-            app.use(window.Quasar.default, {
-                config: {
-                    brand: {
-                        primary: '#1976D2',
-                        secondary: '#26A69A',
-                        accent: '#9C27B0',
-                        dark: '#1D1D1D',
-                        positive: '#21BA45',
-                        negative: '#C10015',
-                        info: '#31CCEC',
-                        warning: '#F2C037'
-                    }
+            console.log('Dependency check:', required);
+            return Object.values(required).every(Boolean);
+        }
+
+        function showError(message) {
+            console.error(message);
+            const errorDiv = document.createElement('div');
+            errorDiv.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                background: #ffebee;
+                color: #b71c1c;
+                padding: 1rem;
+                z-index: 9999;
+                font-family: Arial, sans-serif;
+                white-space: pre-wrap;
+            `;
+            errorDiv.textContent = message;
+            document.body.appendChild(errorDiv);
+        }
+
+        function initApp() {
+            try {
+                if (!checkDependencies()) {
+                    throw new Error('Missing required dependencies. Check console for details.');
                 }
-            });
 
-            // Configure router
-            const router = VueRouter.createRouter({
-                history: VueRouter.createWebHashHistory('/vite/'),
-                routes: [
-                    {
-                        path: '/',
-                        component: window.MainLayout,
-                        children: [
-                            { path: '', component: window.PageEntries },
-                            { path: 'settings', component: window.PageSettings }
-                        ]
+                const { createApp } = Vue;
+                const { createRouter, createWebHashHistory } = VueRouter;
+                
+                // Create app instance
+                const app = createApp({
+                    template: '<router-view></router-view>'
+                });
+
+                // Configure Quasar
+                app.use(window.Quasar.default, {
+                    config: {
+                        brand: {
+                            primary: '#1976D2',
+                            secondary: '#26A69A',
+                            accent: '#9C27B0',
+                            dark: '#1D1D1D',
+                            positive: '#21BA45',
+                            negative: '#C10015',
+                            info: '#31CCEC',
+                            warning: '#F2C037'
+                        }
                     }
-                ]
-            });
+                });
 
-            // Use the router
-            app.use(router);
-            
-            // Mount the app
-            app.mount('#q-app');
-            
-            // Handle app mounted
-            const handleAppMounted = () => {
-                const loading = document.getElementById('loading');
-                const qApp = document.getElementById('q-app');
+                // Configure router
+                const router = createRouter({
+                    history: createWebHashHistory('/vite/'),
+                    routes: [
+                        {
+                            path: '/',
+                            component: window.MainLayout,
+                            children: [
+                                { 
+                                    path: '', 
+                                    component: window.PageEntries,
+                                    name: 'home'
+                                },
+                                { 
+                                    path: 'settings', 
+                                    component: window.PageSettings,
+                                    name: 'settings'
+                                }
+                            ]
+                        }
+                    ]
+                });
 
+                // Mount the app
+                app.use(router).mount('#q-app');
+
+                // Hide loading spinner
+                const loading = document.querySelector('.q-loading');
                 if (loading) {
                     loading.style.display = 'none';
                 }
-                if (qApp) {
-                    qApp.style.opacity = '1';
-                }
-                console.log('Application mounted successfully');
-            };
+                
+                console.log('App mounted successfully');
+                
+            } catch (error) {
+                showError(`Error initializing app:\n${error.message}\n\n${error.stack || ''}`);
+            }
+        }
 
-            // Use the imported nextTick directly
-            nextTick(() => {
-                handleAppMounted();
-            });
-        });
+        // Start the app when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
 
-        // Global error handler
+        // Global error handlers
         window.onerror = function(message, source, lineno, colno, error) {
-            console.error('Global error:', { message, source, lineno, colno, error });
-            return true; // Prevent default error handler
+            showError(`Global error: ${message}\nAt ${source}:${lineno}:${colno}\n${error?.stack || ''}`);
+            return true;
         };
 
-        // Unhandled promise rejections
         window.addEventListener('unhandledrejection', (event) => {
-            console.error('Unhandled promise rejection:', event.reason);
+            showError(`Unhandled promise rejection: ${event.reason?.message || event.reason || 'Unknown error'}`);
             event.preventDefault();
         });
+    })();
     </script>
 </body>
 </html>
