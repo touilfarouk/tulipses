@@ -1,4 +1,4 @@
-const VERSION = 'v1.0.0';
+const VERSION = 'v1.0.1'; // Incremented version
 const CACHE_PREFIX = 'moneyballs-cache';
 const STATIC_CACHE = `${CACHE_PREFIX}-static-${VERSION}`;
 const DYNAMIC_CACHE = `${CACHE_PREFIX}-dynamic-${VERSION}`;
@@ -38,18 +38,32 @@ const PRECACHE_ASSETS = [
   '/favicon.ico',
   
   // CSS files
-  'https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons|Material+Icons+Outlined',
-  'https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/quasar.prod.css',
   '/css/transitions.css',
   '/css/shadows.css',
   '/css/mobile-swipe.css'
 ];
 
+// External CDN resources to cache
+const EXTERNAL_RESOURCES = [
+  'https://cdn.jsdelivr.net/npm/vue@3.3.4/dist/vue.global.prod.js',
+  'https://cdn.jsdelivr.net/npm/vue-router@4.2.4/dist/vue-router.global.prod.js',
+  'https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/quasar.umd.prod.js',
+  'https://cdn.jsdelivr.net/npm/axios@1.6.2/dist/axios.min.js',
+  'https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/lang/fr.umd.prod.js',
+  'https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/lang/en-US.umd.prod.js',
+  'https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/lang/ar.umd.prod.js',
+  'https://cdn.jsdelivr.net/npm/@quasar/quasar-ui-qcalendar/dist/QCalendarMonth.umd.min.js',
+  'https://cdn.jsdelivr.net/npm/@quasar/quasar-ui-qcalendar/dist/Timestamp.umd.min.js',
+  'https://cdn.jsdelivr.net/npm/workbox-sw@7.0.0/build/workbox-sw.js',
+  'https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons|Material+Icons+Outlined',
+  'https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/quasar.prod.css',
+  'https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Mu4mxK.woff2',
+  'https://fonts.gstatic.com/s/materialicons/v140/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2'
+];
+
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
   console.log('[Service Worker] Installing Service Worker...');
-  
-  // Skip waiting to activate the new service worker immediately
   self.skipWaiting();
   
   event.waitUntil(
@@ -57,6 +71,10 @@ self.addEventListener('install', (event) => {
       .then((cache) => {
         console.log('[Service Worker] Caching app shell');
         return cache.addAll(PRECACHE_ASSETS);
+      })
+      .then(() => {
+        return caches.open(DYNAMIC_CACHE)
+          .then(cache => cache.addAll(EXTERNAL_RESOURCES));
       })
       .catch(err => {
         console.error('[Service Worker] Cache addAll failed:', err);
@@ -81,154 +99,117 @@ self.addEventListener('activate', (event) => {
     })
   );
   
-  // Take control of all clients immediately
   return self.clients.claim();
 });
 
-// Fetch event - network first, then cache
+// Helper function to check if request is for an external resource
+function isExternalResource(url) {
+  const externalHosts = [
+    'cdn.jsdelivr.net',
+    'fonts.googleapis.com',
+    'fonts.gstatic.com'
+  ];
+  return externalHosts.some(host => url.includes(host));
+}
+
+// Fetch event handler
 self.addEventListener('fetch', (event) => {
-  // Skip non-GET requests
-  if (event.request.method !== 'GET') return;
+  const request = event.request;
   
-  const requestUrl = new URL(event.request.url);
-  
-  // Skip cross-origin requests and chrome-extension requests
-  if (!requestUrl.origin.startsWith(self.location.origin) || 
-      requestUrl.protocol === 'chrome-extension:') {
+  // Skip non-GET requests and chrome-extension requests
+  if (request.method !== 'GET' || request.url.startsWith('chrome-extension:')) {
     return;
   }
+
+  const requestUrl = new URL(request.url);
   
-  // Handle API requests with network first, then cache
-  if (event.request.url.includes('/api/')) {
+  // Handle external resources (CDN)
+  if (isExternalResource(request.url)) {
     event.respondWith(
-      fetch(event.request)
-        .then((networkResponse) => {
+      caches.open(DYNAMIC_CACHE).then(cache => {
+        return fetch(request)
+          .then(networkResponse => {
+            // Cache the response if valid
+            if (networkResponse && networkResponse.status === 200) {
+              const responseToCache = networkResponse.clone();
+              cache.put(request, responseToCache);
+            }
+            return networkResponse;
+          })
+          .catch(() => {
+            // If network fails, try to get from cache
+            return cache.match(request).then(cachedResponse => {
+              return cachedResponse || new Response('CDN resource not available offline', {
+                status: 408,
+                headers: { 'Content-Type': 'text/plain' }
+              });
+            });
+          });
+      })
+    );
+    return;
+  }
+
+  // Handle API requests
+  if (request.url.includes('/api/')) {
+    event.respondWith(
+      fetch(request)
+        .then(networkResponse => {
           // Cache successful API responses
           if (networkResponse && networkResponse.status === 200) {
             const responseToCache = networkResponse.clone();
-            caches.open(DYNAMIC_CACHE).then((cache) => {
-              cache.put(event.request, responseToCache);
+            caches.open(DYNAMIC_CACHE).then(cache => {
+              cache.put(request, responseToCache);
             });
           }
           return networkResponse;
         })
         .catch(() => {
           // If network fails, try to get from cache
-          return caches.match(event.request).then((cachedResponse) => {
-            return cachedResponse || new Response(JSON.stringify({ error: 'You are offline and no cached data is available' }), {
-              headers: { 'Content-Type': 'application/json' }
-            });
+          return caches.match(request).then(cachedResponse => {
+            return cachedResponse || new Response(
+              JSON.stringify({ error: 'You are offline and no cached data is available' }), 
+              { headers: { 'Content-Type': 'application/json' } }
+            );
           });
         })
     );
     return;
   }
-  
-  // For all other requests, use cache first with network fallback
+
+  // For all other requests, try cache first, then network
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
+    caches.match(request).then(cachedResponse => {
       // Return cached response if found
       if (cachedResponse) {
         return cachedResponse;
       }
-      
-      // Otherwise, fetch from network
-      return fetch(event.request)
-        .then((networkResponse) => {
-          // Check if we received a valid response
-          if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
-            return networkResponse;
+
+      // Otherwise, try the network
+      return fetch(request)
+        .then(networkResponse => {
+          // Only cache successful responses
+          if (networkResponse && networkResponse.status === 200) {
+            const responseToCache = networkResponse.clone();
+            caches.open(DYNAMIC_CACHE).then(cache => {
+              cache.put(request, responseToCache);
+            });
           }
-          
-          // Clone the response
-          const responseToCache = networkResponse.clone();
-          
-          // Cache the response
-          caches.open(DYNAMIC_CACHE).then((cache) => {
-            // Don't cache large files or non-GET requests
-            if (event.request.method === 'GET' && 
-                !event.request.url.includes('sockjs-node') &&
-                !event.request.url.includes('hot-update')) {
-              cache.put(event.request, responseToCache);
-            }
-          });
-          
           return networkResponse;
         })
-        .catch(() => {
-          // If both cache and network fail, show a fallback
-          if (event.request.mode === 'navigate') {
-            return caches.match('/offline.html')
-              .then((offlinePage) => {
-                return offlinePage || new Response('You are offline and no offline page is available.', {
-                  status: 503,
-                  statusText: 'Offline',
-                  headers: new Headers({ 'Content-Type': 'text/plain' })
-                });
-              });
+        .catch(error => {
+          console.log('Fetch failed:', error);
+          // If the request is for a page, return the offline page
+          if (request.mode === 'navigate') {
+            return caches.match('/offline.html');
           }
-          
+          // For other requests, return a generic error response
           return new Response('You are offline and no cached content is available.', {
             status: 503,
             statusText: 'Offline',
-            headers: new Headers({ 'Content-Type': 'text/plain' })
+            headers: { 'Content-Type': 'text/plain' }
           });
         });
     })
   );
-});
-
-// Background sync for failed requests
-self.addEventListener('sync', (event) => {
-  if (event.tag === 'sync-data') {
-    console.log('[Service Worker] Background sync for data');
-    // Implement your background sync logic here
-  }
-});
-
-// Push notifications
-self.addEventListener('push', (event) => {
-  console.log('[Service Worker] Push received');
-  
-  const title = 'Moneyballs';
-  const options = {
-    body: event.data?.text() || 'New update available!',
-    icon: '/icons/favicon-96x96.png',
-    badge: '/icons/favicon-96x96.png'
-  };
-  
-  event.waitUntil(
-    self.registration.showNotification(title, options)
-  );
-});
-
-self.addEventListener('notificationclick', (event) => {
-  console.log('[Service Worker] Notification clicked');
-  event.notification.close();
-  
-  // Focus the app
-  event.waitUntil(
-    clients.matchAll({ type: 'window' }).then((clientList) => {
-      for (const client of clientList) {
-        if (client.url === '/' && 'focus' in client) {
-          return client.focus();
-        }
-      }
-      if (clients.openWindow) {
-        return clients.openWindow('/');
-      }
-    })
-  );
-});
-
-// Handle messages from the app
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
-  
-  // Handle online/offline status updates
-  if (event.data && event.data.ONLINE !== undefined) {
-    console.log(`[Service Worker] App is ${event.data.ONLINE ? 'online' : 'offline'}`);
-  }
 });
