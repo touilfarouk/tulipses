@@ -5,80 +5,156 @@ const APP = {
   isOnline: 'onLine' in navigator && navigator.onLine,
   isStandalone: false,
   navCount: 0,
+  BASE_PATH: '/vite/',
 
   // ================= INIT =================
   init: function() {
-    console.log('APP: Initializing PWA features v5');
+    console.log('APP: Initializing PWA features v6');
     
-    // Check if we're running in the correct path
-    if (!window.location.pathname.startsWith('/vite/') && !window.location.hostname.includes('localhost')) {
-      window.location.href = '/vite/' + window.location.pathname.replace(/^\/+/, '');
-      return;
+    // Ensure we're in the right context
+    this.ensureCorrectPath();
+    
+    // Initialize the app
+    this.initializeApp();
+    
+    // Setup service worker
+    this.setupServiceWorker();
+    
+    // Setup event listeners
+    this.setupEventListeners();
+    
+    // Initial UI update
+    this.updateUI();
+  },
+  
+  ensureCorrectPath: function() {
+    // Only redirect if not on localhost and path doesn't start with base path
+    const isLocalhost = window.location.hostname === 'localhost' || 
+                       window.location.hostname === '127.0.0.1';
+    const isCorrectPath = window.location.pathname.startsWith(this.BASE_PATH);
+    
+    if (!isLocalhost && !isCorrectPath) {
+      const newPath = this.BASE_PATH + window.location.pathname.replace(/^\/+/, '');
+      console.log(`Redirecting to ${newPath}`);
+      window.location.href = newPath;
+      return false;
     }
+    return true;
+  },
+  
+  initializeApp: function() {
+    // Initialize your app components here
+    console.log('Initializing application...');
     
+    // Show the app once everything is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      const appElement = document.getElementById('q-app');
+      if (appElement) {
+        appElement.style.display = 'block';
+      }
+    });
+  },
+  
+  setupServiceWorker: function() {
+    // Register service worker
     this.registerSW();
-    this.addListeners();
-    setTimeout(() => this.checkNavCount(), 10000);
-    this.changeDisplay();
     
     // Check for updates when the app gains focus
     window.addEventListener('focus', () => {
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistration().then(reg => {
-          if (reg) {
-            reg.update().then(() => {
-              console.log('Service Worker update check completed');
-            }).catch(err => {
-              console.error('Service Worker update check failed:', err);
-            });
-          }
-        }).catch(error => {
-          console.error('Service Worker update failed:', error);
-        });
+        navigator.serviceWorker.getRegistration()
+          .then(reg => {
+            if (reg) {
+              return reg.update().then(() => {
+                console.log('Service Worker update check completed');
+              });
+            }
+          })
+          .catch(error => {
+            console.error('Service Worker update check failed:', error);
+          });
       }
     });
+  },
+  
+  setupEventListeners: function() {
+    // Navigation count check
+    setTimeout(() => this.checkNavCount(), 10000);
+    
+    // Network status
+    window.addEventListener('online', () => this.changeStatus({ type: 'online' }));
+    window.addEventListener('offline', () => this.changeStatus({ type: 'offline' }));
+    
+    // Service worker messages
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        this.gotMessage(event);
+      });
+    }
+  },
+  
+  updateUI: function() {
+    this.changeDisplay();
+  },
   },
 
   // ================= SERVICE WORKER =================
   registerSW: function() {
     if (!('serviceWorker' in navigator)) {
       console.warn('APP: Service Worker not supported');
-      return;
+      return Promise.reject('Service Worker not supported');
     }
 
     console.log('APP: Registering service worker');
 
-    // Register service worker with proper scope for GitHub Pages
-    navigator.serviceWorker.register('/vite/sw.js', { scope: '/vite/' })
+    return new Promise((resolve, reject) => {
+      // Register service worker with proper scope for GitHub Pages
+      navigator.serviceWorker.register(this.BASE_PATH + 'sw.js', { 
+        scope: this.BASE_PATH 
+      })
       .then(registration => {
         console.log('APP: Service Worker registered:', registration.scope);
         this.sw = registration.active;
-
-        // Periodic Sync
-        if ('periodicSync' in registration && registration.periodicSync) {
-          registration.periodicSync.register('periodic-sync', {
-            minInterval: 24 * 60 * 60 * 1000
-          }).then(() => {
-            console.log('APP: Periodic sync registered');
-          }).catch(err => {
-            console.log('APP: Periodic sync failed:', err);
-          });
-        } else if ('sync' in registration) {
-          registration.sync.register('background-sync')
-            .then(() => console.log('APP: Background sync registered'))
-            .catch(err => console.log('APP: Background sync failed:', err));
-        } else {
-          console.log('APP: No sync support');
-        }
+        
+        // Wait for service worker to be ready
+        return navigator.serviceWorker.ready;
+      })
+      .then(registration => {
+        console.log('APP: Service Worker ready');
+        this.sw = registration.active;
+        
+        // Set up periodic sync if available
+        this.setupPeriodicSync(registration);
+        
+        // Set up background sync if available
+        this.setupBackgroundSync(registration);
+        
+        resolve(registration);
       })
       .catch(err => {
-        console.warn('APP: SW registration failed:', err);
+        console.error('APP: Service Worker registration failed:', err);
+        reject(err);
       });
-
-    navigator.serviceWorker.ready.then(reg => {
-      console.log('APP: Service Worker ready');
-      this.sw = reg.active;
     });
+  },
+  
+  setupPeriodicSync: function(registration) {
+    if ('periodicSync' in registration && registration.periodicSync) {
+      registration.periodicSync.register('periodic-sync', {
+        minInterval: 24 * 60 * 60 * 1000 // 24 hours
+      })
+      .then(() => console.log('APP: Periodic sync registered'))
+      .catch(err => console.log('APP: Periodic sync failed:', err));
+    }
+  },
+  
+  setupBackgroundSync: function(registration) {
+    if ('sync' in registration) {
+      registration.sync.register('background-sync')
+        .then(() => console.log('APP: Background sync registered'))
+        .catch(err => console.log('APP: Background sync failed:', err));
+    }
+  },
   },
 
   // ================= EVENT LISTENERS =================
