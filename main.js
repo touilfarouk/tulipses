@@ -44,10 +44,18 @@ const routes = [
   }
 ]
 
+// Configure router with base path for GitHub Pages
 const router = VueRouter.createRouter({
-  history: VueRouter.createWebHashHistory(),
-  routes
-})
+  history: VueRouter.createWebHashHistory('/vite/'),
+  routes,
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition;
+    } else {
+      return { top: 0 };
+    }
+  }
+});
 
 // Vue app setup
 const app = Vue.createApp({

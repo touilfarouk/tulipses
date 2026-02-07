@@ -3,7 +3,8 @@
   font-family: 'Material Icons';
   font-style: normal;
   font-weight: 400;
-  src: url('./flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2') format('woff2');
+  src: url('/vite/css/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2') format('woff2');
+  font-display: swap;
 }
 
 /* Material Icons - Outlined */
@@ -11,7 +12,8 @@
   font-family: 'Material Icons Outlined';
   font-style: normal;
   font-weight: 400;
-  src: url('./flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2') format('woff2');
+  src: url('/vite/css/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2') format('woff2');
+  font-display: swap;
 }
 
 /* Roboto - All Weights */
@@ -22,7 +24,7 @@
   font-display: swap;
   src: local('Roboto'), 
        local('Roboto-Regular'),
-       url('./KFOmCnqEu92Fr1Mu4mxK.woff2') format('woff2');
+       url('/vite/css/KFOmCnqEu92Fr1Mu4mxK.woff2') format('woff2');
 }
 
 /* Fallback for Material Icons */
@@ -40,6 +42,10 @@
   direction: ltr;
   -webkit-font-feature-settings: 'liga';
   -webkit-font-smoothing: antialiased;
+  /* Better font rendering */
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'liga';
 }
 
 /* Fallback for Material Icons Outlined */
@@ -57,4 +63,8 @@
   direction: ltr;
   -webkit-font-feature-settings: 'liga';
   -webkit-font-smoothing: antialiased;
+  /* Better font rendering */
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'liga';
 }

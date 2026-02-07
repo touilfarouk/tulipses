@@ -7,16 +7,40 @@ const APP = {
   navCount: 0,
 
   // ================= INIT =================
-  init: () => {
-    console.log('APP: Initializing PWA features v3');
-    APP.registerSW();
-    APP.addListeners();
-    setTimeout(APP.checkNavCount, 10000);
-    APP.changeDisplay();
+  init: function() {
+    console.log('APP: Initializing PWA features v5');
+    
+    // Check if we're running in the correct path
+    if (!window.location.pathname.startsWith('/vite/') && !window.location.hostname.includes('localhost')) {
+      window.location.href = '/vite/' + window.location.pathname.replace(/^\/+/, '');
+      return;
+    }
+    
+    this.registerSW();
+    this.addListeners();
+    setTimeout(() => this.checkNavCount(), 10000);
+    this.changeDisplay();
+    
+    // Check for updates when the app gains focus
+    window.addEventListener('focus', () => {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistration().then(reg => {
+          if (reg) {
+            reg.update().then(() => {
+              console.log('Service Worker update check completed');
+            }).catch(err => {
+              console.error('Service Worker update check failed:', err);
+            });
+          }
+        }).catch(error => {
+          console.error('Service Worker update failed:', error);
+        });
+      }
+    });
   },
 
   // ================= SERVICE WORKER =================
-  registerSW: () => {
+  registerSW: function() {
     if (!('serviceWorker' in navigator)) {
       console.warn('APP: Service Worker not supported');
       return;
@@ -25,11 +49,10 @@ const APP = {
     console.log('APP: Registering service worker');
 
     // Register service worker with proper scope for GitHub Pages
-    // Register service worker with correct path and scope
-    navigator.serviceWorker.register('/sw.js', { scope: '/' })
+    navigator.serviceWorker.register('/vite/sw.js', { scope: '/vite/' })
       .then(registration => {
         console.log('APP: Service Worker registered:', registration.scope);
-        APP.sw = registration.active;
+        this.sw = registration.active;
 
         // Periodic Sync
         if ('periodicSync' in registration && registration.periodicSync) {
@@ -54,57 +77,49 @@ const APP = {
 
     navigator.serviceWorker.ready.then(reg => {
       console.log('APP: Service Worker ready');
-      APP.sw = reg.active;
+      this.sw = reg.active;
     });
   },
 
   // ================= EVENT LISTENERS =================
-  addListeners: () => {
+  addListeners: function() {
     // Check PWA launch mode
     if (navigator.standalone) {
       console.log('APP: Launched: Installed (iOS)');
-      APP.isStandalone = true;
+      this.isStandalone = true;
     } else if (matchMedia('(display-mode: standalone)').matches) {
       console.log('APP: Launched: Installed (PWA)');
-      APP.isStandalone = true;
+      this.isStandalone = true;
     } else {
       console.log('APP: Launched: Browser');
-      APP.isStandalone = false;
+      this.isStandalone = false;
     }
 
     // Network status listeners
-    window.addEventListener('pageshow', APP.updateNavCount);
-    window.addEventListener('online', APP.changeStatus);
-    window.addEventListener('offline', APP.changeStatus);
-    navigator.serviceWorker.addEventListener('message', APP.gotMessage);
+    window.addEventListener('pageshow', () => this.updateNavCount());
+    window.addEventListener('online', () => this.changeStatus());
+    window.addEventListener('offline', () => this.changeStatus());
+    navigator.serviceWorker.addEventListener('message', (ev) => this.gotMessage(ev));
 
     // Install prompt handler
     window.addEventListener('beforeinstallprompt', (ev) => {
       ev.preventDefault();
-      APP.deferredPrompt = ev;
+      this.deferredPrompt = ev;
       console.log('APP: Install prompt deferred');
     });
   },
 
   // ================= STATUS HANDLERS =================
-  changeStatus: (ev) => {
-    APP.isOnline = ev.type === 'online';
-    console.log('APP: Connection status changed to:', APP.isOnline ? 'online' : 'offline');
-
-    if (navigator.serviceWorker.controller) {
-      navigator.serviceWorker.controller.postMessage({
-        type: 'STATUS_CHANGE',
-        online: APP.isOnline
-      });
-    }
-
-    APP.changeDisplay();
+  changeStatus: function(ev) {
+    this.isOnline = ev ? ev.type === 'online' : navigator.onLine;
+    console.log('APP: Connection status changed to:', this.isOnline ? 'online' : 'offline');
+    this.changeDisplay();
   },
 
-  changeDisplay: () => {
+  changeDisplay: function() {
     const onlineElement = document.querySelector('.isonline');
 
-    if (APP.isOnline) {
+    if (this.isOnline) {
       document.body.classList.remove('offline');
       if (onlineElement) {
         onlineElement.textContent = '';
@@ -120,15 +135,14 @@ const APP = {
   },
 
   // ================= MESSAGE HANDLERS =================
-  gotMessage: (ev) => {
+  gotMessage: function(ev) {
     console.log('APP: Message from Service Worker:', ev.data);
-
     if (ev.data.type === 'CACHE_UPDATED') {
       console.log('APP: Cache updated by service worker');
     }
   },
 
-  sendMessage: (msg) => {
+  sendMessage: function(msg) {
     if (navigator.serviceWorker.controller) {
       navigator.serviceWorker.controller.postMessage(msg);
       console.log('APP: Message sent to Service Worker:', msg);
@@ -138,58 +152,33 @@ const APP = {
   },
 
   // ================= NAVIGATION =================
-  updateNavCount: (ev) => {
-    if (!APP.isStandalone) {
-      APP.navCount = 0;
+  updateNavCount: function(ev) {
+    if (!this.isStandalone) {
       let storage = sessionStorage.getItem('moneyballsNavCount');
-      if (storage) {
-        APP.navCount = Number(storage) + 1;
-      } else {
-        APP.navCount = 1;
-      }
-      sessionStorage.setItem('moneyballsNavCount', APP.navCount);
-      console.log('APP: Navigation count updated:', APP.navCount);
+      this.navCount = storage ? Number(storage) + 1 : 1;
+      sessionStorage.setItem('moneyballsNavCount', this.navCount);
+      console.log('APP: Navigation count updated:', this.navCount);
     }
   },
 
-  checkNavCount: () => {
+  checkNavCount: function() {
     let storage = sessionStorage.getItem('moneyballsNavCount');
     if (storage) {
-      APP.navCount = Number(storage);
-      if (APP.navCount > 2) {
-        console.log('APP: Showing install prompt (user visited ' + APP.navCount + ' times)');
-
-        document.body.addEventListener('click', () => {
-          if (APP.deferredPrompt) {
-            APP.deferredPrompt.prompt();
-            APP.deferredPrompt.userChoice.then((choiceResult) => {
-              if (choiceResult.outcome === 'accepted') {
-                console.log('APP: User accepted install prompt');
-                APP.deferredPrompt = null;
-                sessionStorage.clear();
-              } else {
-                console.log('APP: User dismissed install prompt');
-              }
-            });
-          } else {
-            console.log('APP: No deferred prompt available');
-          }
-        }, { once: true });
+      this.navCount = Number(storage);
+      if (this.navCount > 2) {
+        console.log('APP: Showing install prompt (user visited ' + this.navCount + ' times)');
+        this.showInstallPrompt();
       }
     }
   },
 
   // ================= INSTALL PROMPT =================
-  showInstallPrompt: () => {
-    if (APP.deferredPrompt) {
-      // Show the install prompt
-      APP.deferredPrompt.prompt();
-      
-      // Wait for the user to respond to the prompt
-      APP.deferredPrompt.userChoice.then((choiceResult) => {
+  showInstallPrompt: function() {
+    if (this.deferredPrompt) {
+      this.deferredPrompt.prompt();
+      this.deferredPrompt.userChoice.then(choiceResult => {
         if (choiceResult.outcome === 'accepted') {
           console.log('User accepted the install prompt');
-          // Optionally, track the installation
           if (window.gtag) {
             window.gtag('event', 'install', {
               'event_category': 'engagement',
@@ -199,24 +188,17 @@ const APP = {
         } else {
           console.log('User dismissed the install prompt');
         }
-        
-        // Clear the saved prompt since it can't be used again
-        APP.deferredPrompt = null;
-        
-        // Hide the install button
-        const installButton = document.getElementById('install-button');
-        if (installButton) {
-          installButton.style.display = 'none';
-        }
+        this.deferredPrompt = null;
       });
-      console.log('APP: Install prompt not available');
+    } else {
+      console.log('APP: No install prompt available');
     }
   }
 };
 
-// ================= INITIALIZATION =================
+// Initialize the app
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', APP.init);
+  document.addEventListener('DOMContentLoaded', () => APP.init());
 } else {
   APP.init();
 }
