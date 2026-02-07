@@ -25,7 +25,8 @@ const APP = {
     console.log('APP: Registering service worker');
 
     // Register service worker with proper scope for GitHub Pages
-    navigator.serviceWorker.register('/sw.js', { scope: '/vite/' })
+    // Register service worker with correct path and scope
+    navigator.serviceWorker.register('/sw.js', { scope: '/' })
       .then(registration => {
         console.log('APP: Service Worker registered:', registration.scope);
         APP.sw = registration.active;
