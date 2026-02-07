@@ -18,8 +18,7 @@
             <div class="q-loading-spinner"></div>
         </div>
     </div>
-
-    <!-- Load Vue first -->
+<!-- Load Vue first -->
     <script src="/vite/js/vue.global.prod.js"></script>
     <script src="/vite/js/vue-router.global.prod.js"></script>
     <script src="/vite/js/quasar.umd.prod.js"></script>
@@ -43,14 +42,11 @@
     <!-- Initialize Quasar and main app -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const { createApp } = Vue;
-            const { createRouter, createWebHashHistory } = VueRouter;
-            const { Quasar } = Quasar;
+            // Use the global Quasar object directly
+            const app = Vue.createApp({});
             
-            // Initialize Quasar
-            const app = createApp({});
-            
-            app.use(Quasar, {
+            // Configure Quasar
+            app.use(window.Quasar.default, {
                 config: {
                     brand: {
                         primary: '#1976D2',
@@ -65,20 +61,57 @@
                 }
             });
             
-            // Now initialize the rest of your app
-            import('/vite/main.js').catch(err => {
-                console.error('Failed to load main.js:', err);
+            // Configure router
+            const router = VueRouter.createRouter({
+                history: VueRouter.createWebHashHistory('/vite/'),
+                routes: [
+                    {
+                        path: '/',
+                        component: window.MainLayout,
+                        children: [
+                            { path: '', component: window.PageEntries },
+                            { path: 'settings', component: window.PageSettings }
+                        ]
+                    }
+                ]
             });
+ 
+            // Use the router
+            app.use(router);
             
-            // Initialize app.js
-            import('/vite/js/app.js').then(module => {
-                if (module && module.APP) {
-                    window.APP = module.APP;
-                    window.APP.init();
+            // Mount the app
+            app.mount('#q-app');
+            
+            // Handle app mounted
+            const handleAppMounted = () => {
+                const loading = document.getElementById('loading');
+                const qApp = document.getElementById('q-app');
+ 
+                if (loading) {
+                    loading.style.display = 'none';
                 }
-            }).catch(err => {
-                console.error('Failed to load app.js:', err);
+                if (qApp) {
+                    qApp.style.opacity = '1';
+                }
+                console.log('Application mounted successfully');
+            };
+ 
+            // Use nextTick to ensure DOM is updated
+            app.config.globalProperties.$nextTick(() => {
+                handleAppMounted();
             });
+        });
+ 
+        // Global error handler
+        window.onerror = function(message, source, lineno, colno, error) {
+            console.error('Global error:', { message, source, lineno, colno, error });
+            return true; // Prevent default error handler
+        };
+ 
+        // Unhandled promise rejections
+        window.addEventListener('unhandledrejection', (event) => {
+            console.error('Unhandled promise rejection:', event.reason);
+            event.preventDefault();
         });
     </script>
 </body>
