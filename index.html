@@ -40,10 +40,16 @@
     <script src="/vite/src/pages/PageSettings.js"></script>
     
     <!-- Initialize Quasar and main app -->
+   <!-- ... existing head content ... -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Use the global Quasar object directly
-            const app = Vue.createApp({});
+            // Use the global Vue object
+            const { createApp, nextTick } = Vue;
+            
+            // Create app instance
+            const app = createApp({
+                template: '<router-view></router-view>'
+            });
             
             // Configure Quasar
             app.use(window.Quasar.default, {
@@ -60,7 +66,7 @@
                     }
                 }
             });
-            
+
             // Configure router
             const router = VueRouter.createRouter({
                 history: VueRouter.createWebHashHistory('/vite/'),
@@ -75,7 +81,7 @@
                     }
                 ]
             });
- 
+
             // Use the router
             app.use(router);
             
@@ -86,7 +92,7 @@
             const handleAppMounted = () => {
                 const loading = document.getElementById('loading');
                 const qApp = document.getElementById('q-app');
- 
+
                 if (loading) {
                     loading.style.display = 'none';
                 }
@@ -95,19 +101,19 @@
                 }
                 console.log('Application mounted successfully');
             };
- 
-            // Use nextTick to ensure DOM is updated
-            app.config.globalProperties.$nextTick(() => {
+
+            // Use the imported nextTick directly
+            nextTick(() => {
                 handleAppMounted();
             });
         });
- 
+
         // Global error handler
         window.onerror = function(message, source, lineno, colno, error) {
             console.error('Global error:', { message, source, lineno, colno, error });
             return true; // Prevent default error handler
         };
- 
+
         // Unhandled promise rejections
         window.addEventListener('unhandledrejection', (event) => {
             console.error('Unhandled promise rejection:', event.reason);
