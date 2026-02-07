@@ -1,3 +1,5 @@
+console.log('Registering PageEntries component');
+
 // PageEntries component
 const PageEntries = {
   template: `
@@ -308,4 +310,10 @@ const PageEntries = {
       deleteEntry
     }
   }
+};
+
+// Export to global scope
+if (typeof window !== 'undefined') {
+  window.PageEntries = PageEntries;
+  console.log('PageEntries registered to window.PageEntries');
 }

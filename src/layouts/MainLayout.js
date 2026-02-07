@@ -1,3 +1,5 @@
+console.log('Registering MainLayout component');
+
 // MainLayout component
 const MainLayout = {
   template: `
@@ -265,4 +267,10 @@ const MainLayout = {
       navigateTo: store.navigateTo.bind(store)
     }
   }
+};
+
+// Export to global scope
+if (typeof window !== 'undefined') {
+  window.MainLayout = MainLayout;
+  console.log('MainLayout registered to window.MainLayout');
 }

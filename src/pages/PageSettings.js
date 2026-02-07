@@ -1,3 +1,5 @@
+console.log('Registering PageSettings component');
+
 // PageSettings component
 const PageSettings = {
   template: `
@@ -177,4 +179,10 @@ const PageSettings = {
       confirmClearData
     }
   }
+};
+
+// Export to global scope
+if (typeof window !== 'undefined') {
+  window.PageSettings = PageSettings;
+  console.log('PageSettings registered to window.PageSettings');
 }
