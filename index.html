@@ -1,229 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>Quasar Moneyballs</title>
+<head>
+    <!-- Existing head content remains the same until the scripts -->
+    
+    <!-- Move scripts to the end of body -->
+    <script>
+        // Add error handling for scripts
+        window.onerror = function(message, source, lineno, colno, error) {
+            console.error("Error:", message, "at", source, "line", lineno);
+            return true; // Prevent default error handling
+        };
+    </script>
+</head>
+<body>
+    <div id="q-app">
+        <div class="q-loading" style="font-size: 30px">
+            <div class="q-loading-spinner"></div>
+        </div>
+    </div>
 
-    <meta charset="utf-8">
-    <meta name="description" content="Quasar Moneyballs Application">
-    <meta name="format-detection" content="telephone=no">
-    <meta name="msapplication-tap-highlight" content="no">
-    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
-    <meta name="theme-color" content="#00695c">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Moneyballs">
-    <meta name="msapplication-TileImage" content="/vite/icons/mstile-150x150.png">
-    <meta name="msapplication-TileColor" content="#00695c">
-    <meta name="application-name" content="Moneyballs">
-
-    <!-- Web App Manifest -->
-    <link rel="manifest" href="/vite/manifest.json">
-    <base href="/vite/">
-
-    <!-- Icons -->
-    <link rel="icon" type="image/png" sizes="192x192" href="/vite/icons/android-chrome-192x192.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="/vite/icons/android-chrome-512x512.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/vite/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/vite/icons/favicon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/vite/icons/apple-touch-icon.png">
-    <link rel="mask-icon" href="/vite/icons/safari-pinned-tab.svg" color="#00695c">
-
-    <!-- Local JavaScript files -->
+    <!-- Load Vue first -->
     <script src="/vite/js/vue.global.prod.js"></script>
     <script src="/vite/js/vue-router.global.prod.js"></script>
     <script src="/vite/js/quasar.umd.prod.js"></script>
     <script src="/vite/js/axios.min.js"></script>
-
-    <!-- Quasar CSS -->
-    <link href="/vite/css/quasar.prod.css" rel="stylesheet">
-
-    <!-- Quasar Language Packs -->
-    <script src="/vite/js/fr.umd.prod.js"></script>
-    <script src="/vite/js/en-US.umd.prod.js"></script>
-    <script src="/vite/js/ar.umd.prod.js"></script>
-
-    <!-- QCalendar -->
+    
+    <!-- Load other scripts -->
     <script src="/vite/js/QCalendarMonth.umd.min.js"></script>
     <script src="/vite/js/Timestamp.umd.min.js"></script>
-    <link href="/vite/css/transitions.css" rel="stylesheet">
-    <link href="/vite/css/shadows.css" rel="stylesheet">
-    <link href="/vite/css/mobile-swipe.css" rel="stylesheet">
-    <link href="/vite/css/fonts.css" rel="stylesheet">
-    <!-- Critical CSS Inline -->
-    <style>
-      /* Prevent flash of unstyled content */
-      #q-app { display: none; }
-      .loading {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: #00695c;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-family: Roboto, sans-serif;
-        z-index: 9999;
-      }
-      .loading-spinner {
-        width: 40px;
-        height: 40px;
-        border: 4px solid rgba(255,255,255,0.3);
-        border-top: 4px solid white;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-        margin-right: 16px;
-      }
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-    </style>
-    <!-- PWA Meta Tags -->
-    <meta name="theme-color" content="#00695c">
-    <meta name="msapplication-TileColor" content="#00695c">
-    <meta name="msapplication-config" content="/vite/browserconfig.xml">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="Moneyballs">
-    <meta name="application-name" content="Moneyballs">
-    <meta name="msapplication-tooltip" content="Moneyballs - Money Tracker">
-    <link rel="apple-touch-icon" href="/vite/icons/icon-192x192.png">
-    <link rel="shortcut icon" href="/vite/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="/vite/icons/icon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/vite/icons/icon-16x16.png">
-    <link rel="mask-icon" href="/vite/icons/safari-pinned-tab.svg" color="#00695c">
-    <!-- Local QCalendar CSS -->
-    <link href="/vite/css/QCalendarMonth.min.css" rel="stylesheet"
-      type="text/css"
-    />
-  </head>
-  <body>
-    <!-- Loading Screen -->
-    <div class="loading" id="loading">
-      <div class="loading-spinner"></div>
-      <div>Loading Moneyballs...</div>
-    </div>
-
-    <!-- App Container -->
-    <div id="q-app"></div>
-
-  
-
-    <!-- Axios Interceptors for logging -->
-    <script>
-      if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then(registration => {
-        console.log('ServiceWorker registration successful');
-      })
-      .catch(err => {
-        console.log('ServiceWorker registration failed: ', err);
-      });
-  });
-}
-      // Request interceptor - log outgoing requests
-      axios.interceptors.request.use(
-        function(config) {
-          console.log('🚀 Axios Request:', {
-            method: config.method?.toUpperCase(),
-            url: config.url,
-            data: config.data,
-            headers: config.headers
-          });
-          return config;
-        },
-        function(error) {
-          console.error('❌ Axios Request Error:', error);
-          return Promise.reject(error);
-        }
-      );
-
-      // Response interceptor - log responses
-      axios.interceptors.response.use(
-        function(response) {
-          console.log('✅ Axios Response:', {
-            status: response.status,
-            statusText: response.statusText,
-            url: response.config.url,
-            data: response.data,
-            headers: response.headers
-          });
-          return response;
-        },
-        function(error) {
-          console.error('❌ Axios Response Error:', {
-            status: error.response?.status,
-            statusText: error.response?.statusText,
-            url: error.config?.url,
-            message: error.message,
-            data: error.response?.data
-          });
-          return Promise.reject(error);
-        }
-      );
-
-      console.log('🔧 Axios logging enabled - all requests/responses will be logged');
-    </script>
-
-  
-    <!-- Store Script -->
+    
+    <!-- Load language files -->
+    <script src="/vite/js/en-US.umd.prod.js"></script>
+    <script src="/vite/js/fr.umd.prod.js"></script>
+    <script src="/vite/js/ar.umd.prod.js"></script>
+    
+    <!-- Load app scripts -->
     <script src="/vite/js/store.js"></script>
-
-    <!-- Component Scripts -->
     <script src="/vite/src/layouts/MainLayout.js"></script>
     <script src="/vite/src/pages/PageEntries.js"></script>
     <script src="/vite/src/pages/PageSettings.js"></script>
-
-    <!-- Application Script -->
-    <script type="module" src="/vite/main.js"></script>
     
-    <!-- Install Button -->
-    <button id="install-button" class="install-button" aria-label="Install Moneyballs" style="display: none;">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="12" y1="5" x2="12" y2="19"></line>
-        <line x1="5" y1="12" x2="19" y2="12"></line>
-      </svg>
-      Install App
-    </button>
-    
-    <style>
-      .install-button {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        background: #00695c;
-        color: white;
-        border: none;
-        border-radius: 50px;
-        padding: 10px 20px;
-        font-size: 16px;
-        font-weight: 500;
-        cursor: pointer;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        z-index: 1000;
-        transition: all 0.3s ease;
-      }
-      
-      .install-button:hover {
-        background: #00564c;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-      }
-      
-      .install-button svg {
-        width: 20px;
-        height: 20px;
-      }
-    </style>
-  </body>
-
-  <!-- PWA App Script -->
-  <script src="/vite/js/app.js"></script>
+    <!-- Initialize Quasar and main app -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const { createApp } = Vue;
+            const { createRouter, createWebHashHistory } = VueRouter;
+            const { Quasar } = Quasar;
+            
+            // Initialize Quasar
+            const app = createApp({});
+            
+            app.use(Quasar, {
+                config: {
+                    brand: {
+                        primary: '#1976D2',
+                        secondary: '#26A69A',
+                        accent: '#9C27B0',
+                        dark: '#1D1D1D',
+                        positive: '#21BA45',
+                        negative: '#C10015',
+                        info: '#31CCEC',
+                        warning: '#F2C037'
+                    }
+                }
+            });
+            
+            // Now initialize the rest of your app
+            import('/vite/main.js').catch(err => {
+                console.error('Failed to load main.js:', err);
+            });
+            
+            // Initialize app.js
+            import('/vite/js/app.js').then(module => {
+                if (module && module.APP) {
+                    window.APP = module.APP;
+                    window.APP.init();
+                }
+            }).catch(err => {
+                console.error('Failed to load app.js:', err);
+            });
+        });
+    </script>
+</body>
 </html>

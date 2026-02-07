@@ -1,87 +1,42 @@
-const VERSION = 'v1.0.4'; // Incremented version
-const CACHE_PREFIX = 'moneyballs-cache';
-const STATIC_CACHE = `${CACHE_PREFIX}-static-${VERSION}`;
-
-// Base path for GitHub Pages
+// Service Worker for Moneyballs PWA
+const CACHE_PREFIX = 'moneyballs-pwa';
+const CACHE_VERSION = 'v2';
+const STATIC_CACHE = `${CACHE_PREFIX}-static-${CACHE_VERSION}`;
+const DYNAMIC_CACHE = `${CACHE_PREFIX}-dynamic-${CACHE_VERSION}`;
 const BASE_PATH = '/vite';
+const OFFLINE_URL = `${BASE_PATH}/offline.html`;
 
-// List of all files to cache
-const PRECACHE_ASSETS = [
-  // Core HTML
+// Files to cache on install
+const STATIC_ASSETS = [
   `${BASE_PATH}/`,
   `${BASE_PATH}/index.html`,
-  `${BASE_PATH}/offline.html`,
-  `${BASE_PATH}/manifest.json`,
-  
-  // Local JavaScript files
-  `${BASE_PATH}/js/app.js`,
-  `${BASE_PATH}/js/store.js`,
-  `${BASE_PATH}/js/offline.js`,
   `${BASE_PATH}/js/vue.global.prod.js`,
   `${BASE_PATH}/js/vue-router.global.prod.js`,
   `${BASE_PATH}/js/quasar.umd.prod.js`,
   `${BASE_PATH}/js/axios.min.js`,
-  `${BASE_PATH}/js/fr.umd.prod.js`,
-  `${BASE_PATH}/js/en-US.umd.prod.js`,
-  `${BASE_PATH}/js/ar.umd.prod.js`,
-  `${BASE_PATH}/js/QCalendarMonth.umd.min.js`,
-  `${BASE_PATH}/js/Timestamp.umd.min.js`,
-  
-  // Local CSS files
+  `${BASE_PATH}/js/app.js`,
   `${BASE_PATH}/css/quasar.prod.css`,
-  `${BASE_PATH}/css/transitions.css`,
-  `${BASE_PATH}/css/shadows.css`,
-  `${BASE_PATH}/css/mobile-swipe.css`,
   `${BASE_PATH}/css/fonts.css`,
-  `${BASE_PATH}/css/offline.css`,
-  
-  // Icons and assets
-  `${BASE_PATH}/icons/icon-192x192.png`,
-  `${BASE_PATH}/icons/icon-512x512.png`,
-  `${BASE_PATH}/icons/favicon.ico`,
-  `${BASE_PATH}/icons/favicon-128x128.png`,
-  `${BASE_PATH}/icons/favicon-96x96.png`,
-  `${BASE_PATH}/icons/favicon-32x32.png`,
-  `${BASE_PATH}/icons/favicon-16x16.png`,
-  
-  // App resources
-  `${BASE_PATH}/src/layouts/MainLayout.js`,
-  `${BASE_PATH}/src/pages/PageEntries.js`,
-  `${BASE_PATH}/src/pages/PageSettings.js`,
-  `${BASE_PATH}/src/pages/utils.js`,
-  `${BASE_PATH}/src/router/index.js`,
-  `${BASE_PATH}/src/router/routes.js`,
-  `${BASE_PATH}/src/use/useAmountColorClass.js`,
-  `${BASE_PATH}/src/use/useCurrencify.js`
+  `${BASE_PATH}/manifest.json`,
+  // Add other static assets here
 ];
 
-// Install event - cache all static assets
+// Install event - cache static assets
 self.addEventListener('install', (event) => {
   console.log('[Service Worker] Installing Service Worker...');
-  self.skipWaiting();
   
   event.waitUntil(
     caches.open(STATIC_CACHE)
       .then((cache) => {
-        console.log('[Service Worker] Caching app shell and assets');
-        return cache.addAll(PRECACHE_ASSETS);
+        console.log('[Service Worker] Caching app shell');
+        return cache.addAll(STATIC_ASSETS).catch(error => {
+          console.error('Failed to cache some resources:', error);
+          throw error;
+        });
       })
-      .catch(err => {
-        console.error('[Service Worker] Cache addAll failed:', err);
-        return Promise.resolve();
-      })
+      .then(() => self.skipWaiting())
   );
 });
-
-// Function to get the correct path for cache matching
-const getCachePath = (url) => {
-  const path = url.pathname;
-  // If the path doesn't start with BASE_PATH, add it
-  if (!path.startsWith(BASE_PATH)) {
-    return `${BASE_PATH}${path.startsWith('/') ? '' : '/'}${path}`;
-  }
-  return path;
-};
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
@@ -91,66 +46,162 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((keyList) => {
       return Promise.all(
         keyList.map((key) => {
-          if (key !== STATIC_CACHE && key.startsWith(CACHE_PREFIX)) {
+          if (key !== STATIC_CACHE && key !== DYNAMIC_CACHE && key.startsWith(CACHE_PREFIX)) {
             console.log('[Service Worker] Removing old cache:', key);
             return caches.delete(key);
           }
         })
       );
     })
+    .then(() => self.clients.claim())
   );
-  
-  return self.clients.claim();
 });
 
-// Fetch event handler
+// Fetch event - cache first, then network strategy
 self.addEventListener('fetch', (event) => {
-  const request = event.request;
-  const url = new URL(request.url);
+  const requestUrl = new URL(event.request.url);
   
   // Skip non-GET requests and chrome-extension requests
-  if (request.method !== 'GET' || url.protocol === 'chrome-extension:') {
+  if (event.request.method !== 'GET' || requestUrl.protocol === 'chrome-extension:') {
     return;
   }
 
-  // Skip cross-origin requests that aren't from our domain
-  if (!url.pathname.startsWith(BASE_PATH) && url.origin === self.location.origin) {
-    return;
-  }
-
-  // For all requests, try cache first, then network
-  event.respondWith(
-    caches.match(request).then(cachedResponse => {
-      // Return cached response if found
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-
-      // Otherwise, try the network
-      return fetch(request)
+  // Handle API requests with network-first strategy
+  if (requestUrl.pathname.startsWith(`${BASE_PATH}/api/`)) {
+    event.respondWith(
+      fetch(event.request)
         .then(networkResponse => {
-          // Only cache successful responses
-          if (networkResponse && networkResponse.status === 200) {
-            const responseToCache = networkResponse.clone();
-            caches.open(STATIC_CACHE).then(cache => {
-              cache.put(request, responseToCache);
-            });
-          }
+          // Clone the response
+          const responseToCache = networkResponse.clone();
+          
+          // Cache the API response
+          caches.open(DYNAMIC_CACHE).then(cache => {
+            cache.put(event.request, responseToCache);
+          });
+          
           return networkResponse;
         })
-        .catch(error => {
-          console.log('Fetch failed:', error);
-          // If the request is for a page, return the offline page
-          if (request.mode === 'navigate') {
-            return caches.match(`${BASE_PATH}/offline.html`);
-          }
-          // For other requests, return a generic error response
-          return new Response('You are offline and no cached content is available.', {
-            status: 503,
-            statusText: 'Offline',
-            headers: { 'Content-Type': 'text/plain' }
+        .catch(() => {
+          // If network fails, try to serve from cache
+          return caches.match(event.request).then(cachedResponse => {
+            return cachedResponse || new Response(JSON.stringify({ error: 'You are offline' }), {
+              headers: { 'Content-Type': 'application/json' }
+            });
           });
-        });
+        })
+    );
+  } 
+  // Handle static assets with cache-first strategy
+  else {
+    event.respondWith(
+      caches.match(event.request).then((cachedResponse) => {
+        // Return cached response if found
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+
+        // For navigation requests, always try the network first
+        if (event.request.mode === 'navigate') {
+          return fetch(event.request)
+            .then(response => {
+              // Check if we received a valid response
+              if (!response || response.status !== 200 || response.type !== 'basic') {
+                return response;
+              }
+
+              // Clone the response
+              const responseToCache = response.clone();
+
+              caches.open(DYNAMIC_CACHE).then(cache => {
+                cache.put(event.request, responseToCache);
+              });
+
+              return response;
+            })
+            .catch(() => {
+              // If offline and no cache, return offline page
+              return caches.match(OFFLINE_URL);
+            });
+        }
+
+        // For other static assets, try the network
+        return fetch(event.request)
+          .then(response => {
+            // Check if we received a valid response
+            if (!response || response.status !== 200 || response.type !== 'basic') {
+              return response;
+            }
+
+            // Clone the response
+            const responseToCache = response.clone();
+
+            caches.open(DYNAMIC_CACHE).then(cache => {
+              cache.put(event.request, responseToCache);
+            });
+
+            return response;
+          })
+          .catch(() => {
+            // For assets, return a fallback if available
+            if (event.request.destination === 'image') {
+              return caches.match(`${BASE_PATH}/icons/fallback-image.png`);
+            }
+            return new Response('Offline content not available', {
+              status: 503,
+              statusText: 'Offline'
+            });
+          });
+      })
+    );
+  }
+});
+
+// Background sync for failed requests
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'sync-data') {
+    console.log('[Service Worker] Background sync started');
+    event.waitUntil(syncData());
+  }
+});
+
+// Push notification event
+self.addEventListener('push', (event) => {
+  const data = event.data.json();
+  const options = {
+    body: data.body,
+    icon: `${BASE_PATH}/icons/icon-192x192.png`,
+    badge: `${BASE_PATH}/icons/icon-192x192.png`,
+    vibrate: [100, 50, 100],
+    data: {
+      url: data.url || '/'
+    }
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title || 'Moneyballs', options)
+  );
+});
+
+// Notification click handler
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  
+  event.waitUntil(
+    clients.matchAll({ type: 'window' }).then((clientList) => {
+      for (const client of clientList) {
+        if (client.url === event.notification.data.url && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(event.notification.data.url);
+      }
     })
   );
 });
+
+// Helper function for background sync
+async function syncData() {
+  // Implement your background sync logic here
+  console.log('[Service Worker] Syncing data in background...');
+}
