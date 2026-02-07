@@ -11,6 +11,37 @@
     <base href="/vite/">
     <link href="/vite/css/quasar.prod.css" rel="stylesheet">
     <link href="/vite/css/fonts.css" rel="stylesheet">
+    <style>
+        .error-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 2rem;
+            z-index: 9999;
+            font-family: Arial, sans-serif;
+            overflow: auto;
+        }
+        .error-message {
+            background: #b71c1c;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            white-space: pre-wrap;
+        }
+        .debug-info {
+            background: #333;
+            padding: 1rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+            margin-top: 1rem;
+            overflow-x: auto;
+        }
+    </style>
 </head>
 <body>
     <div id="q-app">
@@ -20,150 +51,180 @@
     </div>
 
     <!-- Load Vue and dependencies -->
-    <script src="/vite/js/vue.global.prod.js"></script>
-    <script src="/vite/js/vue-router.global.prod.js"></script>
-    <script src="/vite/js/quasar.umd.prod.js"></script>
-    <script src="/vite/js/axios.min.js"></script>
-    
-    <!-- Load other scripts -->
-    <script src="/vite/js/QCalendarMonth.umd.min.js"></script>
-    <script src="/vite/js/Timestamp.umd.min.js"></script>
-    
-    <!-- Load language files -->
-    <script src="/vite/js/en-US.umd.prod.js"></script>
-    <script src="/vite/js/fr.umd.prod.js"></script>
-    <script src="/vite/js/ar.umd.prod.js"></script>
-    
-    <!-- Load app scripts -->
-    <script src="/vite/js/store.js"></script>
-    <script src="/vite/src/layouts/MainLayout.js"></script>
-    <script src="/vite/src/pages/PageEntries.js"></script>
-    <script src="/vite/src/pages/PageSettings.js"></script>
-    
-    <!-- Initialize the app -->
     <script>
-    (function() {
-        // Debug: Check if required globals are available
-        function checkDependencies() {
+    // Debug information
+    console.log('Starting application initialization...');
+    console.log('Base URL:', window.location.href);
+    console.log('Scripts loading from:', window.location.origin + '/vite/');
+    
+    // Track script loading
+    const loadedScripts = {};
+    
+    function loadScript(src) {
+        console.log('Loading script:', src);
+        return new Promise((resolve, reject) => {
+            if (loadedScripts[src]) {
+                console.log('Script already loaded:', src);
+                return resolve();
+            }
+            
+            const script = document.createElement('script');
+            script.src = src;
+            script.onload = () => {
+                console.log('Script loaded successfully:', src);
+                loadedScripts[src] = true;
+                resolve();
+            };
+            script.onerror = (error) => {
+                console.error('Failed to load script:', src, error);
+                reject(new Error(`Failed to load script: ${src}`));
+            };
+            document.body.appendChild(script);
+        });
+    }
+    
+    // Load scripts in order
+    const scripts = [
+        '/vite/js/vue.global.prod.js',
+        '/vite/js/vue-router.global.prod.js',
+        '/vite/js/quasar.umd.prod.js',
+        '/vite/js/axios.min.js',
+        '/vite/js/QCalendarMonth.umd.min.js',
+        '/vite/js/Timestamp.umd.min.js',
+        '/vite/js/en-US.umd.prod.js',
+        '/vite/js/fr.umd.prod.js',
+        '/vite/js/ar.umd.prod.js',
+        '/vite/js/store.js',
+        '/vite/src/layouts/MainLayout.js',
+        '/vite/src/pages/PageEntries.js',
+        '/vite/src/pages/PageSettings.js'
+    ];
+    
+    function showError(message, details = '') {
+        console.error(message, details);
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-overlay';
+        errorDiv.innerHTML = `
+            <h2>Application Error</h2>
+            <div class="error-message">${message}</div>
+            <div class="debug-info">
+                <h3>Debug Information:</h3>
+                <div>${details}</div>
+                <h3>Loaded Scripts:</h3>
+                <pre>${JSON.stringify(loadedScripts, null, 2)}</pre>
+                <h3>Window Variables:</h3>
+                <pre>Vue: ${!!window.Vue}
+VueRouter: ${!!window.VueRouter}
+Quasar: ${!!window.Quasar}
+MainLayout: ${!!window.MainLayout}
+PageEntries: ${!!window.PageEntries}
+PageSettings: ${!!window.PageSettings}</pre>
+            </div>
+        `;
+        document.body.appendChild(errorDiv);
+    }
+    
+    // Load all scripts and initialize app
+    async function initializeApp() {
+        try {
+            // Load all scripts
+            for (const script of scripts) {
+                await loadScript(script).catch(error => {
+                    throw new Error(`Failed to load script: ${script}\n${error.message}`);
+                });
+            }
+            
+            // Check if all required globals are available
             const required = {
-                'Vue': !!window.Vue,
-                'VueRouter': !!window.VueRouter,
-                'Quasar': !!window.Quasar,
-                'MainLayout': !!window.MainLayout,
-                'PageEntries': !!window.PageEntries,
-                'PageSettings': !!window.PageSettings
+                'Vue': window.Vue,
+                'VueRouter': window.VueRouter,
+                'Quasar': window.Quasar,
+                'MainLayout': window.MainLayout,
+                'PageEntries': window.PageEntries,
+                'PageSettings': window.PageSettings
             };
             
-            console.log('Dependency check:', required);
-            return Object.values(required).every(Boolean);
-        }
-
-        function showError(message) {
-            console.error(message);
-            const errorDiv = document.createElement('div');
-            errorDiv.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                background: #ffebee;
-                color: #b71c1c;
-                padding: 1rem;
-                z-index: 9999;
-                font-family: Arial, sans-serif;
-                white-space: pre-wrap;
-            `;
-            errorDiv.textContent = message;
-            document.body.appendChild(errorDiv);
-        }
-
-        function initApp() {
-            try {
-                if (!checkDependencies()) {
-                    throw new Error('Missing required dependencies. Check console for details.');
-                }
-
-                const { createApp } = Vue;
-                const { createRouter, createWebHashHistory } = VueRouter;
+            const missing = Object.entries(required)
+                .filter(([_, value]) => !value)
+                .map(([name]) => name);
                 
-                // Create app instance
-                const app = createApp({
-                    template: '<router-view></router-view>'
-                });
-
-                // Configure Quasar
-                app.use(window.Quasar.default, {
-                    config: {
-                        brand: {
-                            primary: '#1976D2',
-                            secondary: '#26A69A',
-                            accent: '#9C27B0',
-                            dark: '#1D1D1D',
-                            positive: '#21BA45',
-                            negative: '#C10015',
-                            info: '#31CCEC',
-                            warning: '#F2C037'
-                        }
-                    }
-                });
-
-                // Configure router
-                const router = createRouter({
-                    history: createWebHashHistory('/vite/'),
-                    routes: [
-                        {
-                            path: '/',
-                            component: window.MainLayout,
-                            children: [
-                                { 
-                                    path: '', 
-                                    component: window.PageEntries,
-                                    name: 'home'
-                                },
-                                { 
-                                    path: 'settings', 
-                                    component: window.PageSettings,
-                                    name: 'settings'
-                                }
-                            ]
-                        }
-                    ]
-                });
-
-                // Mount the app
-                app.use(router).mount('#q-app');
-
-                // Hide loading spinner
-                const loading = document.querySelector('.q-loading');
-                if (loading) {
-                    loading.style.display = 'none';
-                }
-                
-                console.log('App mounted successfully');
-                
-            } catch (error) {
-                showError(`Error initializing app:\n${error.message}\n\n${error.stack || ''}`);
+            if (missing.length > 0) {
+                throw new Error(`Missing required dependencies: ${missing.join(', ')}`);
             }
+            
+            // Initialize the app
+            const { createApp } = Vue;
+            const { createRouter, createWebHashHistory } = VueRouter;
+            
+            // Create app instance
+            const app = createApp({
+                template: '<router-view></router-view>'
+            });
+
+            // Configure Quasar
+            app.use(window.Quasar.default, {
+                config: {
+                    brand: {
+                        primary: '#1976D2',
+                        secondary: '#26A69A',
+                        accent: '#9C27B0',
+                        dark: '#1D1D1D',
+                        positive: '#21BA45',
+                        negative: '#C10015',
+                        info: '#31CCEC',
+                        warning: '#F2C037'
+                    }
+                }
+            });
+
+            // Configure router
+            const router = createRouter({
+                history: createWebHashHistory('/vite/'),
+                routes: [
+                    {
+                        path: '/',
+                        component: window.MainLayout,
+                        children: [
+                            { 
+                                path: '', 
+                                component: window.PageEntries,
+                                name: 'home'
+                            },
+                            { 
+                                path: 'settings', 
+                                component: window.PageSettings,
+                                name: 'settings'
+                            }
+                        ]
+                    }
+                ]
+            });
+
+            // Mount the app
+            app.use(router).mount('#q-app');
+
+            // Hide loading spinner
+            const loading = document.querySelector('.q-loading');
+            if (loading) {
+                loading.style.display = 'none';
+            }
+            
+            console.log('App initialized successfully');
+            
+        } catch (error) {
+            showError(
+                'Failed to initialize application', 
+                `Error: ${error.message}\n\nStack: ${error.stack || 'No stack trace available'}`
+            );
         }
-
-        // Start the app when DOM is ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initApp);
-        } else {
-            initApp();
-        }
-
-        // Global error handlers
-        window.onerror = function(message, source, lineno, colno, error) {
-            showError(`Global error: ${message}\nAt ${source}:${lineno}:${colno}\n${error?.stack || ''}`);
-            return true;
-        };
-
-        window.addEventListener('unhandledrejection', (event) => {
-            showError(`Unhandled promise rejection: ${event.reason?.message || event.reason || 'Unknown error'}`);
-            event.preventDefault();
-        });
-    })();
+    }
+    
+    // Start the app
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeApp);
+    } else {
+        initializeApp();
+    }
     </script>
 </body>
 </html>
