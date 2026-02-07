@@ -1,18 +1,33 @@
-const VERSION = 'v1.0.1'; // Incremented version
+const VERSION = 'v1.0.3'; // Incremented version
 const CACHE_PREFIX = 'moneyballs-cache';
 const STATIC_CACHE = `${CACHE_PREFIX}-static-${VERSION}`;
-const DYNAMIC_CACHE = `${CACHE_PREFIX}-dynamic-${VERSION}`;
 
-// List of files to cache on install
+// List of all files to cache
 const PRECACHE_ASSETS = [
+  // Core HTML
   '/',
   '/index.html',
+  '/manifest.json',
   
-  // Core JavaScript files
+  // Local JavaScript files
   '/js/app.js',
   '/js/store.js',
-  '/main.js',
-  '/manifest.json',
+  '/js/vue.global.prod.js',
+  '/js/vue-router.global.prod.js',
+  '/js/quasar.umd.prod.js',
+  '/js/axios.min.js',
+  '/js/fr.umd.prod.js',
+  '/js/en-US.umd.prod.js',
+  '/js/ar.umd.prod.js',
+  '/js/QCalendarMonth.umd.min.js',
+  '/js/Timestamp.umd.min.js',
+  
+  // Local CSS files
+  '/css/quasar.prod.css',
+  '/css/transitions.css',
+  '/css/shadows.css',
+  '/css/mobile-swipe.css',
+  '/css/fonts.css',
   
   // Layouts
   '/src/layouts/MainLayout.js',
@@ -35,33 +50,10 @@ const PRECACHE_ASSETS = [
   '/icons/favicon-96x96.png',
   '/icons/favicon-32x32.png',
   '/icons/favicon-16x16.png',
-  '/favicon.ico',
-  
-  // CSS files
-  '/css/transitions.css',
-  '/css/shadows.css',
-  '/css/mobile-swipe.css'
+  '/favicon.ico'
 ];
 
-// External CDN resources to cache
-const EXTERNAL_RESOURCES = [
-  'https://cdn.jsdelivr.net/npm/vue@3.3.4/dist/vue.global.prod.js',
-  'https://cdn.jsdelivr.net/npm/vue-router@4.2.4/dist/vue-router.global.prod.js',
-  'https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/quasar.umd.prod.js',
-  'https://cdn.jsdelivr.net/npm/axios@1.6.2/dist/axios.min.js',
-  'https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/lang/fr.umd.prod.js',
-  'https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/lang/en-US.umd.prod.js',
-  'https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/lang/ar.umd.prod.js',
-  'https://cdn.jsdelivr.net/npm/@quasar/quasar-ui-qcalendar/dist/QCalendarMonth.umd.min.js',
-  'https://cdn.jsdelivr.net/npm/@quasar/quasar-ui-qcalendar/dist/Timestamp.umd.min.js',
-  'https://cdn.jsdelivr.net/npm/workbox-sw@7.0.0/build/workbox-sw.js',
-  'https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons|Material+Icons+Outlined',
-  'https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/quasar.prod.css',
-  'https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Mu4mxK.woff2',
-  'https://fonts.gstatic.com/s/materialicons/v140/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2'
-];
-
-// Install event - cache static assets
+// Install event - cache all static assets
 self.addEventListener('install', (event) => {
   console.log('[Service Worker] Installing Service Worker...');
   self.skipWaiting();
@@ -69,15 +61,12 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(STATIC_CACHE)
       .then((cache) => {
-        console.log('[Service Worker] Caching app shell');
+        console.log('[Service Worker] Caching app shell and assets');
         return cache.addAll(PRECACHE_ASSETS);
-      })
-      .then(() => {
-        return caches.open(DYNAMIC_CACHE)
-          .then(cache => cache.addAll(EXTERNAL_RESOURCES));
       })
       .catch(err => {
         console.error('[Service Worker] Cache addAll failed:', err);
+        return Promise.resolve();
       })
   );
 });
@@ -90,7 +79,7 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((keyList) => {
       return Promise.all(
         keyList.map((key) => {
-          if (key !== STATIC_CACHE && key !== DYNAMIC_CACHE && key.startsWith(CACHE_PREFIX)) {
+          if (key !== STATIC_CACHE && key.startsWith(CACHE_PREFIX)) {
             console.log('[Service Worker] Removing old cache:', key);
             return caches.delete(key);
           }
@@ -102,16 +91,6 @@ self.addEventListener('activate', (event) => {
   return self.clients.claim();
 });
 
-// Helper function to check if request is for an external resource
-function isExternalResource(url) {
-  const externalHosts = [
-    'cdn.jsdelivr.net',
-    'fonts.googleapis.com',
-    'fonts.gstatic.com'
-  ];
-  return externalHosts.some(host => url.includes(host));
-}
-
 // Fetch event handler
 self.addEventListener('fetch', (event) => {
   const request = event.request;
@@ -121,63 +100,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  const requestUrl = new URL(request.url);
-  
-  // Handle external resources (CDN)
-  if (isExternalResource(request.url)) {
-    event.respondWith(
-      caches.open(DYNAMIC_CACHE).then(cache => {
-        return fetch(request)
-          .then(networkResponse => {
-            // Cache the response if valid
-            if (networkResponse && networkResponse.status === 200) {
-              const responseToCache = networkResponse.clone();
-              cache.put(request, responseToCache);
-            }
-            return networkResponse;
-          })
-          .catch(() => {
-            // If network fails, try to get from cache
-            return cache.match(request).then(cachedResponse => {
-              return cachedResponse || new Response('CDN resource not available offline', {
-                status: 408,
-                headers: { 'Content-Type': 'text/plain' }
-              });
-            });
-          });
-      })
-    );
-    return;
-  }
-
-  // Handle API requests
-  if (request.url.includes('/api/')) {
-    event.respondWith(
-      fetch(request)
-        .then(networkResponse => {
-          // Cache successful API responses
-          if (networkResponse && networkResponse.status === 200) {
-            const responseToCache = networkResponse.clone();
-            caches.open(DYNAMIC_CACHE).then(cache => {
-              cache.put(request, responseToCache);
-            });
-          }
-          return networkResponse;
-        })
-        .catch(() => {
-          // If network fails, try to get from cache
-          return caches.match(request).then(cachedResponse => {
-            return cachedResponse || new Response(
-              JSON.stringify({ error: 'You are offline and no cached data is available' }), 
-              { headers: { 'Content-Type': 'application/json' } }
-            );
-          });
-        })
-    );
-    return;
-  }
-
-  // For all other requests, try cache first, then network
+  // For all requests, try cache first, then network
   event.respondWith(
     caches.match(request).then(cachedResponse => {
       // Return cached response if found
@@ -191,7 +114,7 @@ self.addEventListener('fetch', (event) => {
           // Only cache successful responses
           if (networkResponse && networkResponse.status === 200) {
             const responseToCache = networkResponse.clone();
-            caches.open(DYNAMIC_CACHE).then(cache => {
+            caches.open(STATIC_CACHE).then(cache => {
               cache.put(request, responseToCache);
             });
           }

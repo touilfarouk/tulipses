@@ -26,17 +26,27 @@
     <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
     <link rel="icon" type="image/ico" href="favicon.ico">
 
-    <!-- Quasar Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons|Material+Icons+Outlined" rel="stylesheet" type="text/css">
+<!-- Replace CDN scripts with local files -->
+<script src="/js/vue.global.prod.js"></script>
+<script src="/js/vue-router.global.prod.js"></script>
+<script src="/js/quasar.umd.prod.js"></script>
+<script src="/js/axios.min.js"></script>
 
-    <!-- Quasar CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/quasar.prod.css" rel="stylesheet">
-    <!-- Custom Transitions CSS -->
-    <link href="css/transitions.css" rel="stylesheet">
-    <!-- Custom Shadows CSS -->
-    <link href="css/shadows.css" rel="stylesheet">
-    <!-- Mobile Swipe CSS -->
-    <link href="css/mobile-swipe.css" rel="stylesheet">
+<!-- Quasar CSS -->
+<link href="/css/quasar.prod.css" rel="stylesheet">
+
+<!-- Quasar Language Packs -->
+<script src="/js/fr.umd.prod.js"></script>
+<script src="/js/en-US.umd.prod.js"></script>
+<script src="/js/ar.umd.prod.js"></script>
+
+<!-- QCalendar -->
+<script src="/js/QCalendarMonth.umd.min.js"></script>
+<script src="/js/Timestamp.umd.min.js"></script>
+<link href="/css/transitions.css" rel="stylesheet">
+<link href="/css/shadows.css" rel="stylesheet">
+<link href="/css/mobile-swipe.css" rel="stylesheet">
+<link href="/css/fonts.css" rel="stylesheet">
     <!-- Critical CSS Inline -->
     <style>
       /* Prevent flash of unstyled content */
@@ -101,17 +111,7 @@
     <!-- App Container -->
     <div id="q-app"></div>
 
-    <!-- Vue 3 -->
-    <script src="https://cdn.jsdelivr.net/npm/vue@3.3.4/dist/vue.global.prod.js"></script>
-
-    <!-- Vue Router -->
-    <script src="https://cdn.jsdelivr.net/npm/vue-router@4.2.4/dist/vue-router.global.prod.js"></script>
-
-    <!-- Quasar Framework -->
-    <script src="https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/quasar.umd.prod.js"></script>
-
-    <!-- Axios for HTTP requests -->
-    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.2/dist/axios.min.js"></script>
+  
 
     <!-- Axios Interceptors for logging -->
     <script>
@@ -170,22 +170,7 @@
       console.log('🔧 Axios logging enabled - all requests/responses will be logged');
     </script>
 
-    <!-- Quasar French Language Pack -->
-    <script src="https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/lang/fr.umd.prod.js"></script>
-
-    <!-- Quasar Additional Language Packs -->
-    <script src="https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/lang/en-US.umd.prod.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/quasar@2.12.0/dist/lang/ar.umd.prod.js"></script>
-
-    <!-- qcalendar.netlify.app/ -->
-    <script src="https://cdn.jsdelivr.net/npm/@quasar/quasar-ui-qcalendar/dist/QCalendarMonth.umd.min.js"></script>
-
-    <!-- If you need Timestamp functions: -->
-    <script src="https://cdn.jsdelivr.net/npm/@quasar/quasar-ui-qcalendar/dist/Timestamp.umd.min.js"></script>
-
-    <!-- Workbox CDN for PWA -->
-    <script src="https://cdn.jsdelivr.net/npm/workbox-sw@7.0.0/build/workbox-sw.js"></script>
-
+  
     <!-- Store Script -->
     <script src="js/store.js"></script>
 
