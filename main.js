@@ -1,9 +1,11 @@
+// Import router configuration
+import router from './src/router/routes.js';
+
 // Main application entry point
 document.addEventListener('DOMContentLoaded', () => {
   try {
     // Import Vue and Quasar
     const { createApp } = Vue;
-    const { createRouter, createWebHashHistory } = VueRouter;
     const { Quasar } = Quasar;
     const { createPinia } = Pinia;
 
@@ -32,20 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const pinia = createPinia();
     app.use(pinia);
 
-    // Configure router
-    const router = createRouter({
-      history: createWebHashHistory('/vite/'),
-      routes: [
-        {
-          path: '/',
-          component: () => import('./src/layouts/MainLayout.js'),
-          children: [
-            { path: '', component: () => import('./src/pages/PageEntries.js') },
-            { path: 'settings', component: () => import('./src/pages/PageSettings.js') }
-          ]
-        }
-      ]
-    });
+    // Router is already imported at the top level
 
     // Navigation guard example
     router.beforeEach((to, from, next) => {

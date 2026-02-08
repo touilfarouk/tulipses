@@ -1,19 +1,40 @@
+import { createRouter, createWebHashHistory } from 'vue-router';
+import MainLayout from '../layouts/MainLayout.vue';
+import PageEntries from '../pages/PageEntries.vue';
+import PageSettings from '../pages/PageSettings.vue';
+import ErrorNotFound from '../pages/ErrorNotFound.vue';
+
 const routes = [
   {
     path: '/',
-    component: () => import('layouts/MainLayout.vue'),
+    component: MainLayout,
     children: [
-      { path: '', component: () => import('pages/PageEntries.vue') },
-      { path: 'settings', component: () => import('pages/PageSettings.vue') }
+      {
+        path: '',
+        name: 'home',
+        component: PageEntries
+      },
+
+      {
+        path: 'settings',
+        name: 'settings',
+        component: PageSettings
+      }
     ]
   },
-
-  // Always leave this as last one,
-  // but you can also remove it
   {
     path: '/:catchAll(.*)*',
-    component: () => import('pages/ErrorNotFound.vue')
+    name: 'not-found',
+    component: ErrorNotFound
   }
-]
+];
 
-export default routes
+const router = createRouter({
+  history: createWebHashHistory('/vite/'),
+  routes,
+  scrollBehavior(to, from, savedPosition) {
+    return savedPosition || { top: 0 };
+  }
+});
+
+export default router;
