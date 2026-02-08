@@ -26,7 +26,7 @@ const MainLayout = {
             :color="drawerState === 'open' ? 'white' : 'white'"
           />
           <q-toolbar-title>
-            Moneyballs
+            Aquaculture
             <q-badge
               v-if="drawerState !== 'closed'"
               color="white"
@@ -102,6 +102,31 @@ const MainLayout = {
             </q-item-section>
           </q-item>
 
+          <q-item
+            clickable
+            @click="setActiveMenuAndNavigate('/form-entries')"
+            :style="activeMenuItem === '/form-entries' ? 'background-color: #004d40; border-left: 4px solid #26A69A;' : ''"
+            class="menu-item-transition"
+          >
+            <q-item-section avatar>
+              <q-icon name="description" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Form Entries</q-item-label>
+              <q-item-label caption class="text-white" style="font-size: 8px !important;">View form submissions</q-item-label>
+            </q-item-section>
+            <q-item-section side>
+              <q-chip
+                v-if="activeMenuItem === '/form-entries'"
+                color="white"
+                text-color="primary"
+                size="sm"
+              >
+                Active
+              </q-chip>
+            </q-item-section>
+          </q-item>
+
           <q-separator />
 
           <q-item-label header class="text-white">Quick Stats</q-item-label>
@@ -159,26 +184,26 @@ const MainLayout = {
     store.initializeUIState()
 
     // Create local reactive drawer state with localStorage persistence
-    const savedDrawerState = localStorage.getItem('moneyballs-drawer-state') === 'true'
+    const savedDrawerState = localStorage.getItem('Aquaculture-drawer-state') === 'true'
     const localDrawerOpen = Vue.ref(savedDrawerState)
 
     // Simple drawer toggle function with persistence
     const toggleLeftDrawer = () => {
       localDrawerOpen.value = !localDrawerOpen.value
-      localStorage.setItem('moneyballs-drawer-state', localDrawerOpen.value.toString())
+      localStorage.setItem('Aquaculture-drawer-state', localDrawerOpen.value.toString())
       console.log('Drawer toggled:', localDrawerOpen.value)
     }
 
     // Sync with store when needed
     const onDrawerShow = () => {
       localDrawerOpen.value = true
-      localStorage.setItem('moneyballs-drawer-state', 'true')
+      localStorage.setItem('Aquaculture-drawer-state', 'true')
       store.onDrawerShow()
     }
 
     const onDrawerHide = () => {
       localDrawerOpen.value = false
-      localStorage.setItem('moneyballs-drawer-state', 'false')
+      localStorage.setItem('Aquaculture-drawer-state', 'false')
       store.onDrawerHide()
     }
 
@@ -237,7 +262,7 @@ const MainLayout = {
       // Set active menu based on current path
       const currentPath = store.getCurrentPath()
       store.uiState.activeMenuItem = currentPath
-      store.saveToStorage('moneyballs-active-menu', currentPath)
+      store.saveToStorage('Aquaculture-active-menu', currentPath)
     })
 
     // Watch for active menu changes and force reactivity

@@ -1,40 +1,42 @@
-import { createRouter, createWebHashHistory } from 'vue-router';
-import MainLayout from '../layouts/MainLayout.vue';
-import PageEntries from '../pages/PageEntries.vue';
-import PageSettings from '../pages/PageSettings.vue';
-import ErrorNotFound from '../pages/ErrorNotFound.vue';
-
+// Router configuration using window components
 const routes = [
   {
     path: '/',
-    component: MainLayout,
+    component: window.MainLayout,
     children: [
       {
         path: '',
         name: 'home',
-        component: PageEntries
+        component: window.PageEntries
       },
-
       {
         path: 'settings',
         name: 'settings',
-        component: PageSettings
+        component: window.PageSettings
+      },
+      {
+        path: 'form-entries',
+        name: 'form-entries',
+        component: window.PageFormEntries
       }
     ]
   },
   {
     path: '/:catchAll(.*)*',
     name: 'not-found',
-    component: ErrorNotFound
+    component: () => console.error('Page not found') || { template: '<div>Page not found</div>' }
   }
 ];
 
-const router = createRouter({
-  history: createWebHashHistory('/vite/'),
-  routes,
-  scrollBehavior(to, from, savedPosition) {
-    return savedPosition || { top: 0 };
-  }
-});
+// Create and export router factory function
+export function createAppRouter(basePath = '/vite/') {
+  const router = createRouter({
+    history: createWebHashHistory(basePath),
+    routes,
+    scrollBehavior(to, from, savedPosition) {
+      return savedPosition || { top: 0 };
+    }
+  });
 
-export default router;
+  return router;
+}

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Moneyballs - Money Tracker</title>
+    <title>Aquaculture - Money Tracker</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="A simple money tracking application">
@@ -124,7 +124,8 @@
     const components = [
         { name: 'MainLayout', path: './src/layouts/MainLayout.js' },
         { name: 'PageEntries', path: './src/pages/PageEntries.js' },
-        { name: 'PageSettings', path: './src/pages/PageSettings.js' }
+        { name: 'PageSettings', path: './src/pages/PageSettings.js' },
+        { name: 'PageFormEntries', path: './src/pages/PageFormEntries.js' }
     ];
 
     function showError(message, details = '') {
@@ -222,31 +223,13 @@ PageSettings: ${!!window.PageSettings}</pre>
             // Configure Quasar
             app.use(Quasar, quasarUserOptions);
 
-            // Create router
-            const router = createRouter({
-                history: createWebHashHistory(basePath),
-                routes: [
-                    {
-                        path: '/',
-                        component: window.MainLayout,
-                        children: [
-                            {
-                                path: '',
-                                component: window.PageEntries,
-                                name: 'home'
-                            },
-                            {
-                                path: 'settings',
-                                component: window.PageSettings,
-                                name: 'settings'
-                            }
-                        ]
-                    }
-                ]
-            });
+            // Import and create the router
+            const { createAppRouter } = await import('./src/router/routes.js');
+            const router = createAppRouter(basePath);
 
             // Mount the app
-            app.use(router).mount('#q-app');
+            app.use(router);
+            app.mount('#q-app');
 
             // Hide loading spinner
             const loading = document.querySelector('.q-loading');
