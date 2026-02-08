@@ -6,11 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="A simple money tracking application">
     <meta name="theme-color" content="#00695c">
-    <link rel="icon" href="/vite/icons/favicon.ico">
-    <link rel="manifest" href="/vite/manifest.json">
-    <base href="/vite/">
-    <link href="/vite/css/quasar.prod.css" rel="stylesheet">
-    <link href="/vite/css/fonts.css" rel="stylesheet">
+    <link rel="icon" href="icons/favicon.ico">
+    <link rel="manifest" href="manifest.json">
+    <base href="./">
+    <link href="css/quasar.prod.css" rel="stylesheet">
+    <link href="css/fonts.css" rel="stylesheet">
+    <link href="css/shadows.css" rel="stylesheet">
+    <link href="css/transitions.css" rel="stylesheet">
     <style>
         .error-overlay {
             position: fixed;
@@ -50,56 +52,56 @@
         </div>
     </div>
 
-    <!-- Load Vue and dependencies -->
+    <!-- Load Vue and dependencies from local files -->
+    <script src="js/vue.global.prod.js"></script>
+    <script src="js/vue-router.global.prod.js"></script>
+    <script src="js/quasar.umd.prod.js"></script>
+    <script src="js/axios.min.js"></script>
+    <script src="js/QCalendarMonth.umd.min.js"></script>
+    <script src="js/Timestamp.umd.min.js"></script>
+    <script src="js/en-US.umd.prod.js"></script>
+    <script src="js/fr.umd.prod.js"></script>
+    <script src="js/ar.umd.prod.js"></script>
+    <script src="js/store.js"></script>
+
     <script>
     // Debug information
     console.log('Starting application initialization...');
-    console.log('Base URL:', window.location.href);
-    console.log('Scripts loading from:', window.location.origin + '/vite/');
-    
-    // Track script loading
-    const loadedScripts = {};
-    
-    function loadScript(src) {
-        console.log('Loading script:', src);
+    console.log('Using CDN dependencies');
+
+    // Track component loading
+    const loadedComponents = {};
+
+    // Load component scripts
+    async function loadComponent(name, path) {
         return new Promise((resolve, reject) => {
-            if (loadedScripts[src]) {
-                console.log('Script already loaded:', src);
+            if (loadedComponents[name]) {
+                console.log('Component already loaded:', name);
                 return resolve();
             }
-            
+
             const script = document.createElement('script');
-            script.src = src;
+            script.src = path;
             script.onload = () => {
-                console.log('Script loaded successfully:', src);
-                loadedScripts[src] = true;
+                console.log('Component loaded successfully:', name);
+                loadedComponents[name] = true;
                 resolve();
             };
             script.onerror = (error) => {
-                console.error('Failed to load script:', src, error);
-                reject(new Error(`Failed to load script: ${src}`));
+                console.error('Failed to load component:', name, error);
+                reject(new Error(`Failed to load component: ${name}`));
             };
             document.body.appendChild(script);
         });
     }
-    
-    // Load scripts in order
-    const scripts = [
-        '/vite/js/vue.global.prod.js',
-        '/vite/js/vue-router.global.prod.js',
-        '/vite/js/quasar.umd.prod.js',
-        '/vite/js/axios.min.js',
-        '/vite/js/QCalendarMonth.umd.min.js',
-        '/vite/js/Timestamp.umd.min.js',
-        '/vite/js/en-US.umd.prod.js',
-        '/vite/js/fr.umd.prod.js',
-        '/vite/js/ar.umd.prod.js',
-        '/vite/js/store.js',
-        '/vite/src/layouts/MainLayout.js',
-        '/vite/src/pages/PageEntries.js',
-        '/vite/src/pages/PageSettings.js'
+
+    // Load components in order
+    const components = [
+        { name: 'MainLayout', path: './src/layouts/MainLayout.js' },
+        { name: 'PageEntries', path: './src/pages/PageEntries.js' },
+        { name: 'PageSettings', path: './src/pages/PageSettings.js' }
     ];
-    
+
     function showError(message, details = '') {
         console.error(message, details);
         const errorDiv = document.createElement('div');
@@ -110,12 +112,13 @@
             <div class="debug-info">
                 <h3>Debug Information:</h3>
                 <div>${details}</div>
-                <h3>Loaded Scripts:</h3>
-                <pre>${JSON.stringify(loadedScripts, null, 2)}</pre>
+                <h3>Loaded Components:</h3>
+                <pre>${JSON.stringify(loadedComponents, null, 2)}</pre>
                 <h3>Window Variables:</h3>
                 <pre>Vue: ${!!window.Vue}
 VueRouter: ${!!window.VueRouter}
 Quasar: ${!!window.Quasar}
+axios: ${!!window.axios}
 MainLayout: ${!!window.MainLayout}
 PageEntries: ${!!window.PageEntries}
 PageSettings: ${!!window.PageSettings}</pre>
@@ -123,12 +126,12 @@ PageSettings: ${!!window.PageSettings}</pre>
         `;
         document.body.appendChild(errorDiv);
     }
-    
+
     // Wait for components to be registered
     async function waitForComponents() {
         const maxAttempts = 10;
         let attempts = 0;
-        
+
         return new Promise((resolve, reject) => {
             const checkComponents = () => {
                 attempts++;
@@ -137,7 +140,7 @@ PageSettings: ${!!window.PageSettings}</pre>
                     PageEntries: !!window.PageEntries,
                     PageSettings: !!window.PageSettings
                 });
-                
+
                 if (window.MainLayout && window.PageEntries && window.PageSettings) {
                     console.log('All components found!');
                     resolve();
@@ -151,51 +154,52 @@ PageSettings: ${!!window.PageSettings}</pre>
                     reject(new Error(`Timed out waiting for components to load. Missing: ${missing.join(', ')}`));
                 }
             };
-            
+
             checkComponents();
         });
     }
-    
-    // Load all scripts and initialize app
+
+    // Initialize the app
     async function initializeApp() {
         try {
-            // Load all scripts
-            for (const script of scripts) {
-                await loadScript(script).catch(error => {
-                    throw new Error(`Failed to load script: ${script}\n${error.message}`);
+            // Load all components
+            for (const component of components) {
+                await loadComponent(component.name, component.path).catch(error => {
+                    throw new Error(`Failed to load component: ${component.name}\n${error.message}`);
                 });
             }
-            
+
             // Wait for components to be registered
             console.log('All scripts loaded, waiting for components to register...');
             await waitForComponents();
-            
+
             // Verify all required globals are available
             const required = {
                 'Vue': window.Vue,
                 'VueRouter': window.VueRouter,
-                'Quasar': window.Quasar
+                'Quasar': window.Quasar,
+                'axios': window.axios
             };
-            
+
             const missing = Object.entries(required)
                 .filter(([_, value]) => !value)
                 .map(([name]) => name);
-                
+
             if (missing.length > 0) {
                 throw new Error(`Missing required dependencies: ${missing.join(', ')}`);
             }
-            
-            // Initialize the app
-            const { createApp } = Vue;
-            const { createRouter, createWebHashHistory } = VueRouter;
-            
+
+            // Set up Vue and Quasar
+            const { createApp } = window.Vue;
+            const { createRouter, createWebHashHistory } = window.VueRouter;
+
             // Create app instance
             const app = createApp({
                 template: '<router-view></router-view>'
             });
 
             // Configure Quasar
-            app.use(window.Quasar.default, {
+            app.use(window.Quasar, {
                 config: {
                     brand: {
                         primary: '#1976D2',
@@ -212,19 +216,19 @@ PageSettings: ${!!window.PageSettings}</pre>
 
             // Configure router
             const router = createRouter({
-                history: createWebHashHistory('/vite/'),
+                history: createWebHashHistory(),
                 routes: [
                     {
                         path: '/',
                         component: window.MainLayout,
                         children: [
-                            { 
-                                path: '', 
+                            {
+                                path: '',
                                 component: window.PageEntries,
                                 name: 'home'
                             },
-                            { 
-                                path: 'settings', 
+                            {
+                                path: 'settings',
                                 component: window.PageSettings,
                                 name: 'settings'
                             }
@@ -241,17 +245,17 @@ PageSettings: ${!!window.PageSettings}</pre>
             if (loading) {
                 loading.style.display = 'none';
             }
-            
+
             console.log('App initialized successfully');
-            
+
         } catch (error) {
             showError(
-                'Failed to initialize application', 
+                'Failed to initialize application',
                 `Error: ${error.message}\n\nStack: ${error.stack || 'No stack trace available'}`
             );
         }
     }
-    
+
     // Start the app
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initializeApp);
