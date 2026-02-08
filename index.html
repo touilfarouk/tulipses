@@ -8,7 +8,7 @@
     <meta name="theme-color" content="#00695c">
     <link rel="icon" href="icons/favicon.ico">
     <link rel="manifest" href="manifest.json">
-    <base href="./">
+    <base href="/vite/">
     <link href="css/quasar.prod.css" rel="stylesheet">
     <link href="css/fonts.css" rel="stylesheet">
     <link href="css/shadows.css" rel="stylesheet">
@@ -67,7 +67,32 @@
     <script>
     // Debug information
     console.log('Starting application initialization...');
-    console.log('Using CDN dependencies');
+    console.log('Base URL:', window.location.href);
+    console.log('Scripts loading from:', window.location.origin + '/vite/');
+
+    // Set base URL based on environment
+    const isGitHubPages = window.location.hostname === 'touilfarouk.github.io';
+    const basePath = isGitHubPages ? '/vite/' : '/';
+
+    // Create global Vue app
+    const { createApp } = Vue;
+    const { createRouter, createWebHashHistory } = VueRouter;
+
+    // Initialize Quasar
+    const quasarUserOptions = {
+        config: {
+            brand: {
+                primary: '#1976D2',
+                secondary: '#26A69A',
+                accent: '#9C27B0',
+                dark: '#1D1D1D',
+                positive: '#21BA45',
+                negative: '#C10015',
+                info: '#31CCEC',
+                warning: '#F2C037'
+            }
+        }
+    };
 
     // Track component loading
     const loadedComponents = {};
@@ -189,34 +214,17 @@ PageSettings: ${!!window.PageSettings}</pre>
                 throw new Error(`Missing required dependencies: ${missing.join(', ')}`);
             }
 
-            // Set up Vue and Quasar
-            const { createApp } = window.Vue;
-            const { createRouter, createWebHashHistory } = window.VueRouter;
-
             // Create app instance
             const app = createApp({
                 template: '<router-view></router-view>'
             });
 
             // Configure Quasar
-            app.use(window.Quasar, {
-                config: {
-                    brand: {
-                        primary: '#1976D2',
-                        secondary: '#26A69A',
-                        accent: '#9C27B0',
-                        dark: '#1D1D1D',
-                        positive: '#21BA45',
-                        negative: '#C10015',
-                        info: '#31CCEC',
-                        warning: '#F2C037'
-                    }
-                }
-            });
+            app.use(Quasar, quasarUserOptions);
 
-            // Configure router
+            // Create router
             const router = createRouter({
-                history: createWebHashHistory(),
+                history: createWebHashHistory(basePath),
                 routes: [
                     {
                         path: '/',
