@@ -1,4 +1,5 @@
 // Service Worker for Moneyballs PWA
+console.log('[Service Worker] Script loaded');
 const CACHE_PREFIX = 'moneyballs-pwa';
 const CACHE_VERSION = 'v3'; // Incremented version to force update
 const STATIC_CACHE = `${CACHE_PREFIX}-static-${CACHE_VERSION}`;
@@ -56,8 +57,15 @@ const DYNAMIC_CACHE_TYPES = [
   'document'
 ];
 
+// Handle messages from the page
+self.addEventListener('message', (event) => {
+  console.log('[Service Worker] Message received:', event.data);
+});
+
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
+  console.log('[Service Worker] Install event fired');
+  console.log('[Service Worker] Caching static assets:', STATIC_ASSETS);
   console.log('[Service Worker] Installing Service Worker...');
 
   // Skip waiting to activate the new service worker immediately
@@ -77,6 +85,7 @@ self.addEventListener('install', (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
+  console.log('[Service Worker] Activate event fired');
   console.log('[Service Worker] Activating Service Worker...');
 
   event.waitUntil(
@@ -95,7 +104,8 @@ self.addEventListener('activate', (event) => {
 });
 
 // Cache size management
-const cleanCache = async (cacheName, maxSize) => {
+async function cleanCache(cacheName, maxSize) {
+  console.log(`[Service Worker] Cleaning cache: ${cacheName}`);
   const cache = await caches.open(cacheName);
   const keys = await cache.keys();
 
@@ -107,6 +117,7 @@ const cleanCache = async (cacheName, maxSize) => {
 
 // Fetch event - cache first, then network strategy
 self.addEventListener('fetch', (event) => {
+  console.log(`[Service Worker] Fetch event: ${event.request.url}`);
   const requestUrl = new URL(event.request.url);
   const isSameOrigin = requestUrl.origin === self.location.origin;
   const isStaticAsset = STATIC_ASSETS.some(asset =>
@@ -176,6 +187,7 @@ self.addEventListener('fetch', (event) => {
 
 // Helper function to fetch and cache responses
 async function fetchAndCache(request) {
+  console.log(`[Service Worker] Fetching and caching: ${request.url}`);
   const response = await fetch(request);
 
   // Check if we received a valid response
@@ -200,6 +212,11 @@ async function fetchAndCache(request) {
 
   return response;
 }
+
+// Log when the service worker is controlling the page
+self.addEventListener('controllerchange', () => {
+  console.log('[Service Worker] Controller changed, this service worker is now controlling the page');
+});
 
 // Background sync for failed requests
 self.addEventListener('sync', (event) => {
