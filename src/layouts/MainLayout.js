@@ -16,7 +16,7 @@ const MainLayout = {
     </style>
     <q-layout view="hHh lpR lFf">
       <q-header class="bg-primary text-white shadow-2">
-        <q-toolbar>
+        <q-toolbar class="bg-primary">
           <q-btn
             flat
             dense

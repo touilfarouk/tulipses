@@ -1,6 +1,6 @@
 console.log('Registering PageFormEntries component');
 
-// PageFormEntries component with QStepper https://codepen.io/Css_B/pen/MWmrggZ
+// PageFormEntries component with QStepper
 const PageFormEntries = {
   template: `
     <q-page padding>

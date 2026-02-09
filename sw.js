@@ -1,9 +1,12 @@
-// Service Worker for Moneyballs PWA
+// Service Worker for Aquaculture PWA
 console.log('[Service Worker] Script loaded');
-const CACHE_PREFIX = 'moneyballs-pwa';
-const CACHE_VERSION = 'v3'; // Incremented version to force update
+const CACHE_PREFIX = 'Aquaculture-pwa';
+const CACHE_VERSION = 'v4'; // Incremented version to force update
 const STATIC_CACHE = `${CACHE_PREFIX}-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `${CACHE_PREFIX}-dynamic-${CACHE_VERSION}`;
+const CDN_ASSETS = [
+  'https://cdn.jsdelivr.net/npm/sass.js@0.11.1/dist/sass.sync.js'
+];
 const BASE_PATH = '/vite';
 const OFFLINE_URL = `${BASE_PATH}/offline.html`;
 
@@ -35,6 +38,11 @@ const STATIC_ASSETS = [
   `${BASE_PATH}/css/fonts.css`,
   `${BASE_PATH}/css/shadows.css`,
   `${BASE_PATH}/css/transitions.css`,
+
+  // Runtime SCSS
+  `${BASE_PATH}/js/scss-runtime.js`,
+  `${BASE_PATH}/src/css/quasar.variables.scss`,
+  `${BASE_PATH}/src/css/app.scss`,
 
   // Fonts
   `${BASE_PATH}/css/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2`,
@@ -75,7 +83,7 @@ self.addEventListener('install', (event) => {
     caches.open(STATIC_CACHE)
       .then((cache) => {
         console.log('[Service Worker] Caching app shell');
-        return cache.addAll(STATIC_ASSETS).catch(error => {
+        return cache.addAll(STATIC_ASSETS.concat(CDN_ASSETS)).catch(error => {
           console.error('Failed to cache some resources:', error);
           // Don't fail the entire installation if some resources fail to cache
         });
@@ -124,6 +132,7 @@ self.addEventListener('fetch', (event) => {
     requestUrl.href.endsWith(asset) ||
     (asset.endsWith('/') && requestUrl.pathname.startsWith(asset))
   );
+  const isCdnAsset = CDN_ASSETS.includes(event.request.url);
 
   // Skip non-GET requests and non-http(s) requests
   if (event.request.method !== 'GET' ||
@@ -161,6 +170,14 @@ self.addEventListener('fetch', (event) => {
         })
     );
   }
+  // Handle CDN assets with cache-first strategy
+  else if (isCdnAsset) {
+    event.respondWith(
+      caches.match(event.request)
+        .then(cachedResponse => cachedResponse || fetchAndCache(event.request, STATIC_CACHE, true))
+        .catch(() => caches.match(OFFLINE_URL))
+    );
+  }
   // Handle static assets with cache-first strategy
   else if (isSameOrigin && isStaticAsset) {
     event.respondWith(
@@ -186,12 +203,12 @@ self.addEventListener('fetch', (event) => {
 });
 
 // Helper function to fetch and cache responses
-async function fetchAndCache(request) {
+async function fetchAndCache(request, cacheName = DYNAMIC_CACHE, allowOpaque = false) {
   console.log(`[Service Worker] Fetching and caching: ${request.url}`);
   const response = await fetch(request);
 
   // Check if we received a valid response
-  if (!response || response.status !== 200 || response.type !== 'basic') {
+  if (!response || response.status !== 200 || (!allowOpaque && response.type !== 'basic')) {
     return response;
   }
 
@@ -204,11 +221,13 @@ async function fetchAndCache(request) {
   const responseToCache = response.clone();
 
   // Cache the response
-  const cache = await caches.open(DYNAMIC_CACHE);
+  const cache = await caches.open(cacheName);
   await cache.put(request, responseToCache);
 
-  // Clean up old cache entries
-  await cleanCache(DYNAMIC_CACHE, 200);
+  // Clean up old cache entries for dynamic cache only
+  if (cacheName === DYNAMIC_CACHE) {
+    await cleanCache(DYNAMIC_CACHE, 200);
+  }
 
   return response;
 }
@@ -273,7 +292,7 @@ self.addEventListener('push', (event) => {
     return;
   }
 
-  const title = data.title || 'Moneyballs';
+  const title = data.title || 'Aquaculture';
   const options = {
     body: data.body || 'You have new updates',
     icon: `${BASE_PATH}/icons/icon-192x192.png`,

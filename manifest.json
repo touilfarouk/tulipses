@@ -1,6 +1,6 @@
 {
-  "name": "Moneyballs - Money Tracker",
-  "short_name": "Moneyballs",
+  "name": "Aquaculture - Money Tracker",
+  "short_name": "Aquaculture",
   "description": "A simple money tracking application",
   "start_url": "/vite/",
   "display": "standalone",

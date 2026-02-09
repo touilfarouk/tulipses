@@ -1,4 +1,4 @@
-# Moneyballs (quasar-moneyballs)
+# Aquaculture (quasar-Aquaculture)
 
 A Quasar Project
 

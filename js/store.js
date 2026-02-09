@@ -227,8 +227,8 @@ const EntriesStore = {
 
   // Initialize UI state from storage
   initializeUIState() {
-    const savedDrawerState = this.getFromStorage('moneyballs-drawer-state', false)
-    const savedActiveMenu = this.getFromStorage('moneyballs-active-menu', '/')
+    const savedDrawerState = this.getFromStorage('Aquaculture-drawer-state', false)
+    const savedActiveMenu = this.getFromStorage('Aquaculture-active-menu', '/')
 
     this.uiState.leftDrawer = savedDrawerState
     this.uiState.drawerState = savedDrawerState ? 'open' : 'closed'
@@ -241,19 +241,19 @@ const EntriesStore = {
   toggleLeftDrawer() {
     this.uiState.leftDrawer = !this.uiState.leftDrawer
     this.uiState.drawerState = this.uiState.leftDrawer ? 'opening' : 'closing'
-    this.saveToStorage('moneyballs-drawer-state', this.uiState.leftDrawer)
+    this.saveToStorage('Aquaculture-drawer-state', this.uiState.leftDrawer)
   },
 
   onDrawerShow() {
     this.uiState.drawerState = 'open'
     console.log('Drawer opened')
-    this.saveToStorage('moneyballs-drawer-state', true)
+    this.saveToStorage('Aquaculture-drawer-state', true)
   },
 
   onDrawerHide() {
     this.uiState.drawerState = 'closed'
     console.log('Drawer closed')
-    this.saveToStorage('moneyballs-drawer-state', false)
+    this.saveToStorage('Aquaculture-drawer-state', false)
   },
 
   // Navigation functions
@@ -267,7 +267,7 @@ const EntriesStore = {
     if (window.innerWidth <= 700) {
       this.uiState.leftDrawer = false
       this.uiState.drawerState = 'closing'
-      this.saveToStorage('moneyballs-drawer-state', false)
+      this.saveToStorage('Aquaculture-drawer-state', false)
     }
   },
 
@@ -276,7 +276,7 @@ const EntriesStore = {
     console.log('Current activeMenuItem before:', this.uiState.activeMenuItem)
 
     this.uiState.activeMenuItem = path
-    this.saveToStorage('moneyballs-active-menu', path)
+    this.saveToStorage('Aquaculture-active-menu', path)
 
     console.log('Current activeMenuItem after:', this.uiState.activeMenuItem)
 

@@ -181,9 +181,9 @@ const APP = {
   // Update navigation count for install prompt
   updateNavCount: function() {
     if (!this.isStandalone) {
-      const storage = sessionStorage.getItem('moneyballsNavCount');
+      const storage = sessionStorage.getItem('AquacultureNavCount');
       this.navCount = storage ? Number(storage) + 1 : 1;
-      sessionStorage.setItem('moneyballsNavCount', this.navCount);
+      sessionStorage.setItem('AquacultureNavCount', this.navCount);
       console.log('Navigation count:', this.navCount);
     }
   },
@@ -192,7 +192,7 @@ const APP = {
   checkNavCount: function() {
     if (this.isStandalone) return;
 
-    const storage = sessionStorage.getItem('moneyballsNavCount');
+    const storage = sessionStorage.getItem('AquacultureNavCount');
     if (storage) {
       this.navCount = Number(storage);
       if (this.navCount > 2 && this.deferredPrompt) {
@@ -207,7 +207,7 @@ const APP = {
                 // Reset the deferred prompt variable
                 this.deferredPrompt = null;
                 // Clear the navigation count
-                sessionStorage.removeItem('moneyballsNavCount');
+                sessionStorage.removeItem('AquacultureNavCount');
               } else {
                 console.log('User dismissed the install prompt');
               }
