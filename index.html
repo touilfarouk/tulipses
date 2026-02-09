@@ -135,6 +135,7 @@
     // Load components in order
     const components = [
         { name: 'MainLayout', path: './src/layouts/MainLayout.js' },
+        { name: 'AquaInput', path: './src/components/AquaInput.js' },
         { name: 'PageEntries', path: './src/pages/PageEntries.js' },
         { name: 'PageSettings', path: './src/pages/PageSettings.js' },
         { name: 'PageFormEntries', path: './src/pages/PageFormEntries.js' }
@@ -154,12 +155,15 @@
                 <pre>${JSON.stringify(loadedComponents, null, 2)}</pre>
                 <h3>Window Variables:</h3>
                 <pre>Vue: ${!!window.Vue}
-VueRouter: ${!!window.VueRouter}
-Quasar: ${!!window.Quasar}
-axios: ${!!window.axios}
-MainLayout: ${!!window.MainLayout}
-PageEntries: ${!!window.PageEntries}
-PageSettings: ${!!window.PageSettings}</pre>
+            VueRouter: ${!!window.VueRouter}
+            Quasar: ${!!window.Quasar}
+            axios: ${!!window.axios}
+            MainLayout: ${!!window.MainLayout}
+            AquaInput: ${!!window.AquaInput}
+            PageFormEntries: ${!!window.PageFormEntries}
+            PageEntries: ${!!window.PageEntries}
+            PageSettings: ${!!window.PageSettings}
+            </pre>
             </div>
         `;
         document.body.appendChild(errorDiv);
@@ -176,10 +180,12 @@ PageSettings: ${!!window.PageSettings}</pre>
                 console.log(`Checking for components (attempt ${attempts})...`, {
                     MainLayout: !!window.MainLayout,
                     PageEntries: !!window.PageEntries,
-                    PageSettings: !!window.PageSettings
+                    PageSettings: !!window.PageSettings,
+                    AquaInput: !!window.AquaInput?
+                    PageFormEntries: !!window.PageFormEntries,
                 });
 
-                if (window.MainLayout && window.PageEntries && window.PageSettings) {
+                if (window.MainLayout && window.PageEntries && window.PageSettings && window.AquaInput) {
                     console.log('All components found!');
                     resolve();
                 } else if (attempts < maxAttempts) {
@@ -189,6 +195,9 @@ PageSettings: ${!!window.PageSettings}</pre>
                     if (!window.MainLayout) missing.push('MainLayout');
                     if (!window.PageEntries) missing.push('PageEntries');
                     if (!window.PageSettings) missing.push('PageSettings');
+                    if (!window.AquaInput) missing.push('AquaInput');
+                    if (!window.PageFormEntries) missing.push('PageFormEntries');
+
                     reject(new Error(`Timed out waiting for components to load. Missing: ${missing.join(', ')}`));
                 }
             };

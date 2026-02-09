@@ -30,8 +30,10 @@ const STATIC_ASSETS = [
 
   // Component JS
   `${BASE_PATH}/src/layouts/MainLayout.js`,
+  `${BASE_PATH}/src/components/AquaInput.js`,
   `${BASE_PATH}/src/pages/PageEntries.js`,
   `${BASE_PATH}/src/pages/PageSettings.js`,
+  `${BASE_PATH}/src/pages/PageFormEntries.js`,
 
   // CSS
   `${BASE_PATH}/css/quasar.prod.css`,
