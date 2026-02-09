@@ -117,15 +117,25 @@ const PageSettings = {
       localStorage.setItem('darkMode', value)
     }
 
-    const changeThemeColor = (color) => {
+    const applyThemeColor = (color) => {
       const colors = {
         teal: '#00695c',
         blue: '#1976d2',
         purple: '#7B1FA2',
         red: '#D32F2F'
       }
+      const primary = colors[color] || colors.teal
 
       // Update Quasar brand colors
+      if (Quasar.colors && typeof Quasar.colors.setBrand === 'function') {
+        Quasar.colors.setBrand('primary', primary)
+      } else {
+        document.body.style.setProperty('--q-primary', primary)
+      }
+    }
+
+    const changeThemeColor = (color) => {
+      applyThemeColor(color)
       Quasar.Dark.set(darkMode.value)
       localStorage.setItem('themeColor', color)
     }
@@ -159,6 +169,9 @@ const PageSettings = {
 
       if (savedThemeColor) {
         themeColor.value = savedThemeColor
+        applyThemeColor(savedThemeColor)
+      } else {
+        applyThemeColor(themeColor.value)
       }
 
       if (savedCurrency) {
