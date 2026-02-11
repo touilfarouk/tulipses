@@ -15,7 +15,6 @@
     <link href="https://cdn.jsdelivr.net/npm/quasar@2.14.1/dist/quasar.prod.css" rel="stylesheet">
     <link href="css/fonts.css" rel="stylesheet">
     <link href="css/app.scss" rel="stylesheet" type="text/scss">
-    <link rel="stylesheet" href="js/w2ui.min.css">
     <link href="css/transitions.css" rel="stylesheet">
     <style>
         .error-overlay {
@@ -70,8 +69,8 @@
     <script src="js/ar.umd.prod.js"></script>
 
     <!-- w2ui 2.x (no jQuery required) -->
-
-    <script src="js/w2ui.min.js"></script>
+    <link rel="stylesheet" href="https://rawcdn.githack.com/vitmalina/w2ui/master/dist/w2ui.min.css" onerror="console.error('Failed to load w2ui CSS from CDN')" onload="console.log('w2ui CSS loaded successfully')">
+    <script src="https://rawcdn.githack.com/vitmalina/w2ui/master/dist/w2ui.min.js" onerror="console.error('Failed to load w2ui JS from CDN')" onload="console.log('w2ui JS loaded successfully')"></script>
     <script src="js/store.js"></script>
   <script src="js/sass.sync.js"></script>
     <script src="js/scss-runtime.js"></script>
