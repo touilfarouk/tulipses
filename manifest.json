@@ -1,6 +1,6 @@
 {
-  "name": "Aquaculture - Money Tracker",
-  "short_name": "Aquaculture",
+  "name": "Tulipes - Farouk Template",
+  "short_name": "Tulipes",
   "description": "A simple money tracking application",
   "start_url": "/vite/",
   "display": "standalone",

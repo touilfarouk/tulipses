@@ -1,6 +1,6 @@
-# Tulipes Money Tracker
+# Tulipes Template made by Farouk Touil
 
-A comprehensive money tracking application built with Vue 3, Quasar Framework, and w2ui data tables.
+A comprehensive template application built with Vue 3, Quasar Framework, and w2ui data tables.
 
 ## Screenshots
 

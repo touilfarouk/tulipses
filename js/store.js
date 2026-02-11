@@ -227,8 +227,8 @@ const EntriesStore = {
 
   // Initialize UI state from storage
   initializeUIState() {
-    const savedDrawerState = this.getFromStorage('Aquaculture-drawer-state', false)
-    const savedActiveMenu = this.getFromStorage('Aquaculture-active-menu', '/')
+    const savedDrawerState = this.getFromStorage('Tulipes-drawer-state', false)
+    const savedActiveMenu = this.getFromStorage('Tulipes-active-menu', '/')
 
     this.uiState.leftDrawer = savedDrawerState
     this.uiState.drawerState = savedDrawerState ? 'open' : 'closed'
@@ -241,13 +241,13 @@ const EntriesStore = {
   toggleLeftDrawer() {
     this.uiState.leftDrawer = !this.uiState.leftDrawer
     this.uiState.drawerState = this.uiState.leftDrawer ? 'opening' : 'closing'
-    this.saveToStorage('Aquaculture-drawer-state', this.uiState.leftDrawer)
+    this.saveToStorage('Tulipes-drawer-state', this.uiState.leftDrawer)
   },
 
   onDrawerShow() {
     this.uiState.drawerState = 'open'
     console.log('Drawer opened')
-    this.saveToStorage('Aquaculture-drawer-state', true)
+    this.saveToStorage('Tulipes-drawer-state', true)
   },
 
   onDrawerHide() {
