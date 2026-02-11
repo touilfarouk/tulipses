@@ -10,14 +10,20 @@ const routes = [
         component: window.PageEntries
       },
       {
-        path: 'settings',
-        name: 'settings',
-        component: window.PageSettings
+        path: 'tables-demo',
+        name: 'tables-demo',
+        component: window.TablesDemo
       },
+
       {
         path: 'form-entries',
         name: 'form-entries',
         component: window.PageFormEntries
+      },
+      {
+        path: 'settings',
+        name: 'settings',
+        component: window.PageSettings
       }
     ]
   },

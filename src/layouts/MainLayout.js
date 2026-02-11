@@ -51,7 +51,31 @@ const MainLayout = {
       >
         <q-list>
           <q-item-label header class="text-white">Navigation</q-item-label>
-
+          <q-item
+            clickable
+            @click="setActiveMenuAndNavigate('/tables-demo')"
+            :style="activeMenuItem === '/tables-demo' ? 'background-color: #004d40; border-left: 4px solid #26A69A;' : ''"
+            class="menu-item-transition"
+          >
+            <q-item-section avatar>
+              <q-icon name="table_view" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Data Tables</q-item-label>
+              <q-item-label caption class="text-white" style="font-size: 8px !important;">Interactive data tables</q-item-label>
+            </q-item-section>
+            <q-item-section side>
+              <q-chip
+                v-if="activeMenuItem === '/tables-demo'"
+                color="white"
+                text-color="primary"
+                size="sm"
+              >
+                New
+              </q-chip>
+            </q-item-section>
+          </q-item>
+          <q-separator />
           <q-item
             clickable
             @click="setActiveMenuAndNavigate('/')"

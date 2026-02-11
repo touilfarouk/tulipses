@@ -1,0 +1,15 @@
+{
+  "status": "success",
+  "total": 9,
+  "records": [
+    { "recid": 1, "fname": "John", "lname": "Doe", "email": "john.doe@example.com", "sdate": "2023-01-15" },
+    { "recid": 2, "fname": "Jane", "lname": "Smith", "email": "jane.smith@example.com", "sdate": "2023-02-20" },
+    { "recid": 3, "fname": "Robert", "lname": "Johnson", "email": "robert.j@example.com", "sdate": "2023-03-10" },
+    { "recid": 4, "fname": "Emily", "lname": "Williams", "email": "emily.w@example.com", "sdate": "2023-04-05" },
+    { "recid": 5, "fname": "Michael", "lname": "Brown", "email": "michael.b@example.com", "sdate": "2023-05-12" },
+    { "recid": 6, "fname": "Sarah", "lname": "Jones", "email": "sarah.j@example.com", "sdate": "2023-06-18" },
+    { "recid": 7, "fname": "David", "lname": "Garcia", "email": "david.g@example.com", "sdate": "2023-07-22" },
+    { "recid": 8, "fname": "Lisa", "lname": "Miller", "email": "lisa.m@example.com", "sdate": "2023-08-30" },
+    { "recid": 9, "fname": "James", "lname": "Davis", "email": "james.d@example.com", "sdate": "2023-09-14" }
+  ]
+}

@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Aquaculture - Money Tracker</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,9 +12,9 @@
     <link rel="icon" href="icons/favicon.ico">
     <link rel="manifest" href="manifest.json">
     <base href="/vite/">
-    <link href="css/quasar.prod.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/quasar@2.14.1/dist/quasar.prod.css" rel="stylesheet">
     <link href="css/fonts.css" rel="stylesheet">
-    <link href="css/shadows.css" rel="stylesheet">
+    <link href="css/app.scss" rel="stylesheet" type="text/scss">
     <link href="css/transitions.css" rel="stylesheet">
     <style>
         .error-overlay {
@@ -52,19 +55,26 @@
         </div>
     </div>
 
-    <!-- Load Vue and dependencies from local files -->
-    <script src="js/vue.global.prod.js"></script>
-    <script src="js/vue-router.global.prod.js"></script>
-    <script src="js/quasar.umd.prod.js"></script>
-    <script src="js/axios.min.js"></script>
-    <script src="js/QCalendarMonth.umd.min.js"></script>
-    <script src="js/Timestamp.umd.min.js"></script>
-    <script src="js/en-US.umd.prod.js"></script>
-    <script src="js/fr.umd.prod.js"></script>
-    <script src="js/ar.umd.prod.js"></script>
-    <script src="js/store.js"></script>
 
-    <script src="js/sass.sync.js"></script>
+    <!-- Load Vue and dependencies from CDN -->
+    <script>
+      console.log('Loading libraries from CDN...');
+    </script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js" onerror="console.error('Failed to load Vue from CDN')" onload="console.log('Vue loaded successfully')"></script>
+    <script src="https://unpkg.com/vue-router@4/dist/vue-router.global.prod.js" onerror="console.error('Failed to load Vue Router from CDN')" onload="console.log('Vue Router loaded successfully')"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quasar@2.14.1/dist/quasar.umd.prod.js" onerror="console.error('Failed to load Quasar from CDN')" onload="console.log('Quasar loaded successfully')"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js" onerror="console.error('Failed to load Axios from CDN')" onload="console.log('Axios loaded successfully')"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@quasar/quasar-ui-qcalendar@4.0.0-beta.15/dist/QCalendarMonth.umd.min.js" onerror="console.error('Failed to load QCalendar from CDN')" onload="console.log('QCalendar loaded successfully')"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@quasar/quasar-ui-qcalendar@4.0.0-beta.15/dist/Timestamp.umd.min.js" onerror="console.error('Failed to load QCalendar Timestamp from CDN')" onload="console.log('QCalendar Timestamp loaded successfully')"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quasar@2.14.1/dist/lang/en-US.umd.prod.js" onerror="console.error('Failed to load Quasar EN from CDN')" onload="console.log('Quasar EN loaded successfully')"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quasar@2.14.1/dist/lang/fr.umd.prod.js" onerror="console.error('Failed to load Quasar FR from CDN')" onload="console.log('Quasar FR loaded successfully')"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quasar@2.14.1/dist/lang/ar.umd.prod.js" onerror="console.error('Failed to load Quasar AR from CDN')" onload="console.log('Quasar AR loaded successfully')"></script>
+
+    <!-- w2ui 2.x (no jQuery required) -->
+    <link rel="stylesheet" href="https://rawcdn.githack.com/vitmalina/w2ui/master/dist/w2ui.min.css" onerror="console.error('Failed to load w2ui CSS from CDN')" onload="console.log('w2ui CSS loaded successfully')">
+    <script src="https://rawcdn.githack.com/vitmalina/w2ui/master/dist/w2ui.min.js" onerror="console.error('Failed to load w2ui JS from CDN')" onload="console.log('w2ui JS loaded successfully')"></script>
+    <script src="js/store.js"></script>
+  <script src="js/sass.sync.js"></script>
     <script src="js/scss-runtime.js"></script>
 
     <script>
@@ -72,6 +82,24 @@
     console.log('Starting application initialization...');
     console.log('Base URL:', window.location.href);
     console.log('Scripts loading from:', window.location.origin + '/vite/');
+
+    // Check if all required libraries are loaded
+    function checkLibraries() {
+        console.log('=== Library Status Check ===');
+        console.log('Vue available:', typeof Vue !== 'undefined');
+        console.log('VueRouter available:', typeof VueRouter !== 'undefined');
+        console.log('Quasar available:', typeof Quasar !== 'undefined');
+        console.log('Axios available:', typeof axios !== 'undefined');
+        console.log('w2ui available:', typeof w2ui !== 'undefined');
+        console.log('w2grid available:', typeof w2grid !== 'undefined');
+
+        if (typeof w2ui === 'undefined') {
+            console.error('w2ui is not loaded! This will cause the table to fail.');
+        }
+    }
+
+    // Check libraries after a short delay
+    setTimeout(checkLibraries, 1000);
 
     // Set base URL based on environment
     const isGitHubPages = window.location.hostname === 'touilfarouk.github.io';
@@ -117,6 +145,7 @@
                 return resolve();
             }
 
+            console.log('Loading component:', name, 'from:', path);
             const script = document.createElement('script');
             script.src = path;
             script.onload = () => {
@@ -134,11 +163,12 @@
 
     // Load components in order
     const components = [
-        { name: 'MainLayout', path: './src/layouts/MainLayout.js' },
-        { name: 'AquaInput', path: './src/components/AquaInput.js' },
-        { name: 'PageEntries', path: './src/pages/PageEntries.js' },
-        { name: 'PageSettings', path: './src/pages/PageSettings.js' },
-        { name: 'PageFormEntries', path: './src/pages/PageFormEntries.js' }
+        { name: 'MainLayout', path: './src/layouts/MainLayout.js?v=' + Date.now() },
+        { name: 'AquaInput', path: './src/components/AquaInput.js?v=' + Date.now() },
+        { name: 'PageEntries', path: './src/pages/PageEntries.js?v=' + Date.now() },
+        { name: 'PageSettings', path: './src/pages/PageSettings.js?v=' + Date.now() },
+        { name: 'PageFormEntries', path: './src/pages/PageFormEntries.js?v=' + Date.now() },
+        { name: 'TablesDemo', path: './src/pages/TablesDemo.js?v=' + Date.now() }
     ];
 
     function showError(message, details = '') {
@@ -163,6 +193,7 @@
             PageFormEntries: ${!!window.PageFormEntries}
             PageEntries: ${!!window.PageEntries}
             PageSettings: ${!!window.PageSettings}
+            TablesDemo: ${!!window.TablesDemo}
             </pre>
             </div>
         `;
@@ -181,11 +212,12 @@
                     MainLayout: !!window.MainLayout,
                     PageEntries: !!window.PageEntries,
                     PageSettings: !!window.PageSettings,
-                    AquaInput: !!window.AquaInput?
+                    AquaInput: !!window.AquaInput,
                     PageFormEntries: !!window.PageFormEntries,
+                    TablesDemo: !!window.TablesDemo
                 });
 
-                if (window.MainLayout && window.PageEntries && window.PageSettings && window.AquaInput) {
+                if (window.MainLayout && window.PageEntries && window.PageSettings && window.AquaInput && window.PageFormEntries && window.TablesDemo) {
                     console.log('All components found!');
                     resolve();
                 } else if (attempts < maxAttempts) {
@@ -197,6 +229,7 @@
                     if (!window.PageSettings) missing.push('PageSettings');
                     if (!window.AquaInput) missing.push('AquaInput');
                     if (!window.PageFormEntries) missing.push('PageFormEntries');
+                    if (!window.TablesDemo) missing.push('TablesDemo');
 
                     reject(new Error(`Timed out waiting for components to load. Missing: ${missing.join(', ')}`));
                 }

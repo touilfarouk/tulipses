@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>w2ui Grid Test - Native 2.x</title>
+
+    <!-- w2ui CSS (master branch = 2.x) -->
+    <link rel="stylesheet"
+          href="https://rawcdn.githack.com/vitmalina/w2ui/master/dist/w2ui.min.css" />
+
+    <!-- w2ui JS (master branch = 2.x - NO jQuery required) -->
+    <script src="https://rawcdn.githack.com/vitmalina/w2ui/master/dist/w2ui.min.js"></script>
+
+    <style>
+        body { margin: 20px; font-family: Arial; }
+    </style>
+</head>
+
+<body>
+
+<h2>w2ui Grid 2.x (No jQuery)</h2>
+
+<div id="grid" style="width:100%; height:400px;"></div>
+
+<script>
+// No jQuery needed! Pure JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize the grid using w2ui global object
+    const grid = new w2grid({
+        name: 'grid',
+        box: document.getElementById('grid'),  // Explicitly set container
+        show: {
+            toolbar: true,
+            footer: true,
+            lineNumbers: true
+        },
+        columns: [
+            { field: 'recid', caption: 'ID', size: '60px', sortable: true },
+            { field: 'fname', caption: 'First Name', size: '30%', sortable: true, resizable: true },
+            { field: 'lname', caption: 'Last Name', size: '30%', sortable: true, resizable: true },
+            { field: 'email', caption: 'Email', size: '40%', resizable: true }
+        ],
+        records: [
+            { recid: 1, fname: 'Ahmed', lname: 'Benali', email: 'ahmed@mail.com' },
+            { recid: 2, fname: 'Sara', lname: 'Ali', email: 'sara@mail.com' },
+            { recid: 3, fname: 'Yacine', lname: 'Touil', email: 'yacine@mail.com' }
+        ]
+    });
+});
+</script>
+
+</body>
+</html>
