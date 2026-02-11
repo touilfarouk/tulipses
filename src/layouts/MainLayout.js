@@ -26,7 +26,7 @@ const MainLayout = {
             :color="drawerState === 'open' ? 'white' : 'white'"
           />
           <q-toolbar-title>
-            Aquaculture
+            Tulipes
             <q-badge
               v-if="drawerState !== 'closed'"
               color="white"
