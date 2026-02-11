@@ -57,18 +57,16 @@
 
 
     <!-- Load Vue and dependencies from CDN -->
-    <script>
-      console.log('Loading libraries from CDN...');
-    </script>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js" onerror="console.error('Failed to load Vue from CDN')" onload="console.log('Vue loaded successfully')"></script>
-    <script src="https://unpkg.com/vue-router@4/dist/vue-router.global.prod.js" onerror="console.error('Failed to load Vue Router from CDN')" onload="console.log('Vue Router loaded successfully')"></script>
-    <script src="https://cdn.jsdelivr.net/npm/quasar@2.14.1/dist/quasar.umd.prod.js" onerror="console.error('Failed to load Quasar from CDN')" onload="console.log('Quasar loaded successfully')"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js" onerror="console.error('Failed to load Axios from CDN')" onload="console.log('Axios loaded successfully')"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@quasar/quasar-ui-qcalendar@4.0.0-beta.15/dist/QCalendarMonth.umd.min.js" onerror="console.error('Failed to load QCalendar from CDN')" onload="console.log('QCalendar loaded successfully')"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@quasar/quasar-ui-qcalendar@4.0.0-beta.15/dist/Timestamp.umd.min.js" onerror="console.error('Failed to load QCalendar Timestamp from CDN')" onload="console.log('QCalendar Timestamp loaded successfully')"></script>
-    <script src="https://cdn.jsdelivr.net/npm/quasar@2.14.1/dist/lang/en-US.umd.prod.js" onerror="console.error('Failed to load Quasar EN from CDN')" onload="console.log('Quasar EN loaded successfully')"></script>
-    <script src="https://cdn.jsdelivr.net/npm/quasar@2.14.1/dist/lang/fr.umd.prod.js" onerror="console.error('Failed to load Quasar FR from CDN')" onload="console.log('Quasar FR loaded successfully')"></script>
-    <script src="https://cdn.jsdelivr.net/npm/quasar@2.14.1/dist/lang/ar.umd.prod.js" onerror="console.error('Failed to load Quasar AR from CDN')" onload="console.log('Quasar AR loaded successfully')"></script>
+    <!-- Load Vue and dependencies from local files -->
+    <script src="js/vue.global.prod.js"></script>
+    <script src="js/vue-router.global.prod.js"></script>
+    <script src="js/quasar.umd.prod.js"></script>
+    <script src="js/axios.min.js"></script>
+    <script src="js/QCalendarMonth.umd.min.js"></script>
+    <script src="js/Timestamp.umd.min.js"></script>
+    <script src="js/en-US.umd.prod.js"></script>
+    <script src="js/fr.umd.prod.js"></script>
+    <script src="js/ar.umd.prod.js"></script>
 
     <!-- w2ui 2.x (no jQuery required) -->
     <link rel="stylesheet" href="https://rawcdn.githack.com/vitmalina/w2ui/master/dist/w2ui.min.css" onerror="console.error('Failed to load w2ui CSS from CDN')" onload="console.log('w2ui CSS loaded successfully')">
