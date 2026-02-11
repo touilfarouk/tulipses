@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Aquaculture - Money Tracker</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A simple money tracking application">
+    <meta name="theme-color" content="#00695c">
+    <link rel="icon" href="icons/favicon.ico">
+    <link rel="manifest" href="manifest.json">
+    <base href="/vite/">
+    <link href="css/quasar.prod.css" rel="stylesheet">
+    <link href="css/fonts.css" rel="stylesheet">
+    <link href="css/shadows.css" rel="stylesheet">
+    <link href="css/transitions.css" rel="stylesheet">
+    <style>
+        .error-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 2rem;
+            z-index: 9999;
+            font-family: Arial, sans-serif;
+            overflow: auto;
+        }
+        .error-message {
+            background: #b71c1c;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            white-space: pre-wrap;
+        }
+        .debug-info {
+            background: #333;
+            padding: 1rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+            margin-top: 1rem;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="q-app">
+        <div class="q-loading" style="font-size: 30px">
+            <div class="q-loading-spinner"></div>
+        </div>
+    </div>
+
+    <!-- Load Vue and dependencies from local files -->
+    <script src="js/vue.global.prod.js"></script>
+    <script src="js/vue-router.global.prod.js"></script>
+    <script src="js/quasar.umd.prod.js"></script>
+    <script src="js/axios.min.js"></script>
+    <script src="js/QCalendarMonth.umd.min.js"></script>
+    <script src="js/Timestamp.umd.min.js"></script>
+    <script src="js/en-US.umd.prod.js"></script>
+    <script src="js/fr.umd.prod.js"></script>
+    <script src="js/ar.umd.prod.js"></script>
+
+    <!-- w2ui 2.x (no jQuery required) -->
+    <link rel="stylesheet" href="https://rawcdn.githack.com/vitmalina/w2ui/master/dist/w2ui.min.css" onerror="console.error('Failed to load w2ui CSS from CDN')" onload="console.log('w2ui CSS loaded successfully')">
+    <script src="https://rawcdn.githack.com/vitmalina/w2ui/master/dist/w2ui.min.js" onerror="console.error('Failed to load w2ui JS from CDN')" onload="console.log('w2ui JS loaded successfully')"></script>
+    <script src="js/store.js"></script>
+  <script src="js/sass.sync.js"></script>
+    <script src="js/scss-runtime.js"></script>
+
+    <script>
+    // Debug information
+    console.log('Starting application initialization...');
+    console.log('Base URL:', window.location.href);
+    console.log('Scripts loading from:', window.location.origin + '/vite/');
+
+    // Check if all required libraries are loaded
+    function checkLibraries() {
+        console.log('=== Library Status Check ===');
+        console.log('Vue available:', typeof Vue !== 'undefined');
+        console.log('VueRouter available:', typeof VueRouter !== 'undefined');
+        console.log('Quasar available:', typeof Quasar !== 'undefined');
+        console.log('Axios available:', typeof axios !== 'undefined');
+        console.log('w2ui available:', typeof w2ui !== 'undefined');
+        console.log('w2grid available:', typeof w2grid !== 'undefined');
+
+        if (typeof w2ui === 'undefined') {
+            console.error('w2ui is not loaded! This will cause the table to fail.');
+        }
+    }
+
+    // Check libraries after a short delay
+    setTimeout(checkLibraries, 1000);
+
+    // Set base URL based on environment
+    const isGitHubPages = window.location.hostname === 'touilfarouk.github.io';
+    const basePath = isGitHubPages ? '/vite/' : '/';
+
+    // Create global Vue app
+    const { createApp } = Vue;
+    const { createRouter, createWebHashHistory } = VueRouter;
+
+    // Initialize Quasar
+    const themeColors = {
+        teal: '#00695c',
+        blue: '#1976d2',
+        purple: '#7B1FA2',
+        red: '#D32F2F'
+    };
+    const savedTheme = localStorage.getItem('themeColor') || 'teal';
+    const primaryColor = themeColors[savedTheme] || themeColors.teal;
+
+    const quasarUserOptions = {
+        config: {
+            brand: {
+                primary: primaryColor,
+                secondary: '#26A69A',
+                accent: '#9C27B0',
+                dark: '#1D1D1D',
+                positive: '#21BA45',
+                negative: '#C10015',
+                info: '#31CCEC',
+                warning: '#F2C037'
+            }
+        }
+    };
+
+    // Track component loading
+    const loadedComponents = {};
+
+    // Load component scripts
+    async function loadComponent(name, path) {
+        return new Promise((resolve, reject) => {
+            if (loadedComponents[name]) {
+                console.log('Component already loaded:', name);
+                return resolve();
+            }
+
+            console.log('Loading component:', name, 'from:', path);
+            const script = document.createElement('script');
+            script.src = path;
+            script.onload = () => {
+                console.log('Component loaded successfully:', name);
+                loadedComponents[name] = true;
+                resolve();
+            };
+            script.onerror = (error) => {
+                console.error('Failed to load component:', name, error);
+                reject(new Error(`Failed to load component: ${name}`));
+            };
+            document.body.appendChild(script);
+        });
+    }
+
+    // Load components in order
+    const components = [
+        { name: 'MainLayout', path: './src/layouts/MainLayout.js?v=' + Date.now() },
+        { name: 'AquaInput', path: './src/components/AquaInput.js?v=' + Date.now() },
+        { name: 'PageEntries', path: './src/pages/PageEntries.js?v=' + Date.now() },
+        { name: 'PageSettings', path: './src/pages/PageSettings.js?v=' + Date.now() },
+        { name: 'PageFormEntries', path: './src/pages/PageFormEntries.js?v=' + Date.now() },
+        { name: 'TablesDemo', path: './src/pages/TablesDemo.js?v=' + Date.now() }
+    ];
+
+    function showError(message, details = '') {
+        console.error(message, details);
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-overlay';
+        errorDiv.innerHTML = `
+            <h2>Application Error</h2>
+            <div class="error-message">${message}</div>
+            <div class="debug-info">
+                <h3>Debug Information:</h3>
+                <div>${details}</div>
+                <h3>Loaded Components:</h3>
+                <pre>${JSON.stringify(loadedComponents, null, 2)}</pre>
+                <h3>Window Variables:</h3>
+                <pre>Vue: ${!!window.Vue}
+            VueRouter: ${!!window.VueRouter}
+            Quasar: ${!!window.Quasar}
+            axios: ${!!window.axios}
+            MainLayout: ${!!window.MainLayout}
+            AquaInput: ${!!window.AquaInput}
+            PageFormEntries: ${!!window.PageFormEntries}
+            PageEntries: ${!!window.PageEntries}
+            PageSettings: ${!!window.PageSettings}
+            TablesDemo: ${!!window.TablesDemo}
+            </pre>
+            </div>
+        `;
+        document.body.appendChild(errorDiv);
+    }
+
+    // Wait for components to be registered
+    async function waitForComponents() {
+        const maxAttempts = 10;
+        let attempts = 0;
+
+        return new Promise((resolve, reject) => {
+            const checkComponents = () => {
+                attempts++;
+                console.log(`Checking for components (attempt ${attempts})...`, {
+                    MainLayout: !!window.MainLayout,
+                    PageEntries: !!window.PageEntries,
+                    PageSettings: !!window.PageSettings,
+                    AquaInput: !!window.AquaInput,
+                    PageFormEntries: !!window.PageFormEntries,
+                    TablesDemo: !!window.TablesDemo
+                });
+
+                if (window.MainLayout && window.PageEntries && window.PageSettings && window.AquaInput && window.PageFormEntries && window.TablesDemo) {
+                    console.log('All components found!');
+                    resolve();
+                } else if (attempts < maxAttempts) {
+                    setTimeout(checkComponents, 100);
+                } else {
+                    const missing = [];
+                    if (!window.MainLayout) missing.push('MainLayout');
+                    if (!window.PageEntries) missing.push('PageEntries');
+                    if (!window.PageSettings) missing.push('PageSettings');
+                    if (!window.AquaInput) missing.push('AquaInput');
+                    if (!window.PageFormEntries) missing.push('PageFormEntries');
+                    if (!window.TablesDemo) missing.push('TablesDemo');
+
+                    reject(new Error(`Timed out waiting for components to load. Missing: ${missing.join(', ')}`));
+                }
+            };
+
+            checkComponents();
+        });
+    }
+
+    // Initialize the app
+    async function initializeApp() {
+        try {
+            // Load all components
+            for (const component of components) {
+                await loadComponent(component.name, component.path).catch(error => {
+                    throw new Error(`Failed to load component: ${component.name}\n${error.message}`);
+                });
+            }
+
+            // Wait for components to be registered
+            console.log('All scripts loaded, waiting for components to register...');
+            await waitForComponents();
+
+            // Verify all required globals are available
+            const required = {
+                'Vue': window.Vue,
+                'VueRouter': window.VueRouter,
+                'Quasar': window.Quasar,
+                'axios': window.axios
+            };
+
+            const missing = Object.entries(required)
+                .filter(([_, value]) => !value)
+                .map(([name]) => name);
+
+            if (missing.length > 0) {
+                throw new Error(`Missing required dependencies: ${missing.join(', ')}`);
+            }
+
+            // Create app instance
+            const app = createApp({
+                template: '<router-view></router-view>'
+            });
+
+            // Configure Quasar
+            app.use(Quasar, quasarUserOptions);
+
+            // Import and create the router
+            const { createAppRouter } = await import('./src/router/routes.js');
+            const router = createAppRouter(basePath);
+
+            // Mount the app
+            app.use(router);
+            app.mount('#q-app');
+
+            // Hide loading spinner
+            const loading = document.querySelector('.q-loading');
+            if (loading) {
+                loading.style.display = 'none';
+            }
+
+            console.log('App initialized successfully');
+
+        } catch (error) {
+            showError(
+                'Failed to initialize application',
+                `Error: ${error.message}\n\nStack: ${error.stack || 'No stack trace available'}`
+            );
+        }
+    }
+
+    // Start the app
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeApp);
+    } else {
+        initializeApp();
+    }
+    </script>
+
+    <!-- Load the app.js script after all other scripts -->
+    <script src="js/app.js"></script>
+</body>
+</html>
