@@ -247,6 +247,26 @@ const TablesDemo = {
             { field: 'email', caption: 'Email', size: '40%', sortable: true, resizable: true },
             { field: 'sdate', caption: 'Start Date', size: '120px', sortable: true, resizable: true }
           ],
+          toolbar: {
+            items: [
+              { type: 'break', id: 'break1' },
+              { type: 'button', id: 'add', text: 'Add', icon: 'fa fa-plus', style: 'border-radius: 0px;' }, // Square button
+              { type: 'button', id: 'edit', text: 'Edit', icon: 'fa fa-edit', style: 'border-radius: 0px;' }, // Square button
+              { type: 'button', id: 'delete', text: 'Delete', icon: 'fa fa-trash', style: 'border-radius: 0px;' }, // Square button
+              { type: 'break', id: 'break2' },
+              { type: 'button', id: 'view', text: 'View', icon: 'fa fa-eye', style: 'border-radius: 4px;' }, // Rounded button
+              { type: 'button', id: 'export', text: 'Export', icon: 'fa fa-download', style: 'border-radius: 12px;' }, // More rounded
+              { type: 'button', id: 'import', text: 'Import', icon: 'fa fa-upload', style: 'border-radius: 20px;' }, // Very rounded
+              { type: 'break', id: 'break3' },
+              { type: 'button', id: 'refresh', text: 'Refresh', icon: 'fa fa-refresh', style: 'border-radius: 50%; width: 35px; height: 35px;' }, // Circular
+              { type: 'spacer' },
+              { type: 'html', id: 'info', html: '<span style="color: #666; padding: 8px;">Square buttons available!</span>' }
+            ],
+            onClick: function (event) {
+              console.log('Toolbar clicked:', event.target);
+              handleToolbarAction(event.target);
+            }
+          },
           records: data
         });
 
@@ -273,6 +293,198 @@ const TablesDemo = {
         console.error('Error creating grid:', error);
         console.error('Error stack:', error.stack);
         container.innerHTML = `<div style="padding: 20px; color: red;">Error creating grid: ${error.message}</div>`;
+      }
+    };
+
+    // Handle toolbar actions
+    const handleToolbarAction = (target) => {
+      switch(target) {
+        case 'add':
+          showAddDialog.value = true;
+          editingEmployee.value = false;
+          resetForm();
+          break;
+        case 'edit':
+          editSelectedEmployee();
+          break;
+        case 'delete':
+          deleteSelectedEmployee();
+          break;
+        case 'view':
+          viewSelectedEmployee();
+          break;
+        case 'export':
+          exportToCSV();
+          break;
+        case 'import':
+          triggerFileImport();
+          break;
+        case 'refresh':
+          loadData();
+          break;
+        default:
+          console.log('Unknown action:', target);
+      }
+    };
+
+    // CRUD Operations
+    const resetForm = () => {
+      employeeForm.value = {
+        fname: '',
+        lname: '',
+        email: '',
+        sdate: ''
+      };
+    };
+
+    const closeDialog = () => {
+      showAddDialog.value = false;
+      editingEmployee.value = false;
+      resetForm();
+    };
+
+    const saveEmployee = () => {
+      if (!employeeForm.value.fname || !employeeForm.value.lname || !employeeForm.value.email) {
+        showNotification('Please fill all required fields', 'negative');
+        return;
+      }
+
+      if (editingEmployee.value) {
+        // Update existing employee
+        const index = window.currentGrid.records.findIndex(emp => emp.recid === editingEmployee.value.recid);
+        if (index !== -1) {
+          window.currentGrid.records[index] = { ...editingEmployee.value, ...employeeForm.value };
+          window.currentGrid.refresh();
+          showNotification('Employee updated successfully', 'positive');
+        }
+      } else {
+        // Add new employee
+        const newId = Math.max(...window.currentGrid.records.map(emp => emp.recid)) + 1;
+        const newEmployee = { recid: newId, ...employeeForm.value };
+        window.currentGrid.records.push(newEmployee);
+        window.currentGrid.refresh();
+        showNotification('Employee added successfully', 'positive');
+      }
+
+      closeDialog();
+    };
+
+    const editSelectedEmployee = () => {
+      const selected = window.currentGrid.getSelection();
+      if (selected.length === 0) {
+        showNotification('Please select an employee to edit', 'warning');
+        return;
+      }
+
+      const employee = window.currentGrid.records.find(emp => emp.recid === selected[0]);
+      if (employee) {
+        editingEmployee.value = employee;
+        employeeForm.value = { ...employee };
+        showAddDialog.value = true;
+      }
+    };
+
+    const deleteSelectedEmployee = () => {
+      const selected = window.currentGrid.getSelection();
+      if (selected.length === 0) {
+        showNotification('Please select an employee to delete', 'warning');
+        return;
+      }
+
+      if (confirm('Are you sure you want to delete this employee?')) {
+        window.currentGrid.records = window.currentGrid.records.filter(emp => emp.recid !== selected[0]);
+        window.currentGrid.refresh();
+        showNotification('Employee deleted successfully', 'positive');
+      }
+    };
+
+    const viewSelectedEmployee = () => {
+      const selected = window.currentGrid.getSelection();
+      if (selected.length === 0) {
+        showNotification('Please select an employee to view', 'warning');
+        return;
+      }
+
+      const employee = window.currentGrid.records.find(emp => emp.recid === selected[0]);
+      if (employee) {
+        selectedEmployee.value = employee;
+        showViewDialog.value = true;
+      }
+    };
+
+    const exportToCSV = () => {
+      const records = window.currentGrid.records;
+      const headers = ['ID', 'First Name', 'Last Name', 'Email', 'Start Date'];
+      const csvContent = [
+        headers.join(','),
+        ...records.map(emp =>
+          [emp.recid, emp.fname, emp.lname, emp.email, emp.sdate].join(',')
+        )
+      ].join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'employees.csv';
+      a.click();
+      window.URL.revokeObjectURL(url);
+
+      showNotification('Data exported successfully', 'positive');
+    };
+
+    const triggerFileImport = () => {
+      document.querySelector('input[type="file"]').click();
+    };
+
+    const handleFileImport = (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const csv = e.target.result;
+        const lines = csv.split('\n');
+        const headers = lines[0].split(',');
+
+        const newRecords = lines.slice(1).filter(line => line.trim()).map((line, index) => {
+          const values = line.split(',');
+          return {
+            recid: window.currentGrid.records.length + index + 1,
+            fname: values[1]?.trim() || '',
+            lname: values[2]?.trim() || '',
+            email: values[3]?.trim() || '',
+            sdate: values[4]?.trim() || ''
+          };
+        });
+
+        window.currentGrid.records.push(...newRecords);
+        window.currentGrid.refresh();
+        showNotification(`${newRecords.length} records imported successfully`, 'positive');
+      };
+
+      reader.readAsText(file);
+      event.target.value = '';
+    };
+
+    const confirmClearAll = () => {
+      if (confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
+        window.currentGrid.records = [];
+        window.currentGrid.refresh();
+        showNotification('All data cleared', 'positive');
+      }
+    };
+
+    const showNotification = (message, type = 'info') => {
+      if (window.Quasar && window.Quasar.Notify) {
+        window.Quasar.Notify.create({
+          message,
+          type,
+          position: 'top',
+          timeout: 2500
+        });
+      } else {
+        alert(message);
       }
     };
 
@@ -307,7 +519,23 @@ const TablesDemo = {
     return {
       loading,
       showAddDialog,
-      loadData
+      showViewDialog,
+      editingEmployee,
+      selectedEmployee,
+      employeeForm,
+      loadData,
+      handleToolbarAction,
+      resetForm,
+      closeDialog,
+      saveEmployee,
+      editSelectedEmployee,
+      deleteSelectedEmployee,
+      viewSelectedEmployee,
+      exportToCSV,
+      triggerFileImport,
+      handleFileImport,
+      confirmClearAll,
+      showNotification
     };
   }
 };
