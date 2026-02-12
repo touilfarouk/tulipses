@@ -3,7 +3,7 @@ console.log('Loading TablesDemo component...');
 const TablesDemo = {
   template: `
     <q-page class="q-pa-md">
-      <div class="text-h4 q-mb-md">Employee Data Management</div>
+      <div class="text-h6 q-mb-md">Employee Data Management</div>
 
       <div class="row q-mb-md q-gutter-md">
         <div class="col-auto">
