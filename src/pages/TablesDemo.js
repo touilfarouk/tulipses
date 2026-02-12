@@ -1,10 +1,9 @@
-// TablesDemo with w2ui grid
 console.log('Loading TablesDemo component...');
 
 const TablesDemo = {
   template: `
     <q-page class="q-pa-md">
-      <div class="text-h4 q-mb-md">Employee Data Table</div>
+      <div class="text-h4 q-mb-md">Employee Data Management</div>
 
       <div class="row q-mb-md q-gutter-md">
         <div class="col-auto">
@@ -24,6 +23,37 @@ const TablesDemo = {
             @click="showAddDialog = true"
           />
         </div>
+        <div class="col-auto">
+          <q-btn
+            color="info"
+            icon="download"
+            label="Export CSV"
+            @click="exportToCSV"
+          />
+        </div>
+        <div class="col-auto">
+          <q-btn
+            color="warning"
+            icon="upload"
+            label="Import CSV"
+            @click="triggerFileImport"
+          />
+        </div>
+        <div class="col-auto">
+          <q-btn
+            color="negative"
+            icon="delete"
+            label="Clear All"
+            @click="confirmClearAll"
+          />
+        </div>
+        <input
+          type="file"
+          ref="fileInput"
+          accept=".csv"
+          style="display: none"
+          @change="handleFileImport"
+        />
       </div>
 
       <div v-if="loading" class="text-center q-mt-md">
@@ -31,13 +61,94 @@ const TablesDemo = {
         <div class="q-mt-sm">Loading data...</div>
       </div>
 
-      <div id="grid" style="width: 100%; height: 400px; border: 1px solid #ddd; border-radius: 4px;"></div>
+      <div id="grid" style="width: 100%; height: 500px; border: 1px solid #ddd; border-radius: 4px;"></div>
+
+      <!-- Add/Edit Dialog -->
+      <q-dialog v-model="showAddDialog" persistent>
+        <q-card style="min-width: 400px">
+          <q-card-section>
+            <div class="text-h6">{{ editingEmployee ? 'Edit Employee' : 'Add New Employee' }}</div>
+          </q-card-section>
+
+          <q-card-section class="q-pt-none">
+            <q-form ref="employeeForm" @submit="saveEmployee">
+              <q-input
+                filled
+                v-model="employeeForm.fname"
+                label="First Name"
+                class="q-mb-md"
+                :rules="[val => !!val || 'First name is required']"
+              />
+              <q-input
+                filled
+                v-model="employeeForm.lname"
+                label="Last Name"
+                class="q-mb-md"
+                :rules="[val => !!val || 'Last name is required']"
+              />
+              <q-input
+                filled
+                v-model="employeeForm.email"
+                label="Email"
+                type="email"
+                class="q-mb-md"
+                :rules="[val => !!val || 'Email is required', val => val.includes('@') || 'Invalid email']"
+              />
+              <q-input
+                filled
+                v-model="employeeForm.sdate"
+                label="Start Date"
+                type="date"
+                class="q-mb-md"
+                :rules="[val => !!val || 'Start date is required']"
+              />
+            </q-form>
+          </q-card-section>
+
+          <q-card-actions align="right" class="text-primary">
+            <q-btn flat label="Cancel" @click="closeDialog" />
+            <q-btn flat label="Save" @click="saveEmployee" />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
+
+      <!-- View Dialog -->
+      <q-dialog v-model="showViewDialog">
+        <q-card style="min-width: 400px">
+          <q-card-section>
+            <div class="text-h6">Employee Details</div>
+          </q-card-section>
+
+          <q-card-section class="q-pt-none">
+            <div v-if="selectedEmployee">
+              <p><strong>ID:</strong> {{ selectedEmployee.recid }}</p>
+              <p><strong>First Name:</strong> {{ selectedEmployee.fname }}</p>
+              <p><strong>Last Name:</strong> {{ selectedEmployee.lname }}</p>
+              <p><strong>Email:</strong> {{ selectedEmployee.email }}</p>
+              <p><strong>Start Date:</strong> {{ selectedEmployee.sdate }}</p>
+            </div>
+          </q-card-section>
+
+          <q-card-actions align="right">
+            <q-btn flat label="Close" color="primary" @click="showViewDialog = false" />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
     </q-page>
   `,
   setup() {
     console.log('TablesDemo setup() called');
     const loading = Vue.ref(false);
     const showAddDialog = Vue.ref(false);
+    const showViewDialog = Vue.ref(false);
+    const editingEmployee = Vue.ref(false);
+    const selectedEmployee = Vue.ref(null);
+    const employeeForm = Vue.ref({
+      fname: '',
+      lname: '',
+      email: '',
+      sdate: ''
+    });
 
     const loadData = async () => {
       console.log('=== loadData started ===');
