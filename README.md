@@ -6,8 +6,7 @@ A comprehensive template application built with Vue 3, Quasar Framework, and w2u
 
 ## Screenshots
 
-|
-| <img src="img-01.png" width="1000" alt="Data Table View"> | <img src="img-02.png" width="1000" alt="Form Entries View"> | <img src="img-03.png" width="1000" alt="Form Entries View"> | <img src="img-04.png" width="1000" alt="Form Entries View"> 
+<img src="img-01.png" width="1000" alt="Data Table View"> | <img src="img-02.png" width="1000" alt="Form Entries View"> | <img src="img-03.png" width="1000" alt="Form Entries View"> | <img src="img-04.png" width="1000" alt="Form Entries View"> 
 
 ## Features
 
