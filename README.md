@@ -1,3 +1,5 @@
+## 📄 License
+This project is licensed under the MIT License — see the LICENSE file for details.
 # Tulipes Template made by Farouk Touil
 
 A comprehensive template application built with Vue 3, Quasar Framework, and w2ui data tables.
