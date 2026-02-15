@@ -4,9 +4,9 @@ A comprehensive template application built with Vue 3, Quasar Framework, and w2u
 
 ## Screenshots
 
-| Data Table View | Form Entries View |
+| Data Table View | Form Entries View | Table Grid  View  | Table Grid  Form  |
 |-----------------|------------------|
-| <img src="img-01.png" width="500" alt="Data Table View"> | <img src="img-02.png" width="500" alt="Form Entries View"> |
+| <img src="img-01.png" width="500" alt="Data Table View"> | <img src="img-02.png" width="500" alt="Form Entries View"> | <img src="img-03.png" width="500" alt="Form Entries View"> | <img src="img-04.png" width="500" alt="Form Entries View"> 
 
 ## Features
 
