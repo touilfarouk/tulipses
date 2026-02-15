@@ -3,7 +3,7 @@ const APP = {
   deferredPrompt: null,
   isOnline: 'onLine' in navigator && navigator.onLine,
   isStandalone: window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone,
-  BASE_PATH: '/vite/',
+  BASE_PATH: '/tulipses/',
   navCount: 0,
 
   // Initialize the application

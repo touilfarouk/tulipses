@@ -40,7 +40,7 @@ const routes = [
 ];
 
 // Create and export router factory function
-export function createAppRouter(basePath = '/vite/') {
+export function createAppRouter(basePath = '/tulipses/') {
   const router = createRouter({
     history: createWebHashHistory(basePath),
     routes,

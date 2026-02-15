@@ -63,8 +63,8 @@ const PageMultiGrid = {
     const loadEmployees = async () => {
       try {
         let url =
-          window.location.pathname.includes('/vite/')
-            ? '/vite/data/list.json'
+          window.location.pathname.includes('/tulipses/')
+            ? '/tulipses/data/list.json'
             : 'data/list.json';
 
         const res = await fetch(url);

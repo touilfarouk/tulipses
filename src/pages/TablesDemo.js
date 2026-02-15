@@ -156,8 +156,8 @@ const TablesDemo = {
       try {
         // Try multiple possible URLs
         let dataUrl;
-        if (window.location.pathname.includes('/vite/')) {
-          dataUrl = '/vite/data/list.json';
+        if (window.location.pathname.includes('/tulipses/')) {
+          dataUrl = '/tulipses/data/list.json';
         } else {
           dataUrl = 'data/list.json';
         }

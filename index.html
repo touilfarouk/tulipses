@@ -11,7 +11,7 @@
     <meta name="theme-color" content="#00695c">
     <link rel="icon" href="icons/favicon.ico">
     <link rel="manifest" href="manifest.json">
-    <base href="/vite/">
+    <base href="/tulipses/">
     <link href="https://cdn.jsdelivr.net/npm/quasar@2.14.1/dist/quasar.prod.css" rel="stylesheet">
     <link href="css/fonts.css" rel="stylesheet">
     <link href="css/app.scss" rel="stylesheet" type="text/scss">
@@ -79,7 +79,7 @@
     // Debug information
     console.log('Starting application initialization...');
     console.log('Base URL:', window.location.href);
-    console.log('Scripts loading from:', window.location.origin + '/vite/');
+    console.log('Scripts loading from:', window.location.origin + '/tulipses/');
 
     // Check if all required libraries are loaded
     function checkLibraries() {
@@ -101,7 +101,7 @@
 
     // Set base URL based on environment
     const isGitHubPages = window.location.hostname === 'touilfarouk.github.io';
-    const basePath = isGitHubPages ? '/vite/' : '/';
+    const basePath = isGitHubPages ? '/tulipses/' : '/';
 
     // Create global Vue app
     const { createApp } = Vue;
