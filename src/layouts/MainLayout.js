@@ -222,26 +222,26 @@ const MainLayout = {
     store.initializeUIState()
 
     // Create local reactive drawer state with localStorage persistence
-    const savedDrawerState = localStorage.getItem('Aquaculture-drawer-state') === 'true'
+    const savedDrawerState = localStorage.getItem('Tulipes-drawer-state') === 'true'
     const localDrawerOpen = Vue.ref(savedDrawerState)
 
     // Simple drawer toggle function with persistence
     const toggleLeftDrawer = () => {
       localDrawerOpen.value = !localDrawerOpen.value
-      localStorage.setItem('Aquaculture-drawer-state', localDrawerOpen.value.toString())
+      localStorage.setItem('Tulipes-drawer-state', localDrawerOpen.value.toString())
       console.log('Drawer toggled:', localDrawerOpen.value)
     }
 
     // Sync with store when needed
     const onDrawerShow = () => {
       localDrawerOpen.value = true
-      localStorage.setItem('Aquaculture-drawer-state', 'true')
+      localStorage.setItem('Tulipes-drawer-state', 'true')
       store.onDrawerShow()
     }
 
     const onDrawerHide = () => {
       localDrawerOpen.value = false
-      localStorage.setItem('Aquaculture-drawer-state', 'false')
+      localStorage.setItem('Tulipes-drawer-state', 'false')
       store.onDrawerHide()
     }
 
@@ -300,7 +300,7 @@ const MainLayout = {
       // Set active menu based on current path
       const currentPath = store.getCurrentPath()
       store.uiState.activeMenuItem = currentPath
-      store.saveToStorage('Aquaculture-active-menu', currentPath)
+      store.saveToStorage('Tulipes-active-menu', currentPath)
     })
 
     // Watch for active menu changes and force reactivity

@@ -1,6 +1,6 @@
-// Service Worker for Aquaculture PWA
+// Service Worker for Tulipes PWA
 console.log('[Service Worker] Script loaded');
-const CACHE_PREFIX = 'Aquaculture-pwa';
+const CACHE_PREFIX = 'Tulipes-pwa';
 const CACHE_VERSION = 'v4'; // Incremented version to force update
 const STATIC_CACHE = `${CACHE_PREFIX}-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `${CACHE_PREFIX}-dynamic-${CACHE_VERSION}`;
@@ -294,7 +294,7 @@ self.addEventListener('push', (event) => {
     return;
   }
 
-  const title = data.title || 'Aquaculture';
+  const title = data.title || 'Tulipes';
   const options = {
     body: data.body || 'You have new updates',
     icon: `${BASE_PATH}/icons/icon-192x192.png`,

@@ -87,7 +87,7 @@ const PageSettings = {
               </q-card-section>
 
               <q-card-section>
-                <p class="q-mb-sm">Aquaculture v1.0.0</p>
+                <p class="q-mb-sm">Tulipes v1.0.0</p>
                 <p class="q-mb-none">A simple money tracking application</p>
               </q-card-section>
             </q-card>

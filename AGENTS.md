@@ -1,6 +1,6 @@
-# AI Agents in Aquaculture Farouk Template
+# AI Agents in Tulipes Farouk Template
 
-This document outlines the AI agents and assistants integrated into the Aquaculture Farouk Template application, their roles, and how to interact with them.
+This document outlines the AI agents and assistants integrated into the Tulipes Farouk Template application, their roles, and how to interact with them.
 
 ## Table of Contents
 - [Overview](#overview)
@@ -11,7 +11,7 @@ This document outlines the AI agents and assistants integrated into the Aquacult
 
 ## Overview
 
-The Aquaculture Farouk Template leverages AI to enhance user experience through intelligent form handling, data processing, and user interaction. This document serves as a reference for developers working with these AI components.
+The Tulipes Farouk Template leverages AI to enhance user experience through intelligent form handling, data processing, and user interaction. This document serves as a reference for developers working with these AI components.
 
 ## Agent Directory
 

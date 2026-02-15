@@ -253,7 +253,7 @@ const EntriesStore = {
   onDrawerHide() {
     this.uiState.drawerState = 'closed'
     console.log('Drawer closed')
-    this.saveToStorage('Aquaculture-drawer-state', false)
+    this.saveToStorage('Tulipes-drawer-state', false)
   },
 
   // Router reference (set during app init)
@@ -292,7 +292,7 @@ const EntriesStore = {
     if (window.innerWidth <= 700) {
       this.uiState.leftDrawer = false
       this.uiState.drawerState = 'closing'
-      this.saveToStorage('Aquaculture-drawer-state', false)
+      this.saveToStorage('Tulipes-drawer-state', false)
     }
   },
 
@@ -301,7 +301,7 @@ const EntriesStore = {
     console.log('Current activeMenuItem before:', this.uiState.activeMenuItem)
 
     this.uiState.activeMenuItem = path
-    this.saveToStorage('Aquaculture-active-menu', path)
+    this.saveToStorage('Tulipes-active-menu', path)
 
     console.log('Current activeMenuItem after:', this.uiState.activeMenuItem)
 

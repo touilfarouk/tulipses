@@ -1,8 +1,8 @@
 {
-  "name": "quasar-Aquaculture",
+  "name": "quasar-Tulipes",
   "version": "0.0.1",
   "description": "A Quasar Project",
-  "productName": "Aquaculture",
+  "productName": "Tulipes",
   "author": "Danny Connell",
   "private": true,
   "scripts": {
