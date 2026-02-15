@@ -16,6 +16,11 @@ const routes = [
       },
 
       {
+        path: 'page-multi-grid',
+        name: 'page-multi-grid',
+        component: window.PageMultiGrid
+      },
+      {
         path: 'form-entries',
         name: 'form-entries',
         component: window.PageFormEntries
@@ -30,7 +35,7 @@ const routes = [
   {
     path: '/:catchAll(.*)*',
     name: 'not-found',
-    component: () => console.error('Page not found') || { template: '<div>Page not found</div>' }
+    component: { template: '<div>Page not found</div>' }
   }
 ];
 

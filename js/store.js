@@ -256,9 +256,34 @@ const EntriesStore = {
     this.saveToStorage('Aquaculture-drawer-state', false)
   },
 
+  // Router reference (set during app init)
+  _router: null,
+  setRouter(router) {
+    this._router = router
+  },
+
+  // Path to route name mapping (avoids base-path issues)
+  _pathToName: {
+    '/': 'home',
+    '/tables-demo': 'tables-demo',
+    '/page-multi-grid': 'page-multi-grid',
+    '/form-entries': 'form-entries',
+    '/settings': 'settings'
+  },
+
   // Navigation functions
   navigateTo(path) {
-    window.location.hash = path
+    const normalizedPath = path.startsWith('/') ? path : '/' + path
+    if (this._router) {
+      const name = this._pathToName[normalizedPath]
+      if (name) {
+        this._router.push({ name })
+      } else {
+        this._router.push(normalizedPath)
+      }
+    } else {
+      window.location.hash = normalizedPath
+    }
   },
 
   navigateToAndClose(path) {
@@ -289,7 +314,11 @@ const EntriesStore = {
   },
 
   getCurrentPath() {
-    return window.location.hash.replace('#', '') || '/'
+    if (this._router?.currentRoute?.value?.path) {
+      return this._router.currentRoute.value.path || '/'
+    }
+    const hash = window.location.hash.replace(/^#/, '')
+    return hash || '/'
   }
 }
 

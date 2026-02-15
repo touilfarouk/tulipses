@@ -75,6 +75,20 @@ const MainLayout = {
               </q-chip>
             </q-item-section>
           </q-item>
+          <q-item
+            clickable
+            @click="setActiveMenuAndNavigate('/page-multi-grid')"
+            :style="activeMenuItem === '/page-multi-grid' ? 'background-color: #004d40; border-left: 4px solid #26A69A;' : ''"
+            class="menu-item-transition"
+          >
+            <q-item-section avatar>
+              <q-icon name="grid_on" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Page Multi Grid</q-item-label>
+              <q-item-label caption class="text-white" style="font-size: 8px !important;">Hello World</q-item-label>
+            </q-item-section>
+          </q-item>
           <q-separator />
           <q-item
             clickable

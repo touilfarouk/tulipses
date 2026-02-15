@@ -166,7 +166,8 @@
         { name: 'PageEntries', path: './src/pages/PageEntries.js?v=' + Date.now() },
         { name: 'PageSettings', path: './src/pages/PageSettings.js?v=' + Date.now() },
         { name: 'PageFormEntries', path: './src/pages/PageFormEntries.js?v=' + Date.now() },
-        { name: 'TablesDemo', path: './src/pages/TablesDemo.js?v=' + Date.now() }
+        { name: 'TablesDemo', path: './src/pages/TablesDemo.js?v=' + Date.now() },
+        { name: 'PageMultiGrid', path: './src/pages/PageMultiGrid.js?v=' + Date.now() }
     ];
 
     function showError(message, details = '') {
@@ -192,6 +193,7 @@
             PageEntries: ${!!window.PageEntries}
             PageSettings: ${!!window.PageSettings}
             TablesDemo: ${!!window.TablesDemo}
+            PageMultiGrid: ${!!window.PageMultiGrid}
             </pre>
             </div>
         `;
@@ -212,10 +214,11 @@
                     PageSettings: !!window.PageSettings,
                     AquaInput: !!window.AquaInput,
                     PageFormEntries: !!window.PageFormEntries,
-                    TablesDemo: !!window.TablesDemo
+                    TablesDemo: !!window.TablesDemo,
+                    PageMultiGrid: !!window.PageMultiGrid
                 });
 
-                if (window.MainLayout && window.PageEntries && window.PageSettings && window.AquaInput && window.PageFormEntries && window.TablesDemo) {
+                if (window.MainLayout && window.PageEntries && window.PageSettings && window.AquaInput && window.PageFormEntries && window.TablesDemo && window.PageMultiGrid) {
                     console.log('All components found!');
                     resolve();
                 } else if (attempts < maxAttempts) {
@@ -228,6 +231,7 @@
                     if (!window.AquaInput) missing.push('AquaInput');
                     if (!window.PageFormEntries) missing.push('PageFormEntries');
                     if (!window.TablesDemo) missing.push('TablesDemo');
+                    if (!window.PageMultiGrid) missing.push('PageMultiGrid');
 
                     reject(new Error(`Timed out waiting for components to load. Missing: ${missing.join(', ')}`));
                 }
@@ -278,6 +282,11 @@
             // Import and create the router
             const { createAppRouter } = await import('./src/router/routes.js');
             const router = createAppRouter(basePath);
+
+            // Wire router into store for navigation
+            if (typeof useEntriesStore === 'function') {
+                useEntriesStore().setRouter(router);
+            }
 
             // Mount the app
             app.use(router);
