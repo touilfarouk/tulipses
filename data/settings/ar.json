@@ -1,0 +1,33 @@
+{
+  "labels": {
+    "title": "الإعدادات",
+    "appearance": "المظهر",
+    "darkMode": "الوضع الداكن",
+    "theme": "السمة",
+    "currency": "العملة",
+    "dataManagement": "إدارة البيانات",
+    "clearAllData": "مسح كل البيانات",
+    "about": "حول",
+    "version": "توليبس v1.0.0",
+    "description": "تطبيق بسيط لتتبع الأموال",
+    "backHome": "العودة للرئيسية",
+    "drawerLabel": "الإعدادات",
+    "drawerCaption": "تهيئة التطبيق"
+  },
+  "themeOptions": [
+    { "label": "تركواز", "value": "teal" },
+    { "label": "أزرق", "value": "blue" },
+    { "label": "بنفسجي", "value": "purple" },
+    { "label": "أحمر", "value": "red" }
+  ],
+  "currencyOptions": [
+    { "label": "دولار أمريكي ($)", "value": "USD" },
+    { "label": "يورو (€)", "value": "EUR" },
+    { "label": "جنيه إسترليني (£)", "value": "GBP" },
+    { "label": "ين ياباني (¥)", "value": "JPY" }
+  ],
+  "confirmClear": {
+    "title": "تأكيد",
+    "message": "هل أنت متأكد من مسح كل البيانات؟"
+  }
+}

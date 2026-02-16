@@ -1,0 +1,51 @@
+{
+  "labels": {
+    "title": "إدخالات النماذج",
+    "step1": "المعلومات الشخصية",
+    "step2": "معلومات الاتصال",
+    "step3": "معلومات إضافية",
+    "step4": "مراجعة وإرسال",
+    "back": "رجوع",
+    "continue": "متابعة",
+    "submit": "إرسال",
+    "submitForm": "إرسال النموذج",
+    "notProvided": "غير متوفر",
+    "drawerLabel": "إدخالات النماذج",
+    "drawerCaption": "عرض الإرسالات"
+  },
+  "personalFields": [
+    { "name": "firstName", "label": "الاسم الأول", "type": "text", "value": "" },
+    { "name": "lastName", "label": "اسم العائلة", "type": "text", "value": "" },
+    { "name": "birthDate", "label": "تاريخ الميلاد", "type": "date", "value": "" }
+  ],
+  "contactFields": [
+    { "name": "email", "label": "البريد الإلكتروني", "type": "email", "value": "" },
+    { "name": "phone", "label": "رقم الهاتف", "type": "tel", "value": "" },
+    { "name": "address", "label": "العنوان", "type": "text", "value": "" }
+  ],
+  "additionalFields": [
+    { "name": "notes", "label": "ملاحظات إضافية", "type": "textarea", "value": "" },
+    {
+      "name": "preferredContact",
+      "label": "وسيلة التواصل المفضلة",
+      "type": "radio",
+      "value": "email",
+      "options": [
+        { "label": "البريد الإلكتروني", "value": "email" },
+        { "label": "الهاتف", "value": "phone" }
+      ]
+    },
+    {
+      "name": "interests",
+      "label": "الاهتمامات",
+      "type": "multiselect",
+      "value": [],
+      "options": [
+        { "label": "تقارير", "value": "reports" },
+        { "label": "تنبيهات", "value": "alerts" },
+        { "label": "فواتير", "value": "invoices" }
+      ],
+      "multiple": true
+    }
+  ]
+}

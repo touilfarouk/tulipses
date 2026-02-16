@@ -1,0 +1,34 @@
+{
+  "labels": {
+    "title": "Entries",
+    "paid": "Paid",
+    "swipeOrTap": "Swipe or tap",
+    "delete": "Delete",
+    "swipeLeft": "Swipe left",
+    "markPaid": "Mark Paid",
+    "swipeRight": "Swipe right",
+    "addNewEntry": "Add New Entry",
+    "entryName": "Entry name",
+    "amount": "Amount",
+    "add": "Add",
+    "unmarkPaid": "Unmark Paid",
+    "confirmDeleteTitle": "Confirm Delete",
+    "confirmDeleteMessage": "Are you sure you want to delete \"{name}\"?",
+    "confirmStatusTitle": "Confirm Status Change",
+    "confirmStatusMessage": "Are you sure you want to {action} \"{name}\"?",
+    "actionMarkPaid": "mark as paid",
+    "actionUnmarkPaid": "unmark as unpaid",
+    "okDelete": "Delete",
+    "okMarkPaid": "Mark as Paid",
+    "okUnmarkPaid": "Unmark as Unpaid",
+    "cancel": "Cancel",
+    "drawerLabel": "Entries",
+    "drawerCaption": "Manage entries"
+  },
+  "entries": [
+    { "id": "id1", "name": "Salary", "amount": 4999.99, "paid": false },
+    { "id": "id2", "name": "Rent", "amount": -999, "paid": false },
+    { "id": "id3", "name": "Phone", "amount": -14.99, "paid": true },
+    { "id": "id4", "name": "Unknown", "amount": 0, "paid": false }
+  ]
+}

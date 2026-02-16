@@ -1,0 +1,33 @@
+{
+  "labels": {
+    "title": "Settings",
+    "appearance": "Appearance",
+    "darkMode": "Dark Mode",
+    "theme": "Theme",
+    "currency": "Currency",
+    "dataManagement": "Data Management",
+    "clearAllData": "Clear All Data",
+    "about": "About",
+    "version": "Tulipes v1.0.0",
+    "description": "A simple money tracking application",
+    "backHome": "Back to Home",
+    "drawerLabel": "Settings",
+    "drawerCaption": "App configuration"
+  },
+  "themeOptions": [
+    { "label": "Teal", "value": "teal" },
+    { "label": "Blue", "value": "blue" },
+    { "label": "Purple", "value": "purple" },
+    { "label": "Red", "value": "red" }
+  ],
+  "currencyOptions": [
+    { "label": "US Dollar ($)", "value": "USD" },
+    { "label": "Euro (€)", "value": "EUR" },
+    { "label": "British Pound (£)", "value": "GBP" },
+    { "label": "Japanese Yen (¥)", "value": "JPY" }
+  ],
+  "confirmClear": {
+    "title": "Confirm",
+    "message": "Are you sure you want to clear all data?"
+  }
+}

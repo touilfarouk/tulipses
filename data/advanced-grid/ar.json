@@ -1,0 +1,44 @@
+{
+  "labels": {
+    "grid": {
+      "advancedTitle": "شبكة بيانات متقدمة",
+      "addNew": "إضافة",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "view": "عرض",
+      "id": "المعرف",
+      "name": "الاسم",
+      "category": "الفئة",
+      "value": "القيمة",
+      "status": "الحالة",
+      "itemDetails": "تفاصيل العنصر",
+      "close": "إغلاق"
+    },
+    "status": {
+      "all": "الكل",
+      "active": "نشط",
+      "inactive": "غير نشط",
+      "pending": "قيد الانتظار"
+    },
+    "drawer": {
+      "label": "شبكة متقدمة",
+      "caption": "بحث، تصفية، تعديل"
+    }
+  },
+  "categories": [
+    { "id": "electronics", "text": "إلكترونيات" },
+    { "id": "furniture", "text": "أثاث" },
+    { "id": "office", "text": "مستلزمات مكتبية" },
+    { "id": "other", "text": "أخرى" }
+  ],
+  "statuses": [
+    { "id": "active", "text": "نشط" },
+    { "id": "inactive", "text": "غير نشط" },
+    { "id": "pending", "text": "قيد الانتظار" }
+  ],
+  "records": [
+    { "recid": 1, "id": 1, "name": "عنصر 1", "categoryKey": "electronics", "value": 120, "statusKey": "active" },
+    { "recid": 2, "id": 2, "name": "عنصر 2", "categoryKey": "furniture", "value": 340, "statusKey": "inactive" },
+    { "recid": 3, "id": 3, "name": "عنصر 3", "categoryKey": "office", "value": 560, "statusKey": "pending" }
+  ]
+}

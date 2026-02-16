@@ -57,41 +57,50 @@ const PageMultiGrid = {
 
     const activeTab = Vue.ref('employees');
     const i18nLang = Vue.ref(window.i18n?.lang || 'en');
+    const labels = Vue.ref({});
+    const employees = Vue.ref([]);
+    const departments = Vue.ref([]);
+    const projects = Vue.ref([]);
+
     if (window.i18n?.onChange) {
       window.i18n.onChange((lang) => {
         i18nLang.value = lang;
-        rebuildAllGrids();
+        loadScreenData();
       });
     }
 
     const t = (key) => {
       void i18nLang.value;
-      return window.i18n?.t ? window.i18n.t(key) : key;
+      const parts = key.split('.');
+      let value = labels.value;
+      for (const part of parts) {
+        value = value?.[part];
+      }
+      return value ?? key;
     };
 
     /* --------------------------------------------------
        EMPLOYEES DATA LOAD
     -------------------------------------------------- */
-    const getDataUrl = (lang) => {
-      const version = window.APP_VERSION || Date.now();
-      const suffix = lang ? `.${lang}` : '';
-      if (window.location.pathname.includes('/tulipses/')) {
-        return `/tulipses/data/list${suffix}.json?v=${version}`;
-      }
-      return `data/list${suffix}.json?v=${version}`;
-    };
-
-    const loadEmployees = async () => {
+    const loadScreenData = async () => {
       try {
         const lang = window.i18n?.lang || 'en';
-        const url = getDataUrl(lang);
+        const data = await window.screenData.load('page-multi-grid', lang);
+        if (!data) throw new Error('No screen data returned');
 
-        const res = await fetch(url, { cache: 'no-store' });
-        const json = await res.json();
-        return json.records || [];
+        labels.value = data.labels || {};
+        employees.value = data.employees || [];
+        departments.value = data.departments || [];
+        projects.value = data.projects || [];
+
+        rebuildAllGrids();
       } catch (e) {
-        console.error('Employee load failed', e);
-        return [];
+        console.error('Multi grid load failed', e);
+        labels.value = {};
+        employees.value = [];
+        departments.value = [];
+        projects.value = [];
+        rebuildAllGrids();
       }
     };
 
@@ -100,7 +109,7 @@ const PageMultiGrid = {
     -------------------------------------------------- */
     const initEmployeesGrid = async () => {
 
-      const data = await loadEmployees();
+      const data = employees.value || [];
 
       if (w2ui.employeesGrid) {
         w2ui.employeesGrid.destroy();
@@ -146,12 +155,7 @@ const PageMultiGrid = {
           { field:'name', caption:t('multiGrid.departments'), size:'50%' },
           { field:'manager', caption:t('multiGrid.manager'), size:'50%' }
         ],
-        records: [
-          { recid:1, name:t('multiGrid.deptIT'), manager:'John Smith' },
-          { recid:2, name:t('multiGrid.deptHR'), manager:'Sara Lee' },
-          { recid:3, name:t('multiGrid.deptFinance'), manager:'Ahmed Benali' },
-          { recid:4, name:t('multiGrid.deptMarketing'), manager:'Nadia Karim' }
-        ]
+        records: departments.value || []
       });
     };
 
@@ -175,11 +179,7 @@ const PageMultiGrid = {
           { field:'status', caption:t('multiGrid.status'), size:'30%' },
           { field:'budget', caption:t('multiGrid.budget'), size:'30%', render:'money' }
         ],
-        records: [
-          { recid:1, title:'ERP System', status:t('multiGrid.active'), budget:50000 },
-          { recid:2, title:'Mobile App', status:t('multiGrid.planning'), budget:20000 },
-          { recid:3, title:'Website Redesign', status:t('multiGrid.completed'), budget:12000 }
-        ]
+        records: projects.value || []
       });
     };
 
@@ -208,7 +208,7 @@ const PageMultiGrid = {
 
           console.log('w2ui ready — creating grids');
 
-          rebuildAllGrids();
+          loadScreenData();
 
         } else {
           setTimeout(waitForW2ui, 400);

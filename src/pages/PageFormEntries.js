@@ -23,7 +23,7 @@ const PageFormEntries = {
         <!-- Step 1: Personal Information -->
         <q-step
           :name="1"
-          title="Personal Information"
+          :title="t('step1')"
           icon="person"
           :done="step > 1"
         >
@@ -42,7 +42,7 @@ const PageFormEntries = {
         <!-- Step 2: Contact Information -->
         <q-step
           :name="2"
-          title="Contact Information"
+          :title="t('step2')"
           icon="contact_mail"
           :done="step > 2"
         >
@@ -61,7 +61,7 @@ const PageFormEntries = {
         <!-- Step 3: Additional Information -->
         <q-step
           :name="3"
-          title="Additional Information"
+          :title="t('step3')"
           icon="info"
           :done="step > 3"
         >
@@ -80,12 +80,12 @@ const PageFormEntries = {
         <!-- Step 4: Review & Submit -->
         <q-step
           :name="4"
-          title="Review & Submit"
+          :title="t('step4')"
           icon="check_circle"
         >
           <div class="stepper-pane">
             <div v-for="(value, key) in formData" :key="key" class="q-mb-sm">
-              <strong>{{ formatLabel(key) }}:</strong> {{ value || 'Not provided' }}
+              <strong>{{ formatLabel(key) }}:</strong> {{ value || t('notProvided') }}
             </div>
           </div>
         </q-step>
@@ -98,7 +98,7 @@ const PageFormEntries = {
               flat
               color="primary"
               @click="$refs.stepper.previous()"
-              label="Back"
+              :label="t('back')"
               class="q-ml-sm"
             />
             <q-space />
@@ -106,13 +106,13 @@ const PageFormEntries = {
               v-if="step < 4"
               @click="$refs.stepper.next()"
               color="primary"
-              :label="step === 4 ? 'Submit' : 'Continue'"
+              :label="step === 4 ? t('submit') : t('continue')"
             />
             <q-btn
               v-else
               @click="submitForm"
               color="positive"
-              label="Submit Form"
+              :label="t('submitForm')"
               icon="send"
             />
           </q-stepper-navigation>
@@ -124,58 +124,28 @@ const PageFormEntries = {
   setup() {
     const step = Vue.ref(1);
     const formData = Vue.reactive({});
-
-    // Define form fields for each step
-    const personalFields = [
-      { name: 'firstName', label: 'First Name', type: 'text', value: '' },
-      { name: 'lastName', label: 'Last Name', type: 'text', value: '' },
-      { name: 'dateOfBirth', label: 'Date of Birth', type: 'date', value: '' },
-      // Add more personal fields as needed
-    ];
-
-    const contactFields = [
-      { name: 'email', label: 'Email', type: 'email', value: '' },
-      { name: 'phone', label: 'Phone Number', type: 'tel', value: '' },
-      { name: 'address', label: 'Address', type: 'text', value: '' },
-      // Add more contact fields as needed
-    ];
-
-    const additionalFields = [
-      { name: 'notes', label: 'Additional Notes', type: 'textarea', value: '' },
-      {
-        name: 'preferredContact',
-        label: 'Preferred Contact',
-        type: 'radio',
-        value: 'email',
-        options: [
-          { label: 'Email', value: 'email' },
-          { label: 'Phone', value: 'phone' }
-        ]
-      },
-      {
-        name: 'interests',
-        label: 'Interests',
-        type: 'multiselect',
-        value: [],
-        options: [
-          { label: 'Reports', value: 'reports' },
-          { label: 'Alerts', value: 'alerts' },
-          { label: 'Invoices', value: 'invoices' }
-        ],
-        multiple: true
-      }
-      // Add more additional fields as needed
-    ];
+    const labels = Vue.ref({});
+    const personalFields = Vue.ref([]);
+    const contactFields = Vue.ref([]);
+    const additionalFields = Vue.ref([]);
+    const labelMap = Vue.ref({});
+    const i18nLang = Vue.ref(window.i18n?.lang || 'en');
+    if (window.i18n?.onChange) {
+      window.i18n.onChange((lang) => {
+        i18nLang.value = lang;
+        loadScreenData();
+      });
+    }
 
     // Initialize form data with empty values
     const initializeFormData = () => {
-      [...personalFields, ...contactFields, ...additionalFields].forEach(field => {
+      [...personalFields.value, ...contactFields.value, ...additionalFields.value].forEach(field => {
         formData[field.name] = field.value !== undefined ? field.value : '';
       });
     };
 
     const formatLabel = (key) => {
-      return key
+      return labelMap.value[key] || key
         .replace(/([A-Z])/g, ' $1')
         .replace(/^./, str => str.toUpperCase());
     };
@@ -191,9 +161,46 @@ const PageFormEntries = {
       field.value = value;
     };
 
+    const t = (key) => {
+      void i18nLang.value;
+      return labels.value?.[key] || key;
+    };
+
+    const rebuildLabelMap = () => {
+      const map = {};
+      [...personalFields.value, ...contactFields.value, ...additionalFields.value].forEach(field => {
+        if (field?.name && field?.label) {
+          map[field.name] = field.label;
+        }
+      });
+      labelMap.value = map;
+    };
+
+    const loadScreenData = async () => {
+      try {
+        const lang = window.i18n?.lang || 'en';
+        const data = await window.screenData.load('form-entries', lang);
+        if (!data) throw new Error('No screen data returned');
+        labels.value = data.labels || {};
+        personalFields.value = data.personalFields || [];
+        contactFields.value = data.contactFields || [];
+        additionalFields.value = data.additionalFields || [];
+        rebuildLabelMap();
+        initializeFormData();
+      } catch (error) {
+        console.error('Form entries load failed', error);
+        labels.value = {};
+        personalFields.value = [];
+        contactFields.value = [];
+        additionalFields.value = [];
+        labelMap.value = {};
+        initializeFormData();
+      }
+    };
+
     // Initialize form data when component is mounted
     Vue.onMounted(() => {
-      initializeFormData();
+      loadScreenData();
     });
 
     return {
@@ -203,6 +210,7 @@ const PageFormEntries = {
       contactFields,
       additionalFields,
       formatLabel,
+      t,
       submitForm,
       onFieldUpdate
     };

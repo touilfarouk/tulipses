@@ -1,0 +1,34 @@
+{
+  "labels": {
+    "title": "القيود",
+    "paid": "مدفوع",
+    "swipeOrTap": "اسحب أو اضغط",
+    "delete": "حذف",
+    "swipeLeft": "اسحب لليسار",
+    "markPaid": "تحديد كمدفوع",
+    "swipeRight": "اسحب لليمين",
+    "addNewEntry": "إضافة قيد جديد",
+    "entryName": "اسم القيد",
+    "amount": "المبلغ",
+    "add": "إضافة",
+    "unmarkPaid": "إلغاء المدفوع",
+    "confirmDeleteTitle": "تأكيد الحذف",
+    "confirmDeleteMessage": "هل أنت متأكد من حذف \"{name}\"؟",
+    "confirmStatusTitle": "تأكيد تغيير الحالة",
+    "confirmStatusMessage": "هل أنت متأكد من {action} \"{name}\"؟",
+    "actionMarkPaid": "تحديده كمدفوع",
+    "actionUnmarkPaid": "إلغاء كمدفوع",
+    "okDelete": "حذف",
+    "okMarkPaid": "تحديد كمدفوع",
+    "okUnmarkPaid": "إلغاء المدفوع",
+    "cancel": "إلغاء",
+    "drawerLabel": "القيود",
+    "drawerCaption": "إدارة القيود"
+  },
+  "entries": [
+    { "id": "id1", "name": "راتب", "amount": 4999.99, "paid": false },
+    { "id": "id2", "name": "إيجار", "amount": -999, "paid": false },
+    { "id": "id3", "name": "هاتف", "amount": -14.99, "paid": true },
+    { "id": "id4", "name": "غير معروف", "amount": 0, "paid": false }
+  ]
+}

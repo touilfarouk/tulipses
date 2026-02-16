@@ -1,0 +1,33 @@
+{
+  "labels": {
+    "title": "Paramètres",
+    "appearance": "Apparence",
+    "darkMode": "Mode sombre",
+    "theme": "Thème",
+    "currency": "Devise",
+    "dataManagement": "Gestion des données",
+    "clearAllData": "Tout effacer",
+    "about": "À propos",
+    "version": "Tulipes v1.0.0",
+    "description": "Une application simple de suivi des dépenses",
+    "backHome": "Retour à l’accueil",
+    "drawerLabel": "Paramètres",
+    "drawerCaption": "Configuration"
+  },
+  "themeOptions": [
+    { "label": "Sarcelle", "value": "teal" },
+    { "label": "Bleu", "value": "blue" },
+    { "label": "Violet", "value": "purple" },
+    { "label": "Rouge", "value": "red" }
+  ],
+  "currencyOptions": [
+    { "label": "Dollar US ($)", "value": "USD" },
+    { "label": "Euro (€)", "value": "EUR" },
+    { "label": "Livre sterling (£)", "value": "GBP" },
+    { "label": "Yen japonais (¥)", "value": "JPY" }
+  ],
+  "confirmClear": {
+    "title": "Confirmer",
+    "message": "Voulez-vous vraiment tout effacer ?"
+  }
+}

@@ -140,6 +140,7 @@ const TablesDemo = {
     console.log('TablesDemo setup() called');
     const loading = Vue.ref(false);
     const i18nLang = Vue.ref(window.i18n?.lang || 'en');
+    const labels = Vue.ref({});
     if (window.i18n?.onChange) {
       window.i18n.onChange((lang) => {
         i18nLang.value = lang;
@@ -160,16 +161,12 @@ const TablesDemo = {
 
     const t = (key) => {
       void i18nLang.value;
-      return window.i18n?.t ? window.i18n.t(key) : key;
-    };
-
-    const getDataUrl = (lang) => {
-      const version = window.APP_VERSION || Date.now();
-      const suffix = lang ? `.${lang}` : '';
-      if (window.location.pathname.includes('/tulipses/')) {
-        return `/tulipses/data/list${suffix}.json?v=${version}`;
+      const parts = key.split('.');
+      let value = labels.value;
+      for (const part of parts) {
+        value = value?.[part];
       }
-      return `data/list${suffix}.json?v=${version}`;
+      return value ?? key;
     };
 
     const loadData = async () => {
@@ -177,16 +174,11 @@ const TablesDemo = {
       loading.value = true;
       try {
         const lang = window.i18n?.lang || 'en';
-        const dataUrl = getDataUrl(lang);
-        console.log('Fetching data from:', dataUrl);
-        const response = await fetch(dataUrl, { cache: 'no-store' });
-        console.log('Fetch response status:', response.status);
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await window.screenData.load('tables-demo', lang);
+        if (!data) {
+          throw new Error('No screen data returned');
         }
-
-        const data = await response.json();
+        labels.value = data.labels || {};
         console.log('Raw JSON data:', data);
         console.log('Data records:', data.records);
 
@@ -196,6 +188,7 @@ const TablesDemo = {
       } catch (error) {
         console.error('Error loading data:', error);
         // Initialize grid with empty data on error
+        labels.value = {};
         gridData.value = [];
         initGrid(gridData.value);
       } finally {

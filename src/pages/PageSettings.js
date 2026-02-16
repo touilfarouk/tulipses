@@ -1,11 +1,11 @@
-console.log('Registering PageSettings component');
+﻿console.log('Registering PageSettings component');
 
 // PageSettings component
 const PageSettings = {
   template: `
     <q-page>
       <div class="q-pa-md">
-        <h4>Settings</h4>
+        <h4>{{ t('title') }}</h4>
 
         <!-- Settings Cards in Row -->
         <div class="row q-col-gutter-md q-mb-md">
@@ -13,13 +13,13 @@ const PageSettings = {
           <div class="col-12 col-md-3">
             <q-card flat bordered class="full-height shadow-2">
               <q-card-section>
-                <div class="text-h6">Appearance</div>
+                <div class="text-h6">{{ t('appearance') }}</div>
               </q-card-section>
 
               <q-card-section>
                 <q-toggle
                   v-model="darkMode"
-                  label="Dark Mode"
+                  :label="t('darkMode')"
                   color="primary"
                   @update:model-value="toggleDarkMode"
                 />
@@ -28,12 +28,7 @@ const PageSettings = {
                   <q-btn-toggle
                     v-model="themeColor"
                     toggle-color="primary"
-                    :options="[
-                      { label: 'Teal', value: 'teal' },
-                      { label: 'Blue', value: 'blue' },
-                      { label: 'Purple', value: 'purple' },
-                      { label: 'Red', value: 'red' }
-                    ]"
+                    :options="themeOptions"
                     @update:model-value="changeThemeColor"
                   />
                 </div>
@@ -45,14 +40,14 @@ const PageSettings = {
           <div class="col-12 col-md-3">
             <q-card flat bordered class="full-height shadow-2">
               <q-card-section>
-                <div class="text-h6">Currency</div>
+                <div class="text-h6">{{ t('currency') }}</div>
               </q-card-section>
 
               <q-card-section>
                 <q-select
                   v-model="currency"
                   :options="currencyOptions"
-                  label="Currency"
+                  :label="t('currency')"
                   emit-value
                   map-options
                   @update:model-value="changeCurrency"
@@ -65,13 +60,13 @@ const PageSettings = {
           <div class="col-12 col-md-3">
             <q-card flat bordered class="full-height shadow-2">
               <q-card-section>
-                <div class="text-h6">Data Management</div>
+                <div class="text-h6">{{ t('dataManagement') }}</div>
               </q-card-section>
 
               <q-card-section>
                 <q-btn
                   color="negative"
-                  label="Clear All Data"
+                  :label="t('clearAllData')"
                   @click="confirmClearData"
                   class="full-width"
                 />
@@ -83,19 +78,19 @@ const PageSettings = {
           <div class="col-12 col-md-3">
             <q-card flat bordered class="full-height shadow-2">
               <q-card-section>
-                <div class="text-h6">About</div>
+                <div class="text-h6">{{ t('about') }}</div>
               </q-card-section>
 
               <q-card-section>
-                <p class="q-mb-sm">Tulipes v1.0.0</p>
-                <p class="q-mb-none">A simple money tracking application</p>
+                <p class="q-mb-sm">{{ t('version') }}</p>
+                <p class="q-mb-none">{{ t('description') }}</p>
               </q-card-section>
             </q-card>
           </div>
         </div>
 
         <div class="q-mt-md">
-          <q-btn flat color="primary" @click="$router.push('/')">Back to Home</q-btn>
+          <q-btn flat color="primary" @click="$router.push('/')">{{ t('backHome') }}</q-btn>
         </div>
       </div>
     </q-page>
@@ -104,13 +99,37 @@ const PageSettings = {
     const darkMode = Vue.ref(Quasar.Dark.isActive)
     const themeColor = Vue.ref('teal')
     const currency = Vue.ref('USD')
+    const labels = Vue.ref({})
+    const themeOptions = Vue.ref([])
+    const currencyOptions = Vue.ref([])
+    const i18nLang = Vue.ref(window.i18n?.lang || 'en')
+    if (window.i18n?.onChange) {
+      window.i18n.onChange((lang) => {
+        i18nLang.value = lang
+        loadScreenData()
+      })
+    }
 
-    const currencyOptions = [
-      { label: 'US Dollar ($)', value: 'USD' },
-      { label: 'Euro (€)', value: 'EUR' },
-      { label: 'British Pound (£)', value: 'GBP' },
-      { label: 'Japanese Yen (¥)', value: 'JPY' }
-    ]
+    const t = (key) => {
+      void i18nLang.value
+      return labels.value?.[key] || key
+    }
+
+    const loadScreenData = async () => {
+      try {
+        const lang = window.i18n?.lang || 'en'
+        const data = await window.screenData.load('settings', lang)
+        if (!data) throw new Error('No screen data returned')
+        labels.value = data.labels || {}
+        themeOptions.value = data.themeOptions || []
+        currencyOptions.value = data.currencyOptions || []
+      } catch (error) {
+        console.error('Settings load failed', error)
+        labels.value = {}
+        themeOptions.value = []
+        currencyOptions.value = []
+      }
+    }
 
     const toggleDarkMode = (value) => {
       Quasar.Dark.set(value)
@@ -145,9 +164,11 @@ const PageSettings = {
     }
 
     const confirmClearData = () => {
+      const confirmTitle = labels.value?.confirmClear?.title || 'Confirm'
+      const confirmMessage = labels.value?.confirmClear?.message || 'Are you sure you want to clear all data?'
       Quasar.Dialog.create({
-        title: 'Confirm',
-        message: 'Are you sure you want to clear all data? This action cannot be undone.',
+        title: confirmTitle,
+        message: confirmMessage,
         cancel: true,
         persistent: true
       }).onOk(() => {
@@ -180,16 +201,19 @@ const PageSettings = {
     }
 
     loadSettings()
+    loadScreenData()
 
     return {
       darkMode,
       themeColor,
       currency,
       currencyOptions,
+      themeOptions,
       toggleDarkMode,
       changeThemeColor,
       changeCurrency,
-      confirmClearData
+      confirmClearData,
+      t
     }
   }
 };
@@ -199,3 +223,4 @@ if (typeof window !== 'undefined') {
   window.PageSettings = PageSettings;
   console.log('PageSettings registered to window.PageSettings');
 }
+

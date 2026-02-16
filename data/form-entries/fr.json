@@ -1,0 +1,51 @@
+{
+  "labels": {
+    "title": "Entrées de formulaire",
+    "step1": "Informations personnelles",
+    "step2": "Informations de contact",
+    "step3": "Informations supplémentaires",
+    "step4": "Vérifier et envoyer",
+    "back": "Retour",
+    "continue": "Continuer",
+    "submit": "Envoyer",
+    "submitForm": "Soumettre le formulaire",
+    "notProvided": "Non renseigné",
+    "drawerLabel": "Entrées de formulaire",
+    "drawerCaption": "Voir les soumissions"
+  },
+  "personalFields": [
+    { "name": "firstName", "label": "Prénom", "type": "text", "value": "" },
+    { "name": "lastName", "label": "Nom", "type": "text", "value": "" },
+    { "name": "birthDate", "label": "Date de naissance", "type": "date", "value": "" }
+  ],
+  "contactFields": [
+    { "name": "email", "label": "Email", "type": "email", "value": "" },
+    { "name": "phone", "label": "Téléphone", "type": "tel", "value": "" },
+    { "name": "address", "label": "Adresse", "type": "text", "value": "" }
+  ],
+  "additionalFields": [
+    { "name": "notes", "label": "Notes supplémentaires", "type": "textarea", "value": "" },
+    {
+      "name": "preferredContact",
+      "label": "Contact préféré",
+      "type": "radio",
+      "value": "email",
+      "options": [
+        { "label": "Email", "value": "email" },
+        { "label": "Téléphone", "value": "phone" }
+      ]
+    },
+    {
+      "name": "interests",
+      "label": "Intérêts",
+      "type": "multiselect",
+      "value": [],
+      "options": [
+        { "label": "Rapports", "value": "reports" },
+        { "label": "Alertes", "value": "alerts" },
+        { "label": "Factures", "value": "invoices" }
+      ],
+      "multiple": true
+    }
+  ]
+}

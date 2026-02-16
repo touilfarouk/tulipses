@@ -1,0 +1,34 @@
+{
+  "labels": {
+    "title": "Entrées",
+    "paid": "Payé",
+    "swipeOrTap": "Glisser ou toucher",
+    "delete": "Supprimer",
+    "swipeLeft": "Glisser à gauche",
+    "markPaid": "Marquer payé",
+    "swipeRight": "Glisser à droite",
+    "addNewEntry": "Ajouter une entrée",
+    "entryName": "Nom de l’entrée",
+    "amount": "Montant",
+    "add": "Ajouter",
+    "unmarkPaid": "Annuler payé",
+    "confirmDeleteTitle": "Confirmer la suppression",
+    "confirmDeleteMessage": "Voulez-vous supprimer \"{name}\" ?",
+    "confirmStatusTitle": "Confirmer le changement d’état",
+    "confirmStatusMessage": "Voulez-vous {action} \"{name}\" ?",
+    "actionMarkPaid": "marquer comme payé",
+    "actionUnmarkPaid": "annuler payé",
+    "okDelete": "Supprimer",
+    "okMarkPaid": "Marquer payé",
+    "okUnmarkPaid": "Annuler payé",
+    "cancel": "Annuler",
+    "drawerLabel": "Entrées",
+    "drawerCaption": "Gérer les entrées"
+  },
+  "entries": [
+    { "id": "id1", "name": "Salaire", "amount": 4999.99, "paid": false },
+    { "id": "id2", "name": "Loyer", "amount": -999, "paid": false },
+    { "id": "id3", "name": "Téléphone", "amount": -14.99, "paid": true },
+    { "id": "id4", "name": "Inconnu", "amount": 0, "paid": false }
+  ]
+}

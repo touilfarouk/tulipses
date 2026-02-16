@@ -1,0 +1,44 @@
+{
+  "labels": {
+    "grid": {
+      "advancedTitle": "Advanced Data Grid",
+      "addNew": "Add New",
+      "edit": "Edit",
+      "delete": "Delete",
+      "view": "View",
+      "id": "ID",
+      "name": "Name",
+      "category": "Category",
+      "value": "Value",
+      "status": "Status",
+      "itemDetails": "Item Details",
+      "close": "Close"
+    },
+    "status": {
+      "all": "All",
+      "active": "Active",
+      "inactive": "Inactive",
+      "pending": "Pending"
+    },
+    "drawer": {
+      "label": "Advanced Grid",
+      "caption": "Search, filter, edit"
+    }
+  },
+  "categories": [
+    { "id": "electronics", "text": "Electronics" },
+    { "id": "furniture", "text": "Furniture" },
+    { "id": "office", "text": "Office Supplies" },
+    { "id": "other", "text": "Other" }
+  ],
+  "statuses": [
+    { "id": "active", "text": "Active" },
+    { "id": "inactive", "text": "Inactive" },
+    { "id": "pending", "text": "Pending" }
+  ],
+  "records": [
+    { "recid": 1, "id": 1, "name": "Item 1", "categoryKey": "electronics", "value": 120, "statusKey": "active" },
+    { "recid": 2, "id": 2, "name": "Item 2", "categoryKey": "furniture", "value": 340, "statusKey": "inactive" },
+    { "recid": 3, "id": 3, "name": "Item 3", "categoryKey": "office", "value": 560, "statusKey": "pending" }
+  ]
+}

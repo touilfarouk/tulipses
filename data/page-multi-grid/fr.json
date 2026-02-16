@@ -1,0 +1,54 @@
+{
+  "labels": {
+    "multiGrid": {
+      "title": "Démo des tables (multi-grilles)",
+      "refresh": "Rafraîchir",
+      "employees": "Employés",
+      "departments": "Départements",
+      "projects": "Projets",
+      "employeeHeader": "Gestion des employés",
+      "deptHeader": "Départements",
+      "projHeader": "Projets",
+      "manager": "Responsable",
+      "project": "Projet",
+      "status": "Statut",
+      "budget": "Budget",
+      "active": "Actif",
+      "planning": "Planification",
+      "completed": "Terminé",
+      "drawerLabel": "Page Multi Grid",
+      "drawerCaption": "Bonjour le monde"
+    },
+    "grid": {
+      "id": "ID"
+    },
+    "tablesDemo": {
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "email": "Email",
+      "startDate": "Date de début"
+    }
+  },
+  "employees": [
+    { "recid": 1, "fname": "Jean", "lname": "Dupont", "email": "john.doe@example.com", "sdate": "2023-01-15" },
+    { "recid": 2, "fname": "Jeanne", "lname": "Martin", "email": "jane.smith@example.com", "sdate": "2023-02-20" },
+    { "recid": 3, "fname": "Robert", "lname": "Durand", "email": "robert.j@example.com", "sdate": "2023-03-10" },
+    { "recid": 4, "fname": "Émilie", "lname": "Bernard", "email": "emily.w@example.com", "sdate": "2023-04-05" },
+    { "recid": 5, "fname": "Michel", "lname": "Moreau", "email": "michael.b@example.com", "sdate": "2023-05-12" },
+    { "recid": 6, "fname": "Sara", "lname": "Lefèvre", "email": "sarah.j@example.com", "sdate": "2023-06-18" },
+    { "recid": 7, "fname": "David", "lname": "Garcia", "email": "david.g@example.com", "sdate": "2023-07-22" },
+    { "recid": 8, "fname": "Lisa", "lname": "Miller", "email": "lisa.m@example.com", "sdate": "2023-08-30" },
+    { "recid": 9, "fname": "Jacques", "lname": "Davis", "email": "james.d@example.com", "sdate": "2023-09-14" }
+  ],
+  "departments": [
+    { "recid": 1, "name": "Informatique", "manager": "John Smith" },
+    { "recid": 2, "name": "RH", "manager": "Sara Lee" },
+    { "recid": 3, "name": "Finance", "manager": "Ahmed Benali" },
+    { "recid": 4, "name": "Marketing", "manager": "Nadia Karim" }
+  ],
+  "projects": [
+    { "recid": 1, "title": "Système ERP", "status": "Actif", "budget": 50000 },
+    { "recid": 2, "title": "Application mobile", "status": "Planification", "budget": 20000 },
+    { "recid": 3, "title": "Refonte du site", "status": "Terminé", "budget": 12000 }
+  ]
+}

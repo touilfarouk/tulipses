@@ -1,0 +1,44 @@
+{
+  "labels": {
+    "grid": {
+      "advancedTitle": "Grille de données avancée",
+      "addNew": "Ajouter",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "view": "Afficher",
+      "id": "ID",
+      "name": "Nom",
+      "category": "Catégorie",
+      "value": "Valeur",
+      "status": "Statut",
+      "itemDetails": "Détails",
+      "close": "Fermer"
+    },
+    "status": {
+      "all": "Tous",
+      "active": "Actif",
+      "inactive": "Inactif",
+      "pending": "En attente"
+    },
+    "drawer": {
+      "label": "Grille avancée",
+      "caption": "Recherche, filtre, édition"
+    }
+  },
+  "categories": [
+    { "id": "electronics", "text": "Électronique" },
+    { "id": "furniture", "text": "Mobilier" },
+    { "id": "office", "text": "Fournitures de bureau" },
+    { "id": "other", "text": "Autre" }
+  ],
+  "statuses": [
+    { "id": "active", "text": "Actif" },
+    { "id": "inactive", "text": "Inactif" },
+    { "id": "pending", "text": "En attente" }
+  ],
+  "records": [
+    { "recid": 1, "id": 1, "name": "Article 1", "categoryKey": "electronics", "value": 120, "statusKey": "active" },
+    { "recid": 2, "id": 2, "name": "Article 2", "categoryKey": "furniture", "value": 340, "statusKey": "inactive" },
+    { "recid": 3, "id": 3, "name": "Article 3", "categoryKey": "office", "value": 560, "statusKey": "pending" }
+  ]
+}

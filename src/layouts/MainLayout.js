@@ -83,8 +83,8 @@ const MainLayout = {
               <q-icon name="table_view" />
             </q-item-section>
             <q-item-section>
-              <q-item-label>{{ t('menu.dataTables') }}</q-item-label>
-              <q-item-label caption class="text-white" style="font-size: 8px !important;">{{ t('menu.dataTablesCaption') }}</q-item-label>
+              <q-item-label>{{ screenLabel('tables-demo','tablesDemo.drawerLabel', t('menu.dataTables')) }}</q-item-label>
+              <q-item-label caption class="text-white" style="font-size: 8px !important;">{{ screenLabel('tables-demo','tablesDemo.drawerCaption', t('menu.dataTablesCaption')) }}</q-item-label>
             </q-item-section>
             <q-item-section side>
               <q-chip
@@ -107,8 +107,8 @@ const MainLayout = {
               <q-icon name="grid_view" />
             </q-item-section>
             <q-item-section>
-              <q-item-label>{{ t('menu.advancedGrid') }}</q-item-label>
-              <q-item-label caption class="text-white" style="font-size: 8px !important;">{{ t('menu.advancedGridCaption') }}</q-item-label>
+              <q-item-label>{{ screenLabel('advanced-grid','drawer.label', t('menu.advancedGrid')) }}</q-item-label>
+              <q-item-label caption class="text-white" style="font-size: 8px !important;">{{ screenLabel('advanced-grid','drawer.caption', t('menu.advancedGridCaption')) }}</q-item-label>
             </q-item-section>
           </q-item>
           <q-item
@@ -121,8 +121,8 @@ const MainLayout = {
               <q-icon name="grid_on" />
             </q-item-section>
             <q-item-section>
-              <q-item-label>{{ t('menu.multiGrid') }}</q-item-label>
-              <q-item-label caption class="text-white" style="font-size: 8px !important;">{{ t('menu.multiGridCaption') }}</q-item-label>
+              <q-item-label>{{ screenLabel('page-multi-grid','multiGrid.drawerLabel', t('menu.multiGrid')) }}</q-item-label>
+              <q-item-label caption class="text-white" style="font-size: 8px !important;">{{ screenLabel('page-multi-grid','multiGrid.drawerCaption', t('menu.multiGridCaption')) }}</q-item-label>
             </q-item-section>
           </q-item>
           <q-separator />
@@ -136,8 +136,8 @@ const MainLayout = {
               <q-icon name="home" />
             </q-item-section>
             <q-item-section>
-              <q-item-label>{{ t('app.entries') }}</q-item-label>
-              <q-item-label caption class="text-white" style="font-size: 8px !important;">{{ t('menu.entriesCaption') }}</q-item-label>
+              <q-item-label>{{ screenLabel('entries','drawerLabel', t('app.entries')) }}</q-item-label>
+              <q-item-label caption class="text-white" style="font-size: 8px !important;">{{ screenLabel('entries','drawerCaption', t('menu.entriesCaption')) }}</q-item-label>
             </q-item-section>
             <q-item-section side>
               <q-chip
@@ -161,8 +161,8 @@ const MainLayout = {
               <q-icon name="settings" />
             </q-item-section>
             <q-item-section>
-              <q-item-label>{{ t('app.settings') }}</q-item-label>
-              <q-item-label caption class="text-white" style="font-size: 8px !important;">{{ t('menu.settingsCaption') }}</q-item-label>
+              <q-item-label>{{ screenLabel('settings','drawerLabel', t('app.settings')) }}</q-item-label>
+              <q-item-label caption class="text-white" style="font-size: 8px !important;">{{ screenLabel('settings','drawerCaption', t('menu.settingsCaption')) }}</q-item-label>
             </q-item-section>
             <q-item-section side>
               <q-chip
@@ -186,8 +186,8 @@ const MainLayout = {
               <q-icon name="description" />
             </q-item-section>
             <q-item-section>
-              <q-item-label>{{ t('menu.formEntries') }}</q-item-label>
-              <q-item-label caption class="text-white" style="font-size: 8px !important;">{{ t('menu.formEntriesCaption') }}</q-item-label>
+              <q-item-label>{{ screenLabel('form-entries','drawerLabel', t('menu.formEntries')) }}</q-item-label>
+              <q-item-label caption class="text-white" style="font-size: 8px !important;">{{ screenLabel('form-entries','drawerCaption', t('menu.formEntriesCaption')) }}</q-item-label>
             </q-item-section>
             <q-item-section side>
               <q-chip
@@ -254,9 +254,11 @@ const MainLayout = {
     const store = useEntriesStore()
     const router = VueRouter.useRouter()
     const i18nLang = Vue.ref(window.i18n?.lang || 'en')
+    const screenLabels = Vue.ref({})
     if (window.i18n?.onChange) {
       window.i18n.onChange((lang) => {
         i18nLang.value = lang
+        loadDrawerLabels()
       })
     }
 
@@ -362,6 +364,29 @@ const MainLayout = {
       return window.i18n?.t ? window.i18n.t(key) : key
     }
 
+    const screenLabel = (screen, key, fallback) => {
+      const screenData = screenLabels.value?.[screen]
+      const parts = key.split('.')
+      let value = screenData
+      for (const part of parts) {
+        value = value?.[part]
+      }
+      return value ?? fallback
+    }
+
+    const loadDrawerLabels = async () => {
+      const lang = window.i18n?.lang || 'en'
+      const screens = ['tables-demo', 'advanced-grid', 'page-multi-grid', 'entries', 'settings', 'form-entries']
+      const results = await Promise.all(
+        screens.map((screen) => window.screenData?.load ? window.screenData.load(screen, lang) : Promise.resolve(null))
+      )
+      const next = {}
+      screens.forEach((screen, index) => {
+        next[screen] = results[index]?.labels || {}
+      })
+      screenLabels.value = next
+    }
+
     // Set initial states after component is mounted
     Vue.onMounted(() => {
       console.log('Component mounted, UI State:', store.uiState)
@@ -373,6 +398,7 @@ const MainLayout = {
 
       const savedLang = localStorage.getItem('Tulipes-language') || 'en'
       setLanguage(savedLang)
+      loadDrawerLabels()
     })
 
     // Watch for active menu changes and force reactivity
@@ -401,7 +427,8 @@ const MainLayout = {
       currentPath: Vue.computed(() => store.getCurrentPath()),
       navigateTo: store.navigateTo.bind(store),
       setLanguage,
-      t
+      t,
+      screenLabel
     }
   }
 };

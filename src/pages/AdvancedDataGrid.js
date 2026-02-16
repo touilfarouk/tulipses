@@ -4,7 +4,7 @@ const AdvancedDataGrid = {
   template: `
     <q-page class="q-pa-md">
 
-      <div class="text-h5 q-mb-md">Advanced Data Grid</div>
+      <div class="text-h5 q-mb-md">{{ t('grid.advancedTitle') }}</div>
 
       <div
         id="advanced-data-grid"
@@ -18,49 +18,51 @@ const AdvancedDataGrid = {
     const { ref, onMounted, onUnmounted } = Vue;
 
     const records = ref([]);
+    const labels = ref({});
+    const categories = ref([]);
+    const statuses = ref([]);
     const i18nLang = ref(window.i18n?.lang || 'en');
     if (window.i18n?.onChange) {
       window.i18n.onChange((lang) => {
         i18nLang.value = lang;
-        rebuildGrid();
+        loadScreenData();
       });
     }
 
     const t = (key) => {
       void i18nLang.value;
-      return window.i18n?.t ? window.i18n.t(key) : key;
+      const parts = key.split('.');
+      let value = labels.value;
+      for (const part of parts) {
+        value = value?.[part];
+      }
+      return value ?? key;
     };
 
-    const categoryKeys = ['electronics', 'furniture', 'office', 'other'];
-    const statusKeys = ['active', 'inactive', 'pending'];
-
     const buildCategoryOptions = () =>
-      categoryKeys.map((key) => ({ id: key, text: t(`category.${key}`) }));
+      (categories.value || []).map((item) => ({ id: item.id, text: item.text }));
 
     const buildStatusOptions = (includeAll = false) => {
-      const items = statusKeys.map((key) => ({ id: key, text: t(`status.${key}`) }));
+      const items = (statuses.value || []).map((item) => ({ id: item.id, text: item.text }));
       if (includeAll) {
         items.unshift({ id: 'all', text: t('status.all') });
       }
       return items;
     };
 
-    function generateSampleData() {
-      return Array.from({ length: 50 }, (_, i) => ({
-        recid: i + 1,
-        id: i + 1,
-        name: `Item ${i + 1}`,
-        categoryKey: categoryKeys[Math.floor(Math.random() * categoryKeys.length)],
-        value: Math.floor(Math.random() * 1000),
-        statusKey: statusKeys[Math.floor(Math.random() * statusKeys.length)]
-      }));
-    }
+    const toLookup = (items) => {
+      const map = new Map();
+      (items || []).forEach((item) => map.set(item.id, item.text));
+      return map;
+    };
 
     function localizeRecords(rawRecords) {
+      const categoryMap = toLookup(categories.value);
+      const statusMap = toLookup(statuses.value);
       return rawRecords.map((record) => ({
         ...record,
-        category: t(`category.${record.categoryKey}`),
-        status: t(`status.${record.statusKey}`)
+        category: categoryMap.get(record.categoryKey) || record.categoryKey,
+        status: statusMap.get(record.statusKey) || record.statusKey
       }));
     }
 
@@ -147,9 +149,9 @@ const AdvancedDataGrid = {
       const formRecord = record
         ? {
             name: record.name,
-            category: { id: record.categoryKey, text: t(`category.${record.categoryKey}`) },
+            category: { id: record.categoryKey, text: record.category },
             value: record.value,
-            status: { id: record.statusKey, text: t(`status.${record.statusKey}`) }
+            status: { id: record.statusKey, text: record.status }
           }
         : { name: '', category: null, value: 0, status: { id: 'active', text: t('status.active') } };
 
@@ -169,16 +171,18 @@ const AdvancedDataGrid = {
             const categoryKey = this.record.category?.id || this.record.category;
             const statusKey = this.record.status?.id || this.record.status;
             const name = this.record.name;
+            const categoryMap = toLookup(categories.value);
+            const statusMap = toLookup(statuses.value);
 
             if (isEdit) {
               const updated = {
                 ...record,
                 name,
                 categoryKey,
-                category: t(`category.${categoryKey}`),
+                category: categoryMap.get(categoryKey) || categoryKey,
                 value,
                 statusKey,
-                status: t(`status.${statusKey}`)
+                status: statusMap.get(statusKey) || statusKey
               };
               w2ui.advancedDataGrid.set(record.recid, updated);
               const idx = records.value.findIndex((r) => r.recid === record.recid);
@@ -190,10 +194,10 @@ const AdvancedDataGrid = {
                 id: newId,
                 name,
                 categoryKey,
-                category: t(`category.${categoryKey}`),
+                category: categoryMap.get(categoryKey) || categoryKey,
                 value,
                 statusKey,
-                status: t(`status.${statusKey}`)
+                status: statusMap.get(statusKey) || statusKey
               };
               w2ui.advancedDataGrid.add(created);
               records.value.unshift(created);
@@ -258,12 +262,32 @@ const AdvancedDataGrid = {
       buildGrid();
     }
 
-    onMounted(() => {
-      records.value = generateSampleData();
+    const loadScreenData = async () => {
+      try {
+        const lang = window.i18n?.lang || 'en';
+        const data = await window.screenData.load('advanced-grid', lang);
+        if (!data) throw new Error('No screen data returned');
 
+        labels.value = data.labels || {};
+        categories.value = data.categories || [];
+        statuses.value = data.statuses || [];
+        records.value = data.records || [];
+
+        buildGrid();
+      } catch (error) {
+        console.error('Advanced grid load failed', error);
+        labels.value = {};
+        categories.value = [];
+        statuses.value = [];
+        records.value = [];
+        buildGrid();
+      }
+    };
+
+    onMounted(() => {
       const waitForW2ui = () => {
         if (typeof w2grid !== 'undefined' && typeof w2form !== 'undefined') {
-          buildGrid();
+          loadScreenData();
         } else {
           setTimeout(waitForW2ui, 300);
         }
@@ -281,7 +305,7 @@ const AdvancedDataGrid = {
       }
     });
 
-    return {};
+    return { t };
   }
 };
 

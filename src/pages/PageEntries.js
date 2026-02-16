@@ -9,8 +9,8 @@ const PageEntries = {
         <div class="row q-col-gutter-md">
           <div class="col-12">
             <q-card flat bordered class="shadow-2">
-              <q-card-section>
-                <div class="text-h6 q-mb-md">Entries</div>
+            <q-card-section>
+                <div class="text-h6 q-mb-md">{{ t('title') }}</div>
                 <q-list separator>
                   <q-slide-item
                     v-for="entry in entries"
@@ -38,7 +38,7 @@ const PageEntries = {
                         <q-item-label caption>
                           {{ currencify(entry.amount) }}
                           <q-chip v-if="entry.paid" color="positive" text-color="white" size="sm" class="q-ml-sm">
-                            Paid
+                            {{ t('paid') }}
                           </q-chip>
                         </q-item-label>
                       </q-item-section>
@@ -48,7 +48,7 @@ const PageEntries = {
                         </div>
                         <q-item-label caption class="text-right">
                           <q-icon name="more_vert" />
-                          <span class="q-ml-xs text-grey-6">Swipe or tap</span>
+                          <span class="q-ml-xs text-grey-6">{{ t('swipeOrTap') }}</span>
                         </q-item-label>
                       </q-item-section>
                     </q-item>
@@ -56,16 +56,16 @@ const PageEntries = {
                       <div class="row items-center no-wrap">
                         <q-icon name="delete" class="q-mr-sm" size="24px" />
                         <div class="text-center">
-                          <div class="text-weight-medium">Delete</div>
-                          <div class="text-caption">Swipe left</div>
+                          <div class="text-weight-medium">{{ t('delete') }}</div>
+                          <div class="text-caption">{{ t('swipeLeft') }}</div>
                         </div>
                       </div>
                     </template>
                     <template v-slot:right>
                       <div class="row items-center no-wrap">
                         <div class="text-center">
-                          <div class="text-weight-medium">Mark Paid</div>
-                          <div class="text-caption">Swipe right</div>
+                          <div class="text-weight-medium">{{ t('markPaid') }}</div>
+                          <div class="text-caption">{{ t('swipeRight') }}</div>
                         </div>
                         <q-icon name="check" class="q-ml-sm" size="24px" />
                       </div>
@@ -82,12 +82,12 @@ const PageEntries = {
           <div class="col-12">
             <q-card flat bordered class="shadow-2">
               <q-card-section>
-                <div class="text-h6 q-mb-md">Add New Entry</div>
+                <div class="text-h6 q-mb-md">{{ t('addNewEntry') }}</div>
                 <div class="row q-col-gutter-sm">
                   <div class="col-12 col-sm-5">
                     <q-input
                       v-model="newEntry.name"
-                      placeholder="Entry name"
+                      :placeholder="t('entryName')"
                       bg-color="grey-2"
                       outlined
                       dense
@@ -97,7 +97,7 @@ const PageEntries = {
                     <q-input
                       v-model="newEntry.amount"
                       input-class="text-right"
-                      placeholder="Amount"
+                      :placeholder="t('amount')"
                       bg-color="grey-2"
                       type="number"
                       step="0.01"
@@ -109,7 +109,7 @@ const PageEntries = {
                     <q-btn
                       color="primary"
                       icon="add"
-                      label="Add"
+                      :label="t('add')"
                       class="full-width"
                       @click="addEntry"
                     />
@@ -135,21 +135,21 @@ const PageEntries = {
               flat
               :color="selectedEntry?.paid ? 'orange' : 'positive'"
               :icon="selectedEntry?.paid ? 'undo' : 'check'"
-              :label="selectedEntry?.paid ? 'Unmark Paid' : 'Mark Paid'"
+              :label="selectedEntry?.paid ? t('unmarkPaid') : t('markPaid')"
               @click="togglePaid(selectedEntry?.id)"
             />
             <q-btn
               flat
               color="negative"
               icon="delete"
-              label="Delete"
+              :label="t('delete')"
               @click="deleteEntry(selectedEntry?.id)"
             />
             <q-btn
               flat
               color="primary"
               icon="close"
-              label="Cancel"
+              :label="t('cancel')"
               @click="actionDialog = false"
             />
           </q-card-actions>
@@ -158,12 +158,15 @@ const PageEntries = {
     </q-page>
   `,
   setup() {
-    const entries = Vue.ref([
-      { id: 'id1', name: 'Salary', amount: 4999.99, paid: false },
-      { id: 'id2', name: 'Rent', amount: -999, paid: false },
-      { id: 'id3', name: 'Phone', amount: -14.99, paid: true },
-      { id: 'id4', name: 'Unknown', amount: 0, paid: false }
-    ])
+    const i18nLang = Vue.ref(window.i18n?.lang || 'en')
+    const labels = Vue.ref({})
+    const entries = Vue.ref([])
+    if (window.i18n?.onChange) {
+      window.i18n.onChange((lang) => {
+        i18nLang.value = lang
+        loadScreenData()
+      })
+    }
 
     const newEntry = Vue.ref({
       name: '',
@@ -192,6 +195,33 @@ const PageEntries = {
       return 'text-grey-7'
     }
 
+    const t = (key) => {
+      void i18nLang.value
+      return labels.value?.[key] || key
+    }
+
+    const format = (template, vars) => {
+      let text = template || ''
+      Object.entries(vars || {}).forEach(([key, value]) => {
+        text = text.replace(`{${key}}`, value)
+      })
+      return text
+    }
+
+    const loadScreenData = async () => {
+      try {
+        const lang = window.i18n?.lang || 'en'
+        const data = await window.screenData.load('entries', lang)
+        if (!data) throw new Error('No screen data returned')
+        labels.value = data.labels || {}
+        entries.value = data.entries || []
+      } catch (error) {
+        console.error('Entries load failed', error)
+        labels.value = {}
+        entries.value = []
+      }
+    }
+
     const showEntryActions = (entry) => {
       selectedEntry.value = entry
       actionDialog.value = true
@@ -200,16 +230,16 @@ const PageEntries = {
     const onSwipeLeft = (entry, reset) => {
       // Swipe left = Delete with confirmation
       Quasar.Dialog.create({
-        title: 'Confirm Delete',
-        message: `Are you sure you want to delete "${entry.name}"?`,
+        title: t('confirmDeleteTitle'),
+        message: format(t('confirmDeleteMessage'), { name: entry.name }),
         cancel: true,
         persistent: true,
         ok: {
-          label: 'Delete',
+          label: t('okDelete'),
           color: 'negative'
         },
         cancel: {
-          label: 'Cancel',
+          label: t('cancel'),
           color: 'primary'
         }
       }).onOk(() => {
@@ -225,18 +255,18 @@ const PageEntries = {
 
     const onSwipeRight = (entry, reset) => {
       // Swipe right = Mark Paid with confirmation
-      const action = entry.paid ? 'unmark as unpaid' : 'mark as paid'
+      const action = entry.paid ? t('actionUnmarkPaid') : t('actionMarkPaid')
       Quasar.Dialog.create({
-        title: 'Confirm Status Change',
-        message: `Are you sure you want to ${action} "${entry.name}"?`,
+        title: t('confirmStatusTitle'),
+        message: format(t('confirmStatusMessage'), { action, name: entry.name }),
         cancel: true,
         persistent: true,
         ok: {
-          label: entry.paid ? 'Unmark as Unpaid' : 'Mark as Paid',
+          label: entry.paid ? t('okUnmarkPaid') : t('okMarkPaid'),
           color: 'positive'
         },
         cancel: {
-          label: 'Cancel',
+          label: t('cancel'),
           color: 'primary'
         }
       }).onOk(() => {
@@ -272,16 +302,16 @@ const PageEntries = {
       const entry = entries.value.find(entry => entry.id === id)
       if (entry) {
         Quasar.Dialog.create({
-          title: 'Confirm Delete',
-          message: `Are you sure you want to delete "${entry.name}"?`,
+          title: t('confirmDeleteTitle'),
+          message: format(t('confirmDeleteMessage'), { name: entry.name }),
           cancel: true,
           persistent: true,
           ok: {
-            label: 'Delete',
+            label: t('okDelete'),
             color: 'negative'
           },
           cancel: {
-            label: 'Cancel',
+            label: t('cancel'),
             color: 'primary'
           }
         }).onOk(() => {
@@ -294,6 +324,10 @@ const PageEntries = {
       }
     }
 
+    Vue.onMounted(() => {
+      loadScreenData()
+    })
+
     return {
       entries,
       newEntry,
@@ -302,6 +336,7 @@ const PageEntries = {
       getAmountColorClass,
       actionDialog,
       selectedEntry,
+      t,
       showEntryActions,
       onSwipeLeft,
       onSwipeRight,
