@@ -200,6 +200,20 @@ const MainLayout = {
               </q-chip>
             </q-item-section>
           </q-item>
+          <q-item
+            clickable
+            @click="setActiveMenuAndNavigate('/documentation')"
+            :style="activeMenuItem === '/documentation' ? 'background-color: #004d40; border-left: 4px solid #26A69A;' : ''"
+            class="menu-item-transition"
+          >
+            <q-item-section avatar>
+              <q-icon name="article" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>{{ screenLabel('documentation','drawerLabel', 'Documentation') }}</q-item-label>
+              <q-item-label caption class="text-white" style="font-size: 8px !important;">{{ screenLabel('documentation','drawerCaption', 'Developer guide') }}</q-item-label>
+            </q-item-section>
+          </q-item>
 
           <q-separator />
 
@@ -376,7 +390,7 @@ const MainLayout = {
 
     const loadDrawerLabels = async () => {
       const lang = window.i18n?.lang || 'en'
-      const screens = ['tables-demo', 'advanced-grid', 'page-multi-grid', 'entries', 'settings', 'form-entries']
+      const screens = ['tables-demo', 'advanced-grid', 'page-multi-grid', 'entries', 'settings', 'form-entries', 'documentation']
       const results = await Promise.all(
         screens.map((screen) => window.screenData?.load ? window.screenData.load(screen, lang) : Promise.resolve(null))
       )

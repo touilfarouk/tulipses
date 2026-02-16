@@ -174,7 +174,8 @@
         { name: 'PageFormEntries', path: './src/pages/PageFormEntries.js?v=' + Date.now() },
         { name: 'TablesDemo', path: './src/pages/TablesDemo.js?v=' + Date.now() },
         { name: 'AdvancedDataGrid', path: './src/pages/AdvancedDataGrid.js?v=' + Date.now() },
-        { name: 'PageMultiGrid', path: './src/pages/PageMultiGrid.js?v=' + Date.now() }
+        { name: 'PageMultiGrid', path: './src/pages/PageMultiGrid.js?v=' + Date.now() },
+        { name: 'PageDocumentation', path: './src/pages/PageDocumentation.js?v=' + Date.now() }
     ];
 
     function showError(message, details = '') {
@@ -202,6 +203,7 @@
             TablesDemo: ${!!window.TablesDemo}
             AdvancedDataGrid: ${!!window.AdvancedDataGrid}
             PageMultiGrid: ${!!window.PageMultiGrid}
+            PageDocumentation: ${!!window.PageDocumentation}
             </pre>
             </div>
         `;
@@ -224,10 +226,11 @@
                     PageFormEntries: !!window.PageFormEntries,
                     TablesDemo: !!window.TablesDemo,
                     AdvancedDataGrid: !!window.AdvancedDataGrid,
-                    PageMultiGrid: !!window.PageMultiGrid
+                    PageMultiGrid: !!window.PageMultiGrid,
+                    PageDocumentation: !!window.PageDocumentation
                 });
 
-                if (window.MainLayout && window.PageEntries && window.PageSettings && window.AquaInput && window.PageFormEntries && window.TablesDemo && window.AdvancedDataGrid && window.PageMultiGrid) {
+                if (window.MainLayout && window.PageEntries && window.PageSettings && window.AquaInput && window.PageFormEntries && window.TablesDemo && window.AdvancedDataGrid && window.PageMultiGrid && window.PageDocumentation) {
                     console.log('All components found!');
                     resolve();
                 } else if (attempts < maxAttempts) {
@@ -242,6 +245,7 @@
                     if (!window.TablesDemo) missing.push('TablesDemo');
                     if (!window.AdvancedDataGrid) missing.push('AdvancedDataGrid');
                     if (!window.PageMultiGrid) missing.push('PageMultiGrid');
+                    if (!window.PageDocumentation) missing.push('PageDocumentation');
 
                     reject(new Error(`Timed out waiting for components to load. Missing: ${missing.join(', ')}`));
                 }

@@ -31,6 +31,11 @@ const routes = [
         component: window.PageFormEntries
       },
       {
+        path: 'documentation',
+        name: 'documentation',
+        component: window.PageDocumentation
+      },
+      {
         path: 'settings',
         name: 'settings',
         component: window.PageSettings

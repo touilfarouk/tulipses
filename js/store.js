@@ -269,6 +269,7 @@ const EntriesStore = {
     '/advanced-data-grid': 'advanced-data-grid',
     '/page-multi-grid': 'page-multi-grid',
     '/form-entries': 'form-entries',
+    '/documentation': 'documentation',
     '/settings': 'settings'
   },
 
