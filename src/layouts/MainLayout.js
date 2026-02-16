@@ -77,6 +77,20 @@ const MainLayout = {
           </q-item>
           <q-item
             clickable
+            @click="setActiveMenuAndNavigate('/advanced-data-grid')"
+            :style="activeMenuItem === '/advanced-data-grid' ? 'background-color: #004d40; border-left: 4px solid #26A69A;' : ''"
+            class="menu-item-transition"
+          >
+            <q-item-section avatar>
+              <q-icon name="grid_view" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Advanced Grid</q-item-label>
+              <q-item-label caption class="text-white" style="font-size: 8px !important;">Search, filter, edit</q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-item
+            clickable
             @click="setActiveMenuAndNavigate('/page-multi-grid')"
             :style="activeMenuItem === '/page-multi-grid' ? 'background-color: #004d40; border-left: 4px solid #26A69A;' : ''"
             class="menu-item-transition"

@@ -14,6 +14,11 @@ const routes = [
         name: 'tables-demo',
         component: window.TablesDemo
       },
+      {
+        path: 'advanced-data-grid',
+        name: 'advanced-data-grid',
+        component: window.AdvancedDataGrid
+      },
 
       {
         path: 'page-multi-grid',

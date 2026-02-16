@@ -101,7 +101,8 @@
 
     // Set base URL based on environment
     const isGitHubPages = window.location.hostname === 'touilfarouk.github.io';
-    const basePath = isGitHubPages ? '/tulipses/' : '/';
+    const isTulipsesPath = window.location.pathname.includes('/tulipses/');
+    const basePath = (isGitHubPages || isTulipsesPath) ? '/tulipses/' : '/';
 
     // Create global Vue app
     const { createApp } = Vue;
@@ -167,6 +168,7 @@
         { name: 'PageSettings', path: './src/pages/PageSettings.js?v=' + Date.now() },
         { name: 'PageFormEntries', path: './src/pages/PageFormEntries.js?v=' + Date.now() },
         { name: 'TablesDemo', path: './src/pages/TablesDemo.js?v=' + Date.now() },
+        { name: 'AdvancedDataGrid', path: './src/pages/AdvancedDataGrid.js?v=' + Date.now() },
         { name: 'PageMultiGrid', path: './src/pages/PageMultiGrid.js?v=' + Date.now() }
     ];
 
@@ -193,6 +195,7 @@
             PageEntries: ${!!window.PageEntries}
             PageSettings: ${!!window.PageSettings}
             TablesDemo: ${!!window.TablesDemo}
+            AdvancedDataGrid: ${!!window.AdvancedDataGrid}
             PageMultiGrid: ${!!window.PageMultiGrid}
             </pre>
             </div>
@@ -215,10 +218,11 @@
                     AquaInput: !!window.AquaInput,
                     PageFormEntries: !!window.PageFormEntries,
                     TablesDemo: !!window.TablesDemo,
+                    AdvancedDataGrid: !!window.AdvancedDataGrid,
                     PageMultiGrid: !!window.PageMultiGrid
                 });
 
-                if (window.MainLayout && window.PageEntries && window.PageSettings && window.AquaInput && window.PageFormEntries && window.TablesDemo && window.PageMultiGrid) {
+                if (window.MainLayout && window.PageEntries && window.PageSettings && window.AquaInput && window.PageFormEntries && window.TablesDemo && window.AdvancedDataGrid && window.PageMultiGrid) {
                     console.log('All components found!');
                     resolve();
                 } else if (attempts < maxAttempts) {
@@ -231,6 +235,7 @@
                     if (!window.AquaInput) missing.push('AquaInput');
                     if (!window.PageFormEntries) missing.push('PageFormEntries');
                     if (!window.TablesDemo) missing.push('TablesDemo');
+                    if (!window.AdvancedDataGrid) missing.push('AdvancedDataGrid');
                     if (!window.PageMultiGrid) missing.push('PageMultiGrid');
 
                     reject(new Error(`Timed out waiting for components to load. Missing: ${missing.join(', ')}`));

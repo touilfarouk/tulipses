@@ -266,6 +266,7 @@ const EntriesStore = {
   _pathToName: {
     '/': 'home',
     '/tables-demo': 'tables-demo',
+    '/advanced-data-grid': 'advanced-data-grid',
     '/page-multi-grid': 'page-multi-grid',
     '/form-entries': 'form-entries',
     '/settings': 'settings'
