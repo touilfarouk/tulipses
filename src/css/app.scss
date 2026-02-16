@@ -31,3 +31,25 @@ input::-webkit-inner-spin-button {
 // body {
 //     border: 8px solid #ff3d00;
 //   }
+
+/* RTL support + Almarai font */
+body {
+  font-family: 'Almarai', 'Segoe UI', Tahoma, Arial, sans-serif;
+}
+
+html[dir="rtl"],
+body[dir="rtl"],
+body.rtl {
+  direction: rtl;
+}
+
+html[dir="rtl"] body,
+body[dir="rtl"],
+body.rtl {
+  font-family: 'Almarai', 'Segoe UI', Tahoma, Arial, sans-serif;
+}
+
+/* Avoid duplicate layout shadow */
+.q-layout__shadow {
+  display: none !important;
+}

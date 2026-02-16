@@ -5,12 +5,12 @@ const PageMultiGrid = {
     <q-page class="q-pa-md">
 
       <div class="text-h6 q-mb-md">
-        Data Tables Demo (Multi Grid)
+        {{ t('multiGrid.title') }}
       </div>
 
       <!-- ACTION BAR -->
       <div class="row q-gutter-md q-mb-md">
-        <q-btn color="primary" icon="refresh" label="Refresh"
+        <q-btn color="primary" icon="refresh" :label="t('multiGrid.refresh')"
                @click="reloadActiveGrid" />
       </div>
 
@@ -21,9 +21,9 @@ const PageMultiGrid = {
         class="text-primary"
         align="left"
       >
-        <q-tab name="employees" icon="people" label="Employees"/>
-        <q-tab name="departments" icon="apartment" label="Departments"/>
-        <q-tab name="projects" icon="work" label="Projects"/>
+        <q-tab name="employees" icon="people" :label="t('multiGrid.employees')"/>
+        <q-tab name="departments" icon="apartment" :label="t('multiGrid.departments')"/>
+        <q-tab name="projects" icon="work" :label="t('multiGrid.projects')"/>
       </q-tabs>
 
       <q-separator />
@@ -56,18 +56,37 @@ const PageMultiGrid = {
     console.log('TablesDemo setup started');
 
     const activeTab = Vue.ref('employees');
+    const i18nLang = Vue.ref(window.i18n?.lang || 'en');
+    if (window.i18n?.onChange) {
+      window.i18n.onChange((lang) => {
+        i18nLang.value = lang;
+        rebuildAllGrids();
+      });
+    }
+
+    const t = (key) => {
+      void i18nLang.value;
+      return window.i18n?.t ? window.i18n.t(key) : key;
+    };
 
     /* --------------------------------------------------
        EMPLOYEES DATA LOAD
     -------------------------------------------------- */
+    const getDataUrl = (lang) => {
+      const version = window.APP_VERSION || Date.now();
+      const suffix = lang ? `.${lang}` : '';
+      if (window.location.pathname.includes('/tulipses/')) {
+        return `/tulipses/data/list${suffix}.json?v=${version}`;
+      }
+      return `data/list${suffix}.json?v=${version}`;
+    };
+
     const loadEmployees = async () => {
       try {
-        let url =
-          window.location.pathname.includes('/tulipses/')
-            ? '/tulipses/data/list.json'
-            : 'data/list.json';
+        const lang = window.i18n?.lang || 'en';
+        const url = getDataUrl(lang);
 
-        const res = await fetch(url);
+        const res = await fetch(url, { cache: 'no-store' });
         const json = await res.json();
         return json.records || [];
       } catch (e) {
@@ -90,7 +109,7 @@ const PageMultiGrid = {
       new w2grid({
         name: 'employeesGrid',
         box: '#grid-employees',
-        header: 'Employee Management',
+        header: t('multiGrid.employeeHeader'),
         show: {
           toolbar: true,
           footer: true,
@@ -98,11 +117,11 @@ const PageMultiGrid = {
           toolbarSearch: true
         },
         columns: [
-          { field:'recid', caption:'ID', size:'80px', sortable:true },
-          { field:'fname', caption:'First Name', size:'30%' },
-          { field:'lname', caption:'Last Name', size:'30%' },
-          { field:'email', caption:'Email', size:'40%' },
-          { field:'sdate', caption:'Start Date', size:'120px' }
+          { field:'recid', caption:t('grid.id'), size:'80px', sortable:true },
+          { field:'fname', caption:t('tablesDemo.firstName'), size:'30%' },
+          { field:'lname', caption:t('tablesDemo.lastName'), size:'30%' },
+          { field:'email', caption:t('tablesDemo.email'), size:'40%' },
+          { field:'sdate', caption:t('tablesDemo.startDate'), size:'120px' }
         ],
         records: data
       });
@@ -120,18 +139,18 @@ const PageMultiGrid = {
       new w2grid({
         name: 'departmentsGrid',
         box: '#grid-departments',
-        header: 'Departments',
+        header: t('multiGrid.deptHeader'),
         show: { toolbar:true, footer:true, lineNumbers:true },
         columns: [
-          { field:'recid', caption:'ID', size:'80px' },
-          { field:'name', caption:'Department', size:'50%' },
-          { field:'manager', caption:'Manager', size:'50%' }
+          { field:'recid', caption:t('grid.id'), size:'80px' },
+          { field:'name', caption:t('multiGrid.departments'), size:'50%' },
+          { field:'manager', caption:t('multiGrid.manager'), size:'50%' }
         ],
         records: [
-          { recid:1, name:'IT', manager:'John Smith' },
-          { recid:2, name:'HR', manager:'Sara Lee' },
-          { recid:3, name:'Finance', manager:'Ahmed Benali' },
-          { recid:4, name:'Marketing', manager:'Nadia Karim' }
+          { recid:1, name:t('multiGrid.deptIT'), manager:'John Smith' },
+          { recid:2, name:t('multiGrid.deptHR'), manager:'Sara Lee' },
+          { recid:3, name:t('multiGrid.deptFinance'), manager:'Ahmed Benali' },
+          { recid:4, name:t('multiGrid.deptMarketing'), manager:'Nadia Karim' }
         ]
       });
     };
@@ -148,18 +167,18 @@ const PageMultiGrid = {
       new w2grid({
         name: 'projectsGrid',
         box: '#grid-projects',
-        header: 'Projects',
+        header: t('multiGrid.projHeader'),
         show: { toolbar:true, footer:true, lineNumbers:true },
         columns: [
-          { field:'recid', caption:'ID', size:'80px' },
-          { field:'title', caption:'Project', size:'40%' },
-          { field:'status', caption:'Status', size:'30%' },
-          { field:'budget', caption:'Budget', size:'30%', render:'money' }
+          { field:'recid', caption:t('grid.id'), size:'80px' },
+          { field:'title', caption:t('multiGrid.project'), size:'40%' },
+          { field:'status', caption:t('multiGrid.status'), size:'30%' },
+          { field:'budget', caption:t('multiGrid.budget'), size:'30%', render:'money' }
         ],
         records: [
-          { recid:1, title:'ERP System', status:'Active', budget:50000 },
-          { recid:2, title:'Mobile App', status:'Planning', budget:20000 },
-          { recid:3, title:'Website Redesign', status:'Completed', budget:12000 }
+          { recid:1, title:'ERP System', status:t('multiGrid.active'), budget:50000 },
+          { recid:2, title:'Mobile App', status:t('multiGrid.planning'), budget:20000 },
+          { recid:3, title:'Website Redesign', status:t('multiGrid.completed'), budget:12000 }
         ]
       });
     };
@@ -173,6 +192,12 @@ const PageMultiGrid = {
       if (activeTab.value === 'projects') initProjectsGrid();
     };
 
+    const rebuildAllGrids = () => {
+      initEmployeesGrid();
+      initDepartmentsGrid();
+      initProjectsGrid();
+    };
+
     /* --------------------------------------------------
        WAIT FOR W2UI
     -------------------------------------------------- */
@@ -183,9 +208,7 @@ const PageMultiGrid = {
 
           console.log('w2ui ready — creating grids');
 
-          initEmployeesGrid();
-          initDepartmentsGrid();
-          initProjectsGrid();
+          rebuildAllGrids();
 
         } else {
           setTimeout(waitForW2ui, 400);
@@ -207,7 +230,9 @@ const PageMultiGrid = {
 
     return {
       activeTab,
-      reloadActiveGrid
+      reloadActiveGrid,
+      rebuildAllGrids,
+      t
     };
   }
 };

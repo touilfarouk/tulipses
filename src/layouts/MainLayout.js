@@ -26,7 +26,7 @@ const MainLayout = {
             :color="drawerState === 'open' ? 'white' : 'white'"
           />
           <q-toolbar-title>
-            Tulipes
+            {{ t('app.title') }}
             <q-badge
               v-if="drawerState !== 'closed'"
               color="white"
@@ -35,7 +35,29 @@ const MainLayout = {
               :label="drawerState"
             />
           </q-toolbar-title>
-          <q-btn flat round dense icon="settings" @click="navigateTo('/settings')" />
+          <q-btn-dropdown
+            flat
+            round
+            dense
+            icon="settings"
+            dropdown-icon="translate"
+          >
+            <q-list style="min-width:160px">
+              <q-item clickable v-close-popup @click="setLanguage('en')">
+                <q-item-section>English</q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup @click="setLanguage('fr')">
+                <q-item-section>Français</q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup @click="setLanguage('ar')">
+                <q-item-section>العربية</q-item-section>
+              </q-item>
+              <q-separator />
+              <q-item clickable v-close-popup @click="navigateTo('/settings')">
+                <q-item-section>Settings</q-item-section>
+              </q-item>
+            </q-list>
+          </q-btn-dropdown>
         </q-toolbar>
       </q-header>
 
@@ -50,7 +72,7 @@ const MainLayout = {
         @hide="onDrawerHide"
       >
         <q-list>
-          <q-item-label header class="text-white">Navigation</q-item-label>
+          <q-item-label header class="text-white">{{ t('app.navigation') }}</q-item-label>
           <q-item
             clickable
             @click="setActiveMenuAndNavigate('/tables-demo')"
@@ -61,8 +83,8 @@ const MainLayout = {
               <q-icon name="table_view" />
             </q-item-section>
             <q-item-section>
-              <q-item-label>Data Tables</q-item-label>
-              <q-item-label caption class="text-white" style="font-size: 8px !important;">Interactive data tables</q-item-label>
+              <q-item-label>{{ t('menu.dataTables') }}</q-item-label>
+              <q-item-label caption class="text-white" style="font-size: 8px !important;">{{ t('menu.dataTablesCaption') }}</q-item-label>
             </q-item-section>
             <q-item-section side>
               <q-chip
@@ -85,8 +107,8 @@ const MainLayout = {
               <q-icon name="grid_view" />
             </q-item-section>
             <q-item-section>
-              <q-item-label>Advanced Grid</q-item-label>
-              <q-item-label caption class="text-white" style="font-size: 8px !important;">Search, filter, edit</q-item-label>
+              <q-item-label>{{ t('menu.advancedGrid') }}</q-item-label>
+              <q-item-label caption class="text-white" style="font-size: 8px !important;">{{ t('menu.advancedGridCaption') }}</q-item-label>
             </q-item-section>
           </q-item>
           <q-item
@@ -99,8 +121,8 @@ const MainLayout = {
               <q-icon name="grid_on" />
             </q-item-section>
             <q-item-section>
-              <q-item-label>Page Multi Grid</q-item-label>
-              <q-item-label caption class="text-white" style="font-size: 8px !important;">Hello World</q-item-label>
+              <q-item-label>{{ t('menu.multiGrid') }}</q-item-label>
+              <q-item-label caption class="text-white" style="font-size: 8px !important;">{{ t('menu.multiGridCaption') }}</q-item-label>
             </q-item-section>
           </q-item>
           <q-separator />
@@ -114,8 +136,8 @@ const MainLayout = {
               <q-icon name="home" />
             </q-item-section>
             <q-item-section>
-              <q-item-label>Entries</q-item-label>
-              <q-item-label caption class="text-white" style="font-size: 8px !important;">Manage entries</q-item-label>
+              <q-item-label>{{ t('app.entries') }}</q-item-label>
+              <q-item-label caption class="text-white" style="font-size: 8px !important;">{{ t('menu.entriesCaption') }}</q-item-label>
             </q-item-section>
             <q-item-section side>
               <q-chip
@@ -139,8 +161,8 @@ const MainLayout = {
               <q-icon name="settings" />
             </q-item-section>
             <q-item-section>
-              <q-item-label>Settings</q-item-label>
-              <q-item-label caption class="text-white" style="font-size: 8px !important;">App configuration</q-item-label>
+              <q-item-label>{{ t('app.settings') }}</q-item-label>
+              <q-item-label caption class="text-white" style="font-size: 8px !important;">{{ t('menu.settingsCaption') }}</q-item-label>
             </q-item-section>
             <q-item-section side>
               <q-chip
@@ -164,8 +186,8 @@ const MainLayout = {
               <q-icon name="description" />
             </q-item-section>
             <q-item-section>
-              <q-item-label>Form Entries</q-item-label>
-              <q-item-label caption class="text-white" style="font-size: 8px !important;">View form submissions</q-item-label>
+              <q-item-label>{{ t('menu.formEntries') }}</q-item-label>
+              <q-item-label caption class="text-white" style="font-size: 8px !important;">{{ t('menu.formEntriesCaption') }}</q-item-label>
             </q-item-section>
             <q-item-section side>
               <q-chip
@@ -181,11 +203,11 @@ const MainLayout = {
 
           <q-separator />
 
-          <q-item-label header class="text-white">Quick Stats</q-item-label>
+          <q-item-label header class="text-white">{{ t('app.quickStats') }}</q-item-label>
 
           <q-item>
             <q-item-section>
-              <q-item-label>Total Entries</q-item-label>
+              <q-item-label>{{ t('app.totalEntries') }}</q-item-label>
               <q-item-label caption class="text-white-80">{{ entries.length }}</q-item-label>
             </q-item-section>
             <q-item-section side>
@@ -195,7 +217,7 @@ const MainLayout = {
 
           <q-item>
             <q-item-section>
-              <q-item-label>Balance</q-item-label>
+              <q-item-label>{{ t('app.balance') }}</q-item-label>
               <q-item-label caption class="text-white-80" :class="getAmountColorClass(balance)">{{ currencify(balance) }}</q-item-label>
             </q-item-section>
             <q-item-section side>
@@ -231,6 +253,12 @@ const MainLayout = {
   setup() {
     const store = useEntriesStore()
     const router = VueRouter.useRouter()
+    const i18nLang = Vue.ref(window.i18n?.lang || 'en')
+    if (window.i18n?.onChange) {
+      window.i18n.onChange((lang) => {
+        i18nLang.value = lang
+      })
+    }
 
     // Initialize UI state from store
     store.initializeUIState()
@@ -307,6 +335,33 @@ const MainLayout = {
       return 'text-grey-7'
     }
 
+    const applyDir = (lang) => {
+      const isRtl = lang === 'ar'
+      document.documentElement.setAttribute('dir', isRtl ? 'rtl' : 'ltr')
+      document.body.classList.toggle('rtl', isRtl)
+      if (Quasar?.rtl?.set) {
+        Quasar.rtl.set(isRtl)
+      }
+    }
+
+    const setLanguage = (lang) => {
+      if (window.i18n?.setLang) {
+        window.i18n.setLang(lang)
+      } else {
+        localStorage.setItem('Tulipes-language', lang)
+      }
+      applyDir(lang)
+      if (Quasar?.lang?.set) {
+        if (lang === 'fr' && Quasar.lang.fr) Quasar.lang.set(Quasar.lang.fr)
+        if (lang === 'ar' && Quasar.lang.ar) Quasar.lang.set(Quasar.lang.ar)
+        if (lang === 'en' && Quasar.lang.enUS) Quasar.lang.set(Quasar.lang.enUS)
+      }
+    }
+    const t = (key) => {
+      void i18nLang.value
+      return window.i18n?.t ? window.i18n.t(key) : key
+    }
+
     // Set initial states after component is mounted
     Vue.onMounted(() => {
       console.log('Component mounted, UI State:', store.uiState)
@@ -315,6 +370,9 @@ const MainLayout = {
       const currentPath = store.getCurrentPath()
       store.uiState.activeMenuItem = currentPath
       store.saveToStorage('Tulipes-active-menu', currentPath)
+
+      const savedLang = localStorage.getItem('Tulipes-language') || 'en'
+      setLanguage(savedLang)
     })
 
     // Watch for active menu changes and force reactivity
@@ -341,7 +399,9 @@ const MainLayout = {
       navigateToAndClose: store.navigateToAndClose.bind(store),
       setActiveMenuAndNavigate: store.setActiveMenuAndNavigate.bind(store),
       currentPath: Vue.computed(() => store.getCurrentPath()),
-      navigateTo: store.navigateTo.bind(store)
+      navigateTo: store.navigateTo.bind(store),
+      setLanguage,
+      t
     }
   }
 };

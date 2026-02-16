@@ -3,14 +3,14 @@ console.log('Loading TablesDemo component...');
 const TablesDemo = {
   template: `
     <q-page class="q-pa-md">
-      <div class="text-h6 q-mb-md">Employee Data Management</div>
+      <div class="text-h6 q-mb-md">{{ t('tablesDemo.title') }}</div>
 
       <div class="row q-mb-md q-gutter-md">
         <div class="col-auto">
           <q-btn
             color="primary"
             icon="refresh"
-            label="Refresh"
+            :label="t('tablesDemo.refresh')"
             @click="loadData"
             :loading="loading"
           />
@@ -19,7 +19,7 @@ const TablesDemo = {
           <q-btn
             color="secondary"
             icon="add"
-            label="Add Employee"
+            :label="t('tablesDemo.addEmployee')"
             @click="showAddDialog = true"
           />
         </div>
@@ -27,7 +27,7 @@ const TablesDemo = {
           <q-btn
             color="info"
             icon="download"
-            label="Export CSV"
+            :label="t('tablesDemo.exportCsv')"
             @click="exportToCSV"
           />
         </div>
@@ -35,7 +35,7 @@ const TablesDemo = {
           <q-btn
             color="warning"
             icon="upload"
-            label="Import CSV"
+            :label="t('tablesDemo.importCsv')"
             @click="triggerFileImport"
           />
         </div>
@@ -43,7 +43,7 @@ const TablesDemo = {
           <q-btn
             color="negative"
             icon="delete"
-            label="Clear All"
+            :label="t('tablesDemo.clearAll')"
             @click="confirmClearAll"
           />
         </div>
@@ -58,7 +58,7 @@ const TablesDemo = {
 
       <div v-if="loading" class="text-center q-mt-md">
         <q-spinner-dots size="40px" color="primary" />
-        <div class="q-mt-sm">Loading data...</div>
+        <div class="q-mt-sm">{{ t('tablesDemo.loading') }}</div>
       </div>
 
       <div id="grid" style="width: 100%; height: 500px; border: 1px solid #ddd; border-radius: 4px;"></div>
@@ -67,7 +67,7 @@ const TablesDemo = {
       <q-dialog v-model="showAddDialog" persistent>
         <q-card style="min-width: 400px">
           <q-card-section>
-            <div class="text-h6">{{ editingEmployee ? 'Edit Employee' : 'Add New Employee' }}</div>
+            <div class="text-h6">{{ editingEmployee ? t('tablesDemo.editEmployee') : t('tablesDemo.addNewEmployee') }}</div>
           </q-card-section>
 
           <q-card-section class="q-pt-none">
@@ -75,39 +75,39 @@ const TablesDemo = {
               <q-input
                 filled
                 v-model="employeeForm.fname"
-                label="First Name"
+                :label="t('tablesDemo.firstName')"
                 class="q-mb-md"
-                :rules="[val => !!val || 'First name is required']"
+                :rules="[val => !!val || t('tablesDemo.firstNameRequired')]"
               />
               <q-input
                 filled
                 v-model="employeeForm.lname"
-                label="Last Name"
+                :label="t('tablesDemo.lastName')"
                 class="q-mb-md"
-                :rules="[val => !!val || 'Last name is required']"
+                :rules="[val => !!val || t('tablesDemo.lastNameRequired')]"
               />
               <q-input
                 filled
                 v-model="employeeForm.email"
-                label="Email"
+                :label="t('tablesDemo.email')"
                 type="email"
                 class="q-mb-md"
-                :rules="[val => !!val || 'Email is required', val => val.includes('@') || 'Invalid email']"
+                :rules="[val => !!val || t('tablesDemo.emailRequired'), val => val.includes('@') || t('tablesDemo.emailInvalid')]"
               />
               <q-input
                 filled
                 v-model="employeeForm.sdate"
-                label="Start Date"
+                :label="t('tablesDemo.startDate')"
                 type="date"
                 class="q-mb-md"
-                :rules="[val => !!val || 'Start date is required']"
+                :rules="[val => !!val || t('tablesDemo.startDateRequired')]"
               />
             </q-form>
           </q-card-section>
 
           <q-card-actions align="right" class="text-primary">
-            <q-btn flat label="Cancel" @click="closeDialog" />
-            <q-btn flat label="Save" @click="saveEmployee" />
+            <q-btn flat :label="t('tablesDemo.cancel')" @click="closeDialog" />
+            <q-btn flat :label="t('tablesDemo.save')" @click="saveEmployee" />
           </q-card-actions>
         </q-card>
       </q-dialog>
@@ -116,21 +116,21 @@ const TablesDemo = {
       <q-dialog v-model="showViewDialog">
         <q-card style="min-width: 400px">
           <q-card-section>
-            <div class="text-h6">Employee Details</div>
+            <div class="text-h6">{{ t('tablesDemo.employeeDetails') }}</div>
           </q-card-section>
 
           <q-card-section class="q-pt-none">
             <div v-if="selectedEmployee">
-              <p><strong>ID:</strong> {{ selectedEmployee.recid }}</p>
-              <p><strong>First Name:</strong> {{ selectedEmployee.fname }}</p>
-              <p><strong>Last Name:</strong> {{ selectedEmployee.lname }}</p>
-              <p><strong>Email:</strong> {{ selectedEmployee.email }}</p>
-              <p><strong>Start Date:</strong> {{ selectedEmployee.sdate }}</p>
+              <p><strong>{{ t('grid.id') }}:</strong> {{ selectedEmployee.recid }}</p>
+              <p><strong>{{ t('tablesDemo.firstName') }}:</strong> {{ selectedEmployee.fname }}</p>
+              <p><strong>{{ t('tablesDemo.lastName') }}:</strong> {{ selectedEmployee.lname }}</p>
+              <p><strong>{{ t('tablesDemo.email') }}:</strong> {{ selectedEmployee.email }}</p>
+              <p><strong>{{ t('tablesDemo.startDate') }}:</strong> {{ selectedEmployee.sdate }}</p>
             </div>
           </q-card-section>
 
           <q-card-actions align="right">
-            <q-btn flat label="Close" color="primary" @click="showViewDialog = false" />
+            <q-btn flat :label="t('tablesDemo.close')" color="primary" @click="showViewDialog = false" />
           </q-card-actions>
         </q-card>
       </q-dialog>
@@ -139,10 +139,18 @@ const TablesDemo = {
   setup() {
     console.log('TablesDemo setup() called');
     const loading = Vue.ref(false);
+    const i18nLang = Vue.ref(window.i18n?.lang || 'en');
+    if (window.i18n?.onChange) {
+      window.i18n.onChange((lang) => {
+        i18nLang.value = lang;
+        loadData();
+      });
+    }
     const showAddDialog = Vue.ref(false);
     const showViewDialog = Vue.ref(false);
     const editingEmployee = Vue.ref(false);
     const selectedEmployee = Vue.ref(null);
+    const gridData = Vue.ref([]);
     const employeeForm = Vue.ref({
       fname: '',
       lname: '',
@@ -150,20 +158,28 @@ const TablesDemo = {
       sdate: ''
     });
 
+    const t = (key) => {
+      void i18nLang.value;
+      return window.i18n?.t ? window.i18n.t(key) : key;
+    };
+
+    const getDataUrl = (lang) => {
+      const version = window.APP_VERSION || Date.now();
+      const suffix = lang ? `.${lang}` : '';
+      if (window.location.pathname.includes('/tulipses/')) {
+        return `/tulipses/data/list${suffix}.json?v=${version}`;
+      }
+      return `data/list${suffix}.json?v=${version}`;
+    };
+
     const loadData = async () => {
       console.log('=== loadData started ===');
       loading.value = true;
       try {
-        // Try multiple possible URLs
-        let dataUrl;
-        if (window.location.pathname.includes('/tulipses/')) {
-          dataUrl = '/tulipses/data/list.json';
-        } else {
-          dataUrl = 'data/list.json';
-        }
-
+        const lang = window.i18n?.lang || 'en';
+        const dataUrl = getDataUrl(lang);
         console.log('Fetching data from:', dataUrl);
-        const response = await fetch(dataUrl);
+        const response = await fetch(dataUrl, { cache: 'no-store' });
         console.log('Fetch response status:', response.status);
 
         if (!response.ok) {
@@ -175,11 +191,13 @@ const TablesDemo = {
         console.log('Data records:', data.records);
 
         // Initialize grid with loaded data
-        initGrid(data.records || []);
+        gridData.value = data.records || [];
+        initGrid(gridData.value);
       } catch (error) {
         console.error('Error loading data:', error);
         // Initialize grid with empty data on error
-        initGrid([]);
+        gridData.value = [];
+        initGrid(gridData.value);
       } finally {
         loading.value = false;
       }
@@ -231,7 +249,7 @@ const TablesDemo = {
         const grid = new w2grid({
           name: 'grid',
           box: document.getElementById('grid'),
-          header: 'Employee Management System',
+          header: t('tablesDemo.gridHeader'),
           show: {
             toolbar: true,
             footer: true,
@@ -241,26 +259,26 @@ const TablesDemo = {
             toolbarColumns: true
           },
           columns: [
-            { field: 'recid', caption: 'ID', size: '80px', sortable: true, resizable: true },
-            { field: 'fname', caption: 'First Name', size: '30%', sortable: true, resizable: true },
-            { field: 'lname', caption: 'Last Name', size: '30%', sortable: true, resizable: true },
-            { field: 'email', caption: 'Email', size: '40%', sortable: true, resizable: true },
-            { field: 'sdate', caption: 'Start Date', size: '120px', sortable: true, resizable: true }
+            { field: 'recid', caption: t('grid.id'), size: '80px', sortable: true, resizable: true },
+            { field: 'fname', caption: t('tablesDemo.firstName'), size: '30%', sortable: true, resizable: true },
+            { field: 'lname', caption: t('tablesDemo.lastName'), size: '30%', sortable: true, resizable: true },
+            { field: 'email', caption: t('tablesDemo.email'), size: '40%', sortable: true, resizable: true },
+            { field: 'sdate', caption: t('tablesDemo.startDate'), size: '120px', sortable: true, resizable: true }
           ],
           toolbar: {
             items: [
               { type: 'break', id: 'break1' },
-              { type: 'button', id: 'add', text: 'Add', icon: 'fa fa-plus', style: 'border-radius: 0px;' }, // Square button
-              { type: 'button', id: 'edit', text: 'Edit', icon: 'fa fa-edit', style: 'border-radius: 0px;' }, // Square button
-              { type: 'button', id: 'delete', text: 'Delete', icon: 'fa fa-trash', style: 'border-radius: 0px;' }, // Square button
+              { type: 'button', id: 'add', text: t('tablesDemo.add'), icon: 'fa fa-plus', style: 'border-radius: 0px;' }, // Square button
+              { type: 'button', id: 'edit', text: t('tablesDemo.edit'), icon: 'fa fa-edit', style: 'border-radius: 0px;' }, // Square button
+              { type: 'button', id: 'delete', text: t('tablesDemo.delete'), icon: 'fa fa-trash', style: 'border-radius: 0px;' }, // Square button
               { type: 'break', id: 'break2' },
-              { type: 'button', id: 'view', text: 'View', icon: 'fa fa-eye', style: 'border-radius: 4px;' }, // Rounded button
-              { type: 'button', id: 'export', text: 'Export', icon: 'fa fa-download', style: 'border-radius: 12px;' }, // More rounded
-              { type: 'button', id: 'import', text: 'Import', icon: 'fa fa-upload', style: 'border-radius: 20px;' }, // Very rounded
+              { type: 'button', id: 'view', text: t('tablesDemo.view'), icon: 'fa fa-eye', style: 'border-radius: 4px;' }, // Rounded button
+              { type: 'button', id: 'export', text: t('tablesDemo.export'), icon: 'fa fa-download', style: 'border-radius: 12px;' }, // More rounded
+              { type: 'button', id: 'import', text: t('tablesDemo.import'), icon: 'fa fa-upload', style: 'border-radius: 20px;' }, // Very rounded
               { type: 'break', id: 'break3' },
-              { type: 'button', id: 'refresh', text: 'Refresh', icon: 'fa fa-refresh', style: 'border-radius: 50%; width: 35px; height: 35px;' }, // Circular
+              { type: 'button', id: 'refresh', text: t('tablesDemo.refreshAction'), icon: 'fa fa-refresh', style: 'border-radius: 50%; width: 35px; height: 35px;' }, // Circular
               { type: 'spacer' },
-              { type: 'html', id: 'info', html: '<span style="color: #666; padding: 8px;">Square buttons available!</span>' }
+              { type: 'html', id: 'info', html: `<span style="color: #666; padding: 8px;">${t('tablesDemo.refreshAction')}</span>` }
             ],
             onClick: function (event) {
               console.log('Toolbar clicked:', event.target);
@@ -345,7 +363,7 @@ const TablesDemo = {
 
     const saveEmployee = () => {
       if (!employeeForm.value.fname || !employeeForm.value.lname || !employeeForm.value.email) {
-        showNotification('Please fill all required fields', 'negative');
+        showNotification(t('tablesDemo.notifyFillRequired'), 'negative');
         return;
       }
 
@@ -355,7 +373,7 @@ const TablesDemo = {
         if (index !== -1) {
           window.currentGrid.records[index] = { ...editingEmployee.value, ...employeeForm.value };
           window.currentGrid.refresh();
-          showNotification('Employee updated successfully', 'positive');
+          showNotification(t('tablesDemo.notifyUpdated'), 'positive');
         }
       } else {
         // Add new employee
@@ -363,7 +381,7 @@ const TablesDemo = {
         const newEmployee = { recid: newId, ...employeeForm.value };
         window.currentGrid.records.push(newEmployee);
         window.currentGrid.refresh();
-        showNotification('Employee added successfully', 'positive');
+        showNotification(t('tablesDemo.notifyAdded'), 'positive');
       }
 
       closeDialog();
@@ -372,7 +390,7 @@ const TablesDemo = {
     const editSelectedEmployee = () => {
       const selected = window.currentGrid.getSelection();
       if (selected.length === 0) {
-        showNotification('Please select an employee to edit', 'warning');
+        showNotification(t('tablesDemo.notifySelectEdit'), 'warning');
         return;
       }
 
@@ -387,21 +405,21 @@ const TablesDemo = {
     const deleteSelectedEmployee = () => {
       const selected = window.currentGrid.getSelection();
       if (selected.length === 0) {
-        showNotification('Please select an employee to delete', 'warning');
+        showNotification(t('tablesDemo.notifySelectDelete'), 'warning');
         return;
       }
 
-      if (confirm('Are you sure you want to delete this employee?')) {
+      if (confirm(t('tablesDemo.confirmDelete'))) {
         window.currentGrid.records = window.currentGrid.records.filter(emp => emp.recid !== selected[0]);
         window.currentGrid.refresh();
-        showNotification('Employee deleted successfully', 'positive');
+        showNotification(t('tablesDemo.notifyDeleted'), 'positive');
       }
     };
 
     const viewSelectedEmployee = () => {
       const selected = window.currentGrid.getSelection();
       if (selected.length === 0) {
-        showNotification('Please select an employee to view', 'warning');
+        showNotification(t('tablesDemo.notifySelectView'), 'warning');
         return;
       }
 
@@ -414,7 +432,7 @@ const TablesDemo = {
 
     const exportToCSV = () => {
       const records = window.currentGrid.records;
-      const headers = ['ID', 'First Name', 'Last Name', 'Email', 'Start Date'];
+      const headers = [t('grid.id'), t('tablesDemo.firstName'), t('tablesDemo.lastName'), t('tablesDemo.email'), t('tablesDemo.startDate')];
       const csvContent = [
         headers.join(','),
         ...records.map(emp =>
@@ -430,7 +448,7 @@ const TablesDemo = {
       a.click();
       window.URL.revokeObjectURL(url);
 
-      showNotification('Data exported successfully', 'positive');
+      showNotification(t('tablesDemo.exportSuccess'), 'positive');
     };
 
     const triggerFileImport = () => {
@@ -460,7 +478,7 @@ const TablesDemo = {
 
         window.currentGrid.records.push(...newRecords);
         window.currentGrid.refresh();
-        showNotification(`${newRecords.length} records imported successfully`, 'positive');
+        showNotification(`${newRecords.length} ${t('tablesDemo.importSuccess')}`, 'positive');
       };
 
       reader.readAsText(file);
@@ -468,10 +486,10 @@ const TablesDemo = {
     };
 
     const confirmClearAll = () => {
-      if (confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
+      if (confirm(t('tablesDemo.confirmClear'))) {
         window.currentGrid.records = [];
         window.currentGrid.refresh();
-        showNotification('All data cleared', 'positive');
+        showNotification(t('tablesDemo.clearSuccess'), 'positive');
       }
     };
 
@@ -523,6 +541,7 @@ const TablesDemo = {
       editingEmployee,
       selectedEmployee,
       employeeForm,
+      t,
       loadData,
       handleToolbarAction,
       resetForm,

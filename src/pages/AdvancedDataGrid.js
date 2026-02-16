@@ -18,32 +18,49 @@ const AdvancedDataGrid = {
     const { ref, onMounted, onUnmounted } = Vue;
 
     const records = ref([]);
+    const i18nLang = ref(window.i18n?.lang || 'en');
+    if (window.i18n?.onChange) {
+      window.i18n.onChange((lang) => {
+        i18nLang.value = lang;
+        rebuildGrid();
+      });
+    }
 
-    const categoryOptions = [
-      'Electronics',
-      'Furniture',
-      'Office Supplies',
-      'Other'
-    ];
+    const t = (key) => {
+      void i18nLang.value;
+      return window.i18n?.t ? window.i18n.t(key) : key;
+    };
 
-    const statusOptions = [
-      { id: 'all', text: 'All' },
-      { id: 'active', text: 'Active' },
-      { id: 'inactive', text: 'Inactive' },
-      { id: 'pending', text: 'Pending' }
-    ];
+    const categoryKeys = ['electronics', 'furniture', 'office', 'other'];
+    const statusKeys = ['active', 'inactive', 'pending'];
+
+    const buildCategoryOptions = () =>
+      categoryKeys.map((key) => ({ id: key, text: t(`category.${key}`) }));
+
+    const buildStatusOptions = (includeAll = false) => {
+      const items = statusKeys.map((key) => ({ id: key, text: t(`status.${key}`) }));
+      if (includeAll) {
+        items.unshift({ id: 'all', text: t('status.all') });
+      }
+      return items;
+    };
 
     function generateSampleData() {
-      const cats = categoryOptions;
-      const stats = ['active', 'inactive', 'pending'];
-
       return Array.from({ length: 50 }, (_, i) => ({
         recid: i + 1,
         id: i + 1,
         name: `Item ${i + 1}`,
-        category: cats[Math.floor(Math.random() * cats.length)],
+        categoryKey: categoryKeys[Math.floor(Math.random() * categoryKeys.length)],
         value: Math.floor(Math.random() * 1000),
-        status: stats[Math.floor(Math.random() * stats.length)]
+        statusKey: statusKeys[Math.floor(Math.random() * statusKeys.length)]
+      }));
+    }
+
+    function localizeRecords(rawRecords) {
+      return rawRecords.map((record) => ({
+        ...record,
+        category: t(`category.${record.categoryKey}`),
+        status: t(`status.${record.statusKey}`)
       }));
     }
 
@@ -52,10 +69,14 @@ const AdvancedDataGrid = {
         w2ui.advancedDataGrid.destroy();
       }
 
+      const categoryOptions = buildCategoryOptions();
+      const statusOptions = buildStatusOptions(true);
+      const localizedRecords = localizeRecords(records.value);
+
       new w2grid({
         name: 'advancedDataGrid',
         box: '#advanced-data-grid',
-        header: 'Advanced Data Grid',
+        header: t('grid.advancedTitle'),
         show: {
           toolbar: true,
           footer: true,
@@ -68,25 +89,25 @@ const AdvancedDataGrid = {
         limit: 10,
         multiSearch: true,
         searches: [
-          { field: 'name', text: 'Name', type: 'text' },
-          { field: 'category', text: 'Category', type: 'list', items: categoryOptions },
-          { field: 'status', text: 'Status', type: 'list', items: statusOptions }
+          { field: 'name', text: t('grid.name'), type: 'text' },
+          { field: 'category', text: t('grid.category'), type: 'list', items: categoryOptions },
+          { field: 'status', text: t('grid.status'), type: 'list', items: statusOptions }
         ],
         columns: [
-          { field: 'id', text: 'ID', size: '80px', sortable: true },
-          { field: 'name', text: 'Name', size: '30%', sortable: true },
-          { field: 'category', text: 'Category', size: '30%', sortable: true },
-          { field: 'value', text: 'Value', size: '120px', sortable: true, render: 'money' },
-          { field: 'status', text: 'Status', size: '120px', sortable: true }
+          { field: 'id', text: t('grid.id'), size: '80px', sortable: true },
+          { field: 'name', text: t('grid.name'), size: '30%', sortable: true },
+          { field: 'category', text: t('grid.category'), size: '30%', sortable: true },
+          { field: 'value', text: t('grid.value'), size: '120px', sortable: true, render: 'money' },
+          { field: 'status', text: t('grid.status'), size: '120px', sortable: true }
         ],
-        records: records.value,
+        records: localizedRecords,
         toolbar: {
           items: [
-            { type: 'button', id: 'add', text: 'Add New', icon: 'w2ui-icon-plus' },
-            { type: 'button', id: 'edit', text: 'Edit', icon: 'w2ui-icon-pencil' },
-            { type: 'button', id: 'delete', text: 'Delete', icon: 'w2ui-icon-cross' },
+            { type: 'button', id: 'add', text: t('grid.addNew'), icon: 'w2ui-icon-plus' },
+            { type: 'button', id: 'edit', text: t('grid.edit'), icon: 'w2ui-icon-pencil' },
+            { type: 'button', id: 'delete', text: t('grid.delete'), icon: 'w2ui-icon-cross' },
             { type: 'spacer' },
-            { type: 'button', id: 'view', text: 'View', icon: 'w2ui-icon-search' }
+            { type: 'button', id: 'view', text: t('grid.view'), icon: 'w2ui-icon-search' }
           ],
           onClick(event) {
             if (event.target === 'add') {
@@ -126,48 +147,56 @@ const AdvancedDataGrid = {
       const formRecord = record
         ? {
             name: record.name,
-            category: record.category,
+            category: { id: record.categoryKey, text: t(`category.${record.categoryKey}`) },
             value: record.value,
-            status: record.status
+            status: { id: record.statusKey, text: t(`status.${record.statusKey}`) }
           }
-        : { name: '', category: '', value: 0, status: 'active' };
+        : { name: '', category: null, value: 0, status: { id: 'active', text: t('status.active') } };
 
       const form = new w2form({
         name: formName,
         fields: [
           { field: 'name', type: 'text', required: true },
-          { field: 'category', type: 'list', required: true, options: { items: categoryOptions } },
+          { field: 'category', type: 'list', required: true, options: { items: buildCategoryOptions() } },
           { field: 'value', type: 'int' },
-          { field: 'status', type: 'list', options: { items: statusOptions } }
+          { field: 'status', type: 'list', options: { items: buildStatusOptions(false) } }
         ],
         record: formRecord,
         actions: {
           Save() {
             if (this.validate().length) return;
             const value = this.record.value || 0;
-            const category = this.record.category?.text || this.record.category;
-            const status = this.record.status?.id || this.record.status;
+            const categoryKey = this.record.category?.id || this.record.category;
+            const statusKey = this.record.status?.id || this.record.status;
             const name = this.record.name;
 
             if (isEdit) {
               const updated = {
                 ...record,
                 name,
-                category,
+                categoryKey,
+                category: t(`category.${categoryKey}`),
                 value,
-                status
+                statusKey,
+                status: t(`status.${statusKey}`)
               };
               w2ui.advancedDataGrid.set(record.recid, updated);
+              const idx = records.value.findIndex((r) => r.recid === record.recid);
+              if (idx > -1) records.value[idx] = updated;
             } else {
               const newId = Math.max(0, ...w2ui.advancedDataGrid.records.map(r => r.id)) + 1;
-              w2ui.advancedDataGrid.add({
+              const created = {
                 recid: newId,
                 id: newId,
                 name,
-                category,
+                categoryKey,
+                category: t(`category.${categoryKey}`),
                 value,
-                status
-              });
+                statusKey,
+                status: t(`status.${statusKey}`)
+              };
+              w2ui.advancedDataGrid.add(created);
+              records.value.unshift(created);
             }
 
             w2popup.close();
@@ -179,7 +208,7 @@ const AdvancedDataGrid = {
       });
 
       w2popup.open({
-        title: isEdit ? 'Edit Item' : 'Add New Item',
+        title: isEdit ? t('grid.edit') : t('grid.addNew'),
         width: 520,
         height: 360,
         modal: true,
@@ -196,31 +225,37 @@ const AdvancedDataGrid = {
     }
 
     function confirmDelete(record) {
-      w2confirm(`Delete ${record.name}?`)
+      w2confirm(`${t('grid.delete')} ${record.name}?`)
         .yes(() => {
           w2ui.advancedDataGrid.remove(record.recid);
+          records.value = records.value.filter((r) => r.recid !== record.recid);
         });
     }
 
     function viewItem(record) {
       const html = `
         <div style="padding: 12px;">
-          <div><strong>ID:</strong> ${record.id}</div>
-          <div><strong>Name:</strong> ${record.name}</div>
-          <div><strong>Category:</strong> ${record.category}</div>
-          <div><strong>Value:</strong> ${record.value}</div>
-          <div><strong>Status:</strong> ${record.status}</div>
+          <div><strong>${t('grid.id')}:</strong> ${record.id}</div>
+          <div><strong>${t('grid.name')}:</strong> ${record.name}</div>
+          <div><strong>${t('grid.category')}:</strong> ${record.category}</div>
+          <div><strong>${t('grid.value')}:</strong> ${record.value}</div>
+          <div><strong>${t('grid.status')}:</strong> ${record.status}</div>
         </div>
       `;
 
       w2popup.open({
-        title: 'Item Details',
+        title: t('grid.itemDetails'),
         width: 420,
         height: 260,
         modal: true,
         body: html,
-        buttons: '<button class="w2ui-btn" onclick="w2popup.close()">Close</button>'
+        buttons: `<button class="w2ui-btn" onclick="w2popup.close()">${t('grid.close')}</button>`
       });
+    }
+
+    function rebuildGrid() {
+      if (!w2ui?.advancedDataGrid) return;
+      buildGrid();
     }
 
     onMounted(() => {
