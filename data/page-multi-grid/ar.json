@@ -41,10 +41,10 @@
     { "recid": 9, "fname": "فهد", "lname": "القرشي", "email": "james.d@example.com", "sdate": "2023-09-14" }
   ],
   "departments": [
-    { "recid": 1, "name": "تقنية المعلومات", "manager": "John Smith" },
-    { "recid": 2, "name": "الموارد البشرية", "manager": "Sara Lee" },
-    { "recid": 3, "name": "المالية", "manager": "Ahmed Benali" },
-    { "recid": 4, "name": "التسويق", "manager": "Nadia Karim" }
+    { "recid": 1, "name": "تقنية المعلومات", "manager": "مروان السيد" },
+    { "recid": 2, "name": "الموارد البشرية", "manager": "هدى الحربي" },
+    { "recid": 3, "name": "المالية", "manager": "رامي العتيبي" },
+    { "recid": 4, "name": "التسويق", "manager": "دانا السعدي" }
   ],
   "projects": [
     { "recid": 1, "title": "نظام ERP", "status": "نشط", "budget": 50000 },
