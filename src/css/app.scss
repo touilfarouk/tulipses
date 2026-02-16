@@ -104,3 +104,68 @@ body.rtl {
     width: 100% !important;
   }
 }
+
+/* w2ui light/dark theme support */
+.w2ui-grid,
+.w2ui-grid * {
+  box-sizing: border-box;
+}
+
+.w2ui-grid {
+  background: #ffffff;
+  color: #1f1f1f;
+}
+
+.w2ui-grid .w2ui-grid-header,
+.w2ui-grid .w2ui-grid-summary,
+.w2ui-grid .w2ui-grid-footer,
+.w2ui-grid .w2ui-grid-toolbar {
+  background: #f7f7f7;
+  color: #1f1f1f;
+}
+
+.w2ui-grid .w2ui-grid-body {
+  background: #ffffff;
+}
+
+.w2ui-grid .w2ui-grid-records .w2ui-odd {
+  background: #ffffff;
+}
+
+.w2ui-grid .w2ui-grid-records .w2ui-even {
+  background: #fbfbfb;
+}
+
+.w2ui-grid .w2ui-grid-records .w2ui-selected {
+  background: #e3f2fd !important;
+}
+
+body.q-dark .w2ui-grid {
+  background: #1e1e1e;
+  color: #e6e6e6;
+}
+
+body.q-dark .w2ui-grid .w2ui-grid-header,
+body.q-dark .w2ui-grid .w2ui-grid-summary,
+body.q-dark .w2ui-grid .w2ui-grid-footer,
+body.q-dark .w2ui-grid .w2ui-grid-toolbar {
+  background: #2a2a2a;
+  color: #e6e6e6;
+}
+
+body.q-dark .w2ui-grid .w2ui-grid-body {
+  background: #1e1e1e;
+}
+
+body.q-dark .w2ui-grid .w2ui-grid-records .w2ui-odd {
+  background: #1e1e1e;
+}
+
+body.q-dark .w2ui-grid .w2ui-grid-records .w2ui-even {
+  background: #242424;
+}
+
+body.q-dark .w2ui-grid .w2ui-grid-records .w2ui-selected {
+  background: #0d47a1 !important;
+  color: #ffffff;
+}
