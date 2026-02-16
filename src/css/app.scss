@@ -53,3 +53,54 @@ body.rtl {
 .q-layout__shadow {
   display: none !important;
 }
+
+/* w2ui responsive tweaks */
+@media (max-width: 768px) {
+  .w2ui-grid {
+    font-size: 12px;
+  }
+
+  .w2ui-grid-header,
+  .w2ui-grid-summary,
+  .w2ui-grid-footer {
+    overflow-x: auto;
+  }
+
+  .w2ui-grid-body {
+    overflow-x: auto;
+  }
+
+  .w2ui-grid-toolbar,
+  .w2ui-grid-toolbar table,
+  .w2ui-grid-toolbar tr,
+  .w2ui-grid-toolbar td {
+    display: block;
+    width: 100%;
+  }
+
+  .w2ui-toolbar table.w2ui-toolbar-table {
+    width: 100%;
+  }
+
+  .w2ui-toolbar table.w2ui-toolbar-table td {
+    padding: 4px 6px;
+  }
+
+  .w2ui-toolbar .w2ui-search {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .w2ui-grid {
+    font-size: 11px;
+  }
+
+  .w2ui-grid .w2ui-grid-header {
+    font-size: 12px;
+  }
+
+  .w2ui-toolbar .w2ui-search input {
+    width: 100% !important;
+  }
+}
